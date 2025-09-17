@@ -34,7 +34,7 @@ public class MainMenuAnimator : MonoBehaviour
         // 初始位置設定
         leftCurtain.anchoredPosition = new Vector2(-1500, 65);
         rightCurtain.anchoredPosition = new Vector2(1500, 65);
-        title.anchoredPosition = new Vector2(0, 723);
+        title.anchoredPosition = new Vector2(0, 800);
 
         foreach (var btn in buttons)
         {

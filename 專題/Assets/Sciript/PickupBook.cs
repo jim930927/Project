@@ -1,5 +1,8 @@
-﻿using UnityEngine;
-using Ink.Runtime;
+﻿using Ink.Runtime;
+using Unity.VisualScripting;
+using TMPro;
+using UnityEngine.UI;
+using UnityEngine;
 
 public class PickupBook : MonoBehaviour
 {
@@ -10,10 +13,17 @@ public class PickupBook : MonoBehaviour
     private bool isPlayerNear = false;
     private bool hasPickedUp = false;
 
+    private GameObject player;
+
+    public TextMeshProUGUI interactHint;
+
     void Start()
     {
         if (bookIconUI != null)
             bookIconUI.SetActive(false); // 預設隱藏書本圖示
+
+        if (interactHint != null)
+            interactHint.canvasRenderer.SetAlpha(0); // 初始隱藏
     }
 
     void Update()
@@ -24,6 +34,7 @@ public class PickupBook : MonoBehaviour
 
             if (bookIconUI != null)
                 bookIconUI.SetActive(true); // 顯示書圖示 UI
+
 
             if (dialogueManager != null && inkJSONAsset != null)
             {
@@ -37,17 +48,37 @@ public class PickupBook : MonoBehaviour
 
             gameObject.SetActive(false); // 隱藏場景中的書本
         }
+
+        if (isPlayerNear && player != null)
+        {
+            // 顯示提示
+            if (interactHint != null)
+                interactHint.canvasRenderer.SetAlpha(1);
+        }
+        else
+        {
+            // 離開範圍，隱藏提示
+            if (interactHint != null)
+                interactHint.canvasRenderer.SetAlpha(0);
+        }
+
+
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
             isPlayerNear = true;
+            player = other.gameObject;
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
             isPlayerNear = false;
+            player = null;
+
+        if (interactHint != null)
+            interactHint.canvasRenderer.SetAlpha(0); // 離開立即隱藏
     }
 }

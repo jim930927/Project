@@ -13,6 +13,10 @@ public class PlayerMovement : MonoBehaviour
     [Header("移動控制")]
     public bool canMove = true; // 可由外部如對話系統控制
 
+    [Header("動畫延遲")]
+    private float idleBuffer = 0.1f; // 緩衝 0.1 秒
+    private float lastMoveTime;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -36,16 +40,20 @@ public class PlayerMovement : MonoBehaviour
         else if (movement.y != 0) movement.x = 0;
 
         // 動畫控制
-        animator.SetFloat("MoveX", movement.x);
-        animator.SetFloat("MoveY", movement.y);
-        animator.SetBool("IsMoving", movement != Vector2.zero);
-
         if (movement != Vector2.zero)
         {
             lastDirection = movement.normalized;
-            animator.SetFloat("LastX", lastDirection.x);
-            animator.SetFloat("LastY", lastDirection.y);
+            animator.SetFloat("MoveX", lastDirection.x);
+            animator.SetFloat("MoveY", lastDirection.y);
+            animator.SetBool("IsMoving", true);
         }
+        else
+        {
+            animator.SetBool("IsMoving", false);
+        }
+
+        animator.SetFloat("LastX", lastDirection.x);
+        animator.SetFloat("LastY", lastDirection.y);
     }
 
     void FixedUpdate()
