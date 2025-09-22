@@ -11,8 +11,10 @@ public class TalkToBoss : MonoBehaviour
     {
         if (isPlayerNear && Input.GetKeyDown(KeyCode.Space))
         {
-            // ✅ 加入檢查：正在對話中就不要再觸發
-            if (dialogueManager != null && inkJSONAsset != null && !dialogueManager.dialogueIsPlaying)
+            // 🚩 檢查：不能在對話中，也不能在冷卻中
+            if (dialogueManager != null && inkJSONAsset != null
+                && !dialogueManager.dialogueIsPlaying
+                && !dialogueManager.IsInCooldown)
             {
                 dialogueManager.EnterDialogueMode(inkJSONAsset, "boss_talk");
             }

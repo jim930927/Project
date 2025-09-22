@@ -46,6 +46,9 @@ TagManager:
   - name: other
     uniqueID: 1989948023
     locked: 0
+  - name: "\u7269\u4EF62"
+    uniqueID: 2353886707
+    locked: 0
   - name: "\u7269\u4EF6"
     uniqueID: 2119614441
     locked: 0

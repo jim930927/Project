@@ -17,12 +17,18 @@ public class InkDialogueManager : MonoBehaviour
     [Header("Ink 劇本")]
     public TextAsset inkJSON;
 
+    [Header("對話緩衝")]
+    private float dialogueEndCooldown = 1f; // 0.3秒緩衝
+    private float dialogueEndTimer = 0f;
+
+
     private Story story;
     private bool canContinue = false;
     private float inputDelay = 0.2f;
     private float inputTimer = 0f;
 
     public bool dialogueIsPlaying { get; private set; }
+    public bool IsInCooldown => dialogueEndTimer > 0f;
 
     void Start()
     {
@@ -40,6 +46,13 @@ public class InkDialogueManager : MonoBehaviour
 
     void Update()
     {
+        if (dialogueEndTimer > 0f)
+        {
+            dialogueEndTimer -= Time.deltaTime;
+            return; // 在冷卻時間內，不接受互動輸入
+        }
+
+
         if (!dialoguePanel.activeSelf || !dialogueIsPlaying) return;
 
         if (!canContinue)
@@ -72,11 +85,14 @@ public class InkDialogueManager : MonoBehaviour
             story = new Story(inkJSON.text);
         }
 
+
+        // 如果有指定 knot，跳到該節點
         if (!string.IsNullOrEmpty(knotName))
         {
             try
             {
                 story.ChoosePathString(knotName);
+                Debug.Log($"✅ 成功跳到節點：{knotName}");
             }
             catch (System.Exception e)
             {
@@ -84,11 +100,14 @@ public class InkDialogueManager : MonoBehaviour
             }
         }
 
+        // 打開對話 UI
         dialoguePanel.SetActive(true);
         dialogueIsPlaying = true;
         canContinue = false;
         inputTimer = 0f;
         SetPlayerCanMove(false);
+
+        // 立即繼續故事
         ContinueStory();
     }
 
@@ -109,6 +128,8 @@ public class InkDialogueManager : MonoBehaviour
             dialogueIsPlaying = false;
             Debug.Log("✅ Ink 對話結束");
             SetPlayerCanMove(true);
+
+            dialogueEndTimer = dialogueEndCooldown; // 🚩 開始冷卻，避免馬上觸發下一輪
         }
     }
 
@@ -127,6 +148,12 @@ public class InkDialogueManager : MonoBehaviour
         List<Choice> choices = story.currentChoices;
         Debug.Log("🟡 currentChoices 數量 = " + choices.Count); // 新增 Debug 訊息
         choiceContainer.SetActive(choices.Count > 0);
+
+        Debug.Log("Ink state canContinue：" + story.canContinue);
+        for (int i = 0; i < choices.Count; i++)
+        {
+            Debug.Log($"choice {i}: '{choices[i].text}'");
+        }
 
         for (int i = 0; i < choiceButtons.Length; i++)
         {
@@ -166,7 +193,7 @@ public class InkDialogueManager : MonoBehaviour
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
         {
-            var pm = player.GetComponent<PlayerMovement>();
+            var pm = player.GetComponent<Player>();
             if (pm != null)
                 pm.canMove = canMove;
         }

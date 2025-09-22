@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class Player : MonoBehaviour
 {
     public float moveSpeed = 5f;
     private Rigidbody2D rb;
@@ -14,7 +14,7 @@ public class PlayerMovement : MonoBehaviour
     public bool canMove = true; // 可由外部如對話系統控制
 
     [Header("動畫延遲")]
-    private float idleBuffer = 0.1f; // 緩衝 0.1 秒
+    //private float idleBuffer = 0.1f; // 緩衝 0.1 秒
     private float lastMoveTime;
 
     void Start()
