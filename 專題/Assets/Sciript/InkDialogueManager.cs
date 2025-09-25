@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Ink.Runtime;
 using System.Collections.Generic;
+using System; // ✅ 為了 Action
 
 public class InkDialogueManager : MonoBehaviour
 {
@@ -11,16 +12,15 @@ public class InkDialogueManager : MonoBehaviour
     public GameObject dialoguePanel;
 
     [Header("選項 UI")]
-    public GameObject choiceContainer;         // ChoiceContainer
-    public Button[] choiceButtons;             // ChoiceButton1 / 2 / 3
+    public GameObject choiceContainer;
+    public Button[] choiceButtons;
 
     [Header("Ink 劇本")]
     public TextAsset inkJSON;
 
     [Header("對話緩衝")]
-    private float dialogueEndCooldown = 1f; // 0.3秒緩衝
+    private float dialogueEndCooldown = 1f;
     private float dialogueEndTimer = 0f;
-
 
     private Story story;
     private bool canContinue = false;
@@ -29,6 +29,9 @@ public class InkDialogueManager : MonoBehaviour
 
     public bool dialogueIsPlaying { get; private set; }
     public bool IsInCooldown => dialogueEndTimer > 0f;
+
+    // ✅ 新增：對話結束的 callback
+    private Action onDialogueComplete;
 
     void Start()
     {
@@ -40,7 +43,7 @@ public class InkDialogueManager : MonoBehaviour
 
         if (inkJSON != null)
         {
-            story = new Story(inkJSON.text); // 預載入
+            story = new Story(inkJSON.text);
         }
     }
 
@@ -49,9 +52,8 @@ public class InkDialogueManager : MonoBehaviour
         if (dialogueEndTimer > 0f)
         {
             dialogueEndTimer -= Time.deltaTime;
-            return; // 在冷卻時間內，不接受互動輸入
+            return;
         }
-
 
         if (!dialoguePanel.activeSelf || !dialogueIsPlaying) return;
 
@@ -71,7 +73,8 @@ public class InkDialogueManager : MonoBehaviour
         }
     }
 
-    public void EnterDialogueMode(TextAsset newInkJSON, string knotName = "")
+    // ✅ 改寫：可以傳 callback
+    public void EnterDialogueMode(TextAsset newInkJSON, string knotName = "", Action onComplete = null)
     {
         if (newInkJSON == null)
         {
@@ -85,8 +88,6 @@ public class InkDialogueManager : MonoBehaviour
             story = new Story(inkJSON.text);
         }
 
-
-        // 如果有指定 knot，跳到該節點
         if (!string.IsNullOrEmpty(knotName))
         {
             try
@@ -100,14 +101,14 @@ public class InkDialogueManager : MonoBehaviour
             }
         }
 
-        // 打開對話 UI
+        onDialogueComplete = onComplete; // ✅ 記錄 callback
+
         dialoguePanel.SetActive(true);
         dialogueIsPlaying = true;
         canContinue = false;
         inputTimer = 0f;
         SetPlayerCanMove(false);
 
-        // 立即繼續故事
         ContinueStory();
     }
 
@@ -129,7 +130,11 @@ public class InkDialogueManager : MonoBehaviour
             Debug.Log("✅ Ink 對話結束");
             SetPlayerCanMove(true);
 
-            dialogueEndTimer = dialogueEndCooldown; // 🚩 開始冷卻，避免馬上觸發下一輪
+            dialogueEndTimer = dialogueEndCooldown;
+
+            // ✅ 對話結束 → 呼叫 callback
+            onDialogueComplete?.Invoke();
+            onDialogueComplete = null;
         }
     }
 
@@ -146,14 +151,7 @@ public class InkDialogueManager : MonoBehaviour
     void DisplayChoices()
     {
         List<Choice> choices = story.currentChoices;
-        Debug.Log("🟡 currentChoices 數量 = " + choices.Count); // 新增 Debug 訊息
         choiceContainer.SetActive(choices.Count > 0);
-
-        Debug.Log("Ink state canContinue：" + story.canContinue);
-        for (int i = 0; i < choices.Count; i++)
-        {
-            Debug.Log($"choice {i}: '{choices[i].text}'");
-        }
 
         for (int i = 0; i < choiceButtons.Length; i++)
         {
@@ -165,12 +163,8 @@ public class InkDialogueManager : MonoBehaviour
                 {
                     choiceText.text = choices[i].text;
                 }
-                else
-                {
-                    Debug.LogWarning("❗ 找不到選項按鈕內的 Text 元件");
-                }
 
-                int choiceIndex = i; // 保留當前 i 值
+                int choiceIndex = i;
                 choiceButtons[i].onClick.RemoveAllListeners();
                 choiceButtons[i].onClick.AddListener(() => OnChoiceSelected(choiceIndex));
             }

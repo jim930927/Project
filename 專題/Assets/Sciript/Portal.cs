@@ -14,7 +14,7 @@ public class Portal : MonoBehaviour
 
     private void Start()
     {
-        fader = FindObjectOfType<ScreenFader>();
+        fader = Object.FindFirstObjectByType<ScreenFader>();
     }
 
     private void Update()
