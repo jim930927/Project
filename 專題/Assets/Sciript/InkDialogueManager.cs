@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Ink.Runtime;
 using System.Collections.Generic;
-using System; // ✅ 為了 Action
+using System;
 
 public class InkDialogueManager : MonoBehaviour
 {
@@ -18,8 +18,15 @@ public class InkDialogueManager : MonoBehaviour
     [Header("Ink 劇本")]
     public TextAsset inkJSON;
 
+    [Header("角色立繪區域")]
+    public Image leftPortraitImage;       // 左側立繪
+    public Image rightPortraitImage;      // 右側立繪
+    public Sprite leftDefaultPortrait;    // 左側預設立繪
+    public Sprite rightDefaultPortrait;   // 右側預設立繪
+    public CharacterPortrait[] portraits; // 設定角色對應的立繪 + 位置
+
     [Header("對話緩衝")]
-    private float dialogueEndCooldown = 1f;
+    public float dialogueEndCooldown = 1f;
     private float dialogueEndTimer = 0f;
 
     private Story story;
@@ -30,7 +37,6 @@ public class InkDialogueManager : MonoBehaviour
     public bool dialogueIsPlaying { get; private set; }
     public bool IsInCooldown => dialogueEndTimer > 0f;
 
-    // ✅ 新增：對話結束的 callback
     private Action onDialogueComplete;
 
     void Start()
@@ -38,13 +44,8 @@ public class InkDialogueManager : MonoBehaviour
         dialoguePanel.SetActive(false);
         choiceContainer.SetActive(false);
         dialogueIsPlaying = false;
-        canContinue = false;
-        inputTimer = 0f;
 
-        if (inkJSON != null)
-        {
-            story = new Story(inkJSON.text);
-        }
+        HidePortraits(); // 🚩 一開始隱藏立繪
     }
 
     void Update()
@@ -73,14 +74,9 @@ public class InkDialogueManager : MonoBehaviour
         }
     }
 
-    // ✅ 改寫：可以傳 callback
     public void EnterDialogueMode(TextAsset newInkJSON, string knotName = "", Action onComplete = null)
     {
-        if (newInkJSON == null)
-        {
-            Debug.LogWarning("⚠️ Ink JSON 未指定，無法載入 Ink 對話。");
-            return;
-        }
+        if (newInkJSON == null) return;
 
         if (story == null || inkJSON != newInkJSON)
         {
@@ -93,15 +89,11 @@ public class InkDialogueManager : MonoBehaviour
             try
             {
                 story.ChoosePathString(knotName);
-                Debug.Log($"✅ 成功跳到節點：{knotName}");
             }
-            catch (System.Exception e)
-            {
-                Debug.LogWarning($"⚠️ 指定節點「{knotName}」不存在於 Ink 劇本中：{e.Message}");
-            }
+            catch { }
         }
 
-        onDialogueComplete = onComplete; // ✅ 記錄 callback
+        onDialogueComplete = onComplete;
 
         dialoguePanel.SetActive(true);
         dialogueIsPlaying = true;
@@ -109,6 +101,8 @@ public class InkDialogueManager : MonoBehaviour
         inputTimer = 0f;
         SetPlayerCanMove(false);
 
+        ShowPortraits();   // 🚩 對話開始 → 顯示立繪區
+        ResetPortraits();  // 🚩 初始化為左右 defaultPortrait
         ContinueStory();
     }
 
@@ -117,9 +111,25 @@ public class InkDialogueManager : MonoBehaviour
         if (story != null && story.canContinue)
         {
             string text = story.Continue().Trim();
-            Debug.Log("Ink 顯示內容：" + text);
             dialogueText.text = text;
-            nameText.text = ParseSpeaker(text);
+
+            // 從 Ink 變數抓 speaker
+            string speakerName = "";
+            try
+            {
+                var value = story.variablesState["speaker"];
+                if (value != null) speakerName = value.ToString();
+            }
+            catch
+            {
+                Debug.LogWarning("⚠️ Ink 變數 'speaker' 不存在");
+            }
+
+            nameText.text = speakerName;
+
+            // 切換立繪
+            UpdatePortrait(speakerName);
+
             DisplayChoices();
         }
         else
@@ -127,25 +137,15 @@ public class InkDialogueManager : MonoBehaviour
             dialoguePanel.SetActive(false);
             choiceContainer.SetActive(false);
             dialogueIsPlaying = false;
-            Debug.Log("✅ Ink 對話結束");
             SetPlayerCanMove(true);
 
             dialogueEndTimer = dialogueEndCooldown;
 
-            // ✅ 對話結束 → 呼叫 callback
+            HidePortraits(); // 🚩 對話結束 → 隱藏立繪
+
             onDialogueComplete?.Invoke();
             onDialogueComplete = null;
         }
-    }
-
-    string ParseSpeaker(string line)
-    {
-        if (line.Contains("："))
-        {
-            string[] parts = line.Split('：');
-            return parts[0];
-        }
-        return "";
     }
 
     void DisplayChoices()
@@ -158,12 +158,7 @@ public class InkDialogueManager : MonoBehaviour
             if (i < choices.Count)
             {
                 choiceButtons[i].gameObject.SetActive(true);
-                Text choiceText = choiceButtons[i].GetComponentInChildren<Text>();
-                if (choiceText != null)
-                {
-                    choiceText.text = choices[i].text;
-                }
-
+                choiceButtons[i].GetComponentInChildren<Text>().text = choices[i].text;
                 int choiceIndex = i;
                 choiceButtons[i].onClick.RemoveAllListeners();
                 choiceButtons[i].onClick.AddListener(() => OnChoiceSelected(choiceIndex));
@@ -182,6 +177,41 @@ public class InkDialogueManager : MonoBehaviour
         ContinueStory();
     }
 
+    void UpdatePortrait(string speakerName)
+    {
+        // 預設兩邊先放上 default
+        leftPortraitImage.sprite = leftDefaultPortrait;
+        rightPortraitImage.sprite = rightDefaultPortrait;
+
+        foreach (var entry in portraits)
+        {
+            if (entry.speakerName == speakerName)
+            {
+                if (entry.position == PortraitPosition.Left)
+                    leftPortraitImage.sprite = entry.sprite;
+                else
+                    rightPortraitImage.sprite = entry.sprite;
+
+                return;
+            }
+        }
+    }
+    void HidePortraits()
+    {
+        if (leftPortraitImage != null) leftPortraitImage.gameObject.SetActive(false);
+        if (rightPortraitImage != null) rightPortraitImage.gameObject.SetActive(false);
+    }
+    void ShowPortraits()
+    {
+        if (leftPortraitImage != null) leftPortraitImage.gameObject.SetActive(true);
+        if (rightPortraitImage != null) rightPortraitImage.gameObject.SetActive(true);
+    }
+    void ResetPortraits()
+    {
+        if (leftPortraitImage != null) leftPortraitImage.sprite = leftDefaultPortrait;
+        if (rightPortraitImage != null) rightPortraitImage.sprite = rightDefaultPortrait;
+    }
+
     void SetPlayerCanMove(bool canMove)
     {
         GameObject player = GameObject.FindWithTag("Player");
@@ -192,4 +222,18 @@ public class InkDialogueManager : MonoBehaviour
                 pm.canMove = canMove;
         }
     }
+}
+
+[System.Serializable]
+public class CharacterPortrait
+{
+    public string speakerName;     // Ink 變數 speaker 的值
+    public Sprite sprite;          // 對應立繪
+    public PortraitPosition position; // 左 / 右
+}
+
+public enum PortraitPosition
+{
+    Left,
+    Right
 }
