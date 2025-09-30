@@ -1533,15 +1533,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78df913832aeba6489ae6bb7c3ba5cb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nameText: {fileID: 0}
-  dialogueText: {fileID: 0}
-  dialoguePanel: {fileID: 0}
+  nameText: {fileID: 512738355}
+  dialogueText: {fileID: 2076335521}
+  dialoguePanel: {fileID: 420945167}
   choiceContainer: {fileID: 0}
   choiceButtons:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  inkJSON: {fileID: 4900000, guid: e76dab864702f8e47b9fc7657c46b1ac, type: 3}
+  inkJSON: {fileID: 4900000, guid: c8272a4acb6869245a02c6a77e5bd507, type: 3}
   leftPortraitImage: {fileID: 0}
   rightPortraitImage: {fileID: 0}
   leftDefaultPortrait: {fileID: 616736846636412051, guid: 36f6fbe1bda04e44384f49eea40fbbdf, type: 3}
