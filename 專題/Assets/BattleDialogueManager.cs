@@ -1,8 +1,9 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using Ink.Runtime;
+﻿using Ink.Runtime;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleDialogueManager : MonoBehaviour
 {
@@ -13,10 +14,10 @@ public class BattleDialogueManager : MonoBehaviour
 
     [Header("選項 UI")]
     public GameObject choiceContainer;
-    public Button[] choiceButtons; // 依序拖入 1~3 個按鈕
+    public Button[] choiceButtons;
 
     [Header("Ink 劇本 JSON")]
-    public TextAsset inkJSON; // 拖入戰鬥用 .ink 對應的 JSON
+    public TextAsset inkJSON;
 
     private Story story;
     private bool canContinue;
@@ -26,7 +27,8 @@ public class BattleDialogueManager : MonoBehaviour
     public bool dialogueIsPlaying { get; private set; }
     private Action onDialogueComplete;
 
-    void Start()
+
+    void Awake()
     {
         if (dialoguePanel != null) dialoguePanel.SetActive(false);
         if (choiceContainer != null) choiceContainer.SetActive(false);
@@ -47,9 +49,9 @@ public class BattleDialogueManager : MonoBehaviour
             return;
         }
 
-        // 沒有選項時，空白鍵繼續
         if (Input.GetKeyDown(KeyCode.Space) && story.currentChoices.Count == 0)
         {
+            Debug.Log("⏩ 玩家按下空白鍵，繼續對話");
             ContinueStory();
             canContinue = false;
             inputTimer = 0f;
@@ -59,20 +61,30 @@ public class BattleDialogueManager : MonoBehaviour
     // ===== 外部呼叫入口 =====
     public void EnterDialogueMode(TextAsset newInkJSON, string knotName = "start", Action onComplete = null)
     {
+        Debug.Log("🎬 呼叫 EnterDialogueMode");
+
         if (newInkJSON == null)
         {
             Debug.LogWarning("⚠️ EnterDialogueMode：Ink JSON 為空，無法啟動對話。");
             return;
         }
 
+        if (dialogueText != null)
+        {
+            dialogueText.text = "測試文字 (UI 應該要顯示)";
+            Debug.Log("✅ 測試文字已設定");
+        }
+
         inkJSON = newInkJSON;
         story = new Story(inkJSON.text);
+        Debug.Log("📖 已建立 Ink Story");
 
         if (!string.IsNullOrEmpty(knotName))
         {
             try
             {
                 story.ChoosePathString(knotName);
+                Debug.Log($"📍 跳到 knot：{knotName}");
             }
             catch (Exception e)
             {
@@ -82,22 +94,21 @@ public class BattleDialogueManager : MonoBehaviour
 
         onDialogueComplete = onComplete;
 
-        // 🚩 確保打開面板
-        if (dialoguePanel != null) dialoguePanel.SetActive(true);
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(true);
+            Debug.Log("🖼️ 對話面板已啟用");
+        }
+        else
+        {
+            Debug.LogError("❌ dialoguePanel 沒有指派，無法顯示對話框");
+        }
 
         dialogueIsPlaying = true;
         canContinue = false;
         inputTimer = 0f;
 
-        Debug.Log($"🎬 進入對話模式（knot = {knotName}）");
-
         ContinueStory();
-    }
-
-    // 使用 inspector 設定好的 JSON
-    public void EnterDialogueMode(string knotName = "start", Action onComplete = null)
-    {
-        EnterDialogueMode(inkJSON, knotName, onComplete);
     }
 
     public void ContinueStory()
@@ -105,25 +116,35 @@ public class BattleDialogueManager : MonoBehaviour
         if (story != null && story.canContinue)
         {
             string line = story.Continue().Trim();
-            if (dialogueText != null) dialogueText.text = line;
+            if (dialogueText != null)
+            {
+                dialogueText.text = line;
+                Debug.Log("📝 Ink 行文：" + line);
+            }
+            else
+            {
+                Debug.LogError("❌ dialogueText 沒有指派，文字無法顯示");
+            }
 
-            Debug.Log("📝 Ink 行文：" + line);
-
-            // 可選：Ink 變數 speaker
             string speakerName = "";
             try
             {
                 var v = story.variablesState["speaker"];
                 if (v != null) speakerName = v.ToString();
             }
-            catch { /* 沒有 speaker 就跳過 */ }
+            catch { }
 
-            if (nameText != null) nameText.text = speakerName;
+            if (nameText != null)
+            {
+                nameText.text = speakerName;
+                Debug.Log("🎙️ 說話者：" + speakerName);
+            }
 
             DisplayChoices();
         }
         else
         {
+            Debug.Log("📕 Ink 劇本已結束，呼叫 EndDialogue()");
             EndDialogue();
         }
     }
@@ -132,6 +153,8 @@ public class BattleDialogueManager : MonoBehaviour
     {
         List<Choice> choices = story.currentChoices;
         if (choiceContainer != null) choiceContainer.SetActive(choices.Count > 0);
+
+        Debug.Log("🔀 當前選項數量：" + choices.Count);
 
         for (int i = 0; i < choiceButtons.Length; i++)
         {
@@ -145,6 +168,7 @@ public class BattleDialogueManager : MonoBehaviour
                 int choiceIndex = i;
                 btn.onClick.RemoveAllListeners();
                 btn.onClick.AddListener(() => OnChoiceSelected(choiceIndex));
+                Debug.Log($"👉 選項 {i}：{choices[i].text}");
             }
             else
             {
@@ -156,6 +180,7 @@ public class BattleDialogueManager : MonoBehaviour
 
     private void OnChoiceSelected(int choiceIndex)
     {
+        Debug.Log($"✅ 玩家選擇選項 {choiceIndex}");
         story.ChooseChoiceIndex(choiceIndex);
         if (choiceContainer != null) choiceContainer.SetActive(false);
         ContinueStory();
@@ -167,7 +192,7 @@ public class BattleDialogueManager : MonoBehaviour
         if (choiceContainer != null) choiceContainer.SetActive(false);
 
         dialogueIsPlaying = false;
-        Debug.Log("✅ 對話結束");
+        Debug.Log("🏁 對話結束");
 
         onDialogueComplete?.Invoke();
         onDialogueComplete = null;

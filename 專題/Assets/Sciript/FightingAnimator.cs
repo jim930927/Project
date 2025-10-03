@@ -1,28 +1,30 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System;
 
 public class FightingAnimator : MonoBehaviour
 {
-    [Header("¥¬¹õ")]
+    [Header("å¸ƒå¹•")]
     public RectTransform leftCurtain;
     public RectTransform rightCurtain;
 
-    [Header("°İÃD¥d¤ù")]
+    [Header("å•é¡Œå¡ç‰‡")]
     public RectTransform question1;
     public RectTransform question2;
     public RectTransform question3;
 
-    [Header("¤Ş¸ô¤H")]
+    [Header("å¼•è·¯äºº")]
     public CanvasGroup guideCharacter;
 
-    [Header("°Êµe³]©w")]
+    [Header("å‹•ç•«è¨­å®š")]
     public float curtainDuration = 1.2f;
     public float questionDropDuration = 0.8f;
     public float questionDropDelay = 0.3f;
     public float guideFadeInDuration = 1.0f;
 
+    public Action OnIntroFinished;
     void Start()
     {
         StartCoroutine(PlayBattleIntro());
@@ -30,15 +32,12 @@ public class FightingAnimator : MonoBehaviour
 
     IEnumerator PlayBattleIntro()
     {
-        // ¥¬¹õ©Ô¶}°Êµe
         leftCurtain.DOAnchorPosX(-1600f, curtainDuration).SetEase(Ease.InOutQuad);
         rightCurtain.DOAnchorPosX(1600f, curtainDuration).SetEase(Ease.InOutQuad);
         yield return new WaitForSeconds(curtainDuration + 0.2f);
 
-        // ¤Ş¸ô¤H²H¤J
         yield return guideCharacter.DOFade(1f, guideFadeInDuration).WaitForCompletion();
 
-        // °İÃD¥d¤ù±¼¸¨
         question1.DOAnchorPosY(-200f, questionDropDuration).SetEase(Ease.OutBounce);
         yield return new WaitForSeconds(questionDropDelay);
         question2.DOAnchorPosY(20f, questionDropDuration).SetEase(Ease.OutBounce);
@@ -46,6 +45,7 @@ public class FightingAnimator : MonoBehaviour
         question3.DOAnchorPosY(145f, questionDropDuration).SetEase(Ease.OutBounce);
         yield return new WaitForSeconds(questionDropDuration + 0.3f);
 
-        
+        // ğŸš© å‹•ç•«å…¨éƒ¨æ’­å®Œï¼Œé€šçŸ¥å¤–éƒ¨
+        OnIntroFinished?.Invoke();
     }
 }

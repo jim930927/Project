@@ -7,14 +7,14 @@ public class BattleStarter : MonoBehaviour
 
     void Start()
     {
-        if (dialogueManager == null || battleInkJson == null)
+        // 等動畫播完才進入對話
+        var animator = FindObjectOfType<FightingAnimator>();
+        animator.OnIntroFinished += () =>
         {
-            Debug.LogWarning("⚠️ BattleStarter：請在 Inspector 指定 dialogueManager 與 battleInkJson");
-            return;
-        }
-
-        dialogueManager.EnterDialogueMode(battleInkJson, "start", OnDialogueEnd);
+            dialogueManager.EnterDialogueMode(battleInkJson, "start", OnDialogueEnd);
+        };
     }
+
 
     void OnDialogueEnd()
     {

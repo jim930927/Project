@@ -1,13 +1,17 @@
 VAR talked_to_boss = false
+VAR speaker = "???"
 
 這是……舞台？為什麼我會在這種地方？
 
 -> END
 
 == book_found ==
+~ speaker = "我"
 這是什麼......？
 
 「這是...劇本？」
+
+「先帶著吧，說不定會有用」
 
 -> END
 
@@ -19,22 +23,28 @@ VAR talked_to_boss = false
 }
 
 == boss_talk_first
+~ speaker = "我"
 「那個...請問你知道這是哪裡嗎？」
 
+~ speaker = "神秘人"
 「你...還記得...自己是誰嗎？」
 
+~ speaker = "我"
 「什麼？我是誰？」
 
 「我是......」
 
 「欸？我......是誰？我好像...想不起來了......」
 
+~ speaker = "神秘人"
 「看看四周…你會想起來的……」
 
 「還有這個......你拿著......」
 
+~ speaker = "我"
 「這是......油燈？你給我這個幹什麼？」
 
+~ speaker = "神秘人"
 「你以後就知道了......」
 
 ~ talked_to_boss = true
@@ -43,6 +53,7 @@ VAR talked_to_boss = false
 
 
 == main_npc_talk
+~ speaker = "???"
 「欸欸！你知道B班的那個神經病嗎？」
 
 「我好像知道！我記得他...姓什麼來著？我想一下......喔！好像是姓...墨？」
@@ -55,6 +66,7 @@ VAR talked_to_boss = false
 
 「天啊，傻X學校為什麼不開除他？讓我們這些普通人跟隨時都有可能會攻擊我們的神經病待在一起？」
 
+~ speaker = "我"
 * 「姓墨？是在說我嗎...」
   「我有精神疾病？」
   -> END
@@ -64,12 +76,15 @@ VAR talked_to_boss = false
 * 「好希望這樣的人也能夠跟大家好好相處...」
   「他有精神疾病應該連他自己也很不好受......」
   
+  ~ speaker = ""
   【獲得線索 “木偶的對話”】
   -> END
 
 == letter_content
+~ speaker = "我"
 「有個信封？說不定跟我的身份有關，打開來看看。」
 
+~ speaker = ""
 信封袋裡面放著一張字跡潦草、字裡行間還參雜著注音的信件。
 
 是七歲的墨涅寫給未來自己的信——
@@ -78,6 +93,7 @@ VAR talked_to_boss = false
 
 
 == letter_choices
+~ speaker = "我"
 * 「墨涅...這是我的名字嗎？」
     「所以...這是我給我自己的信？啊…好想燒掉，感覺好羞恥......」
   -> END
@@ -87,18 +103,22 @@ VAR talked_to_boss = false
 * 「字寫得好醜......」
     「還有一堆注音，應該是小孩子寫的」
     
+~ speaker = ""
     【獲得線索 “一封老舊的信封”】
   -> END
   
   
   
 ==  journal_content
+~ speaker = "我"
 「這是……一本日記？」
 
+~ speaker = ""
 翻開椅子上的日記
   -> END
   
 == journal_choices
+~ speaker = "我"
 「這篇日記到後面就沒有任何記載了......」
 
 「......」
@@ -128,30 +148,43 @@ VAR talked_to_boss = false
  
   
 == boss_talk_repeat
+~ speaker = "神秘人"
 「你…找到屬於自己的記憶了嗎……」
 
-* 「我想…我大概知道了……」
+~ speaker = "我"
++ 「我想…我大概知道了……」
     -> after_boss_choice_1
 
-* 「還沒有……」
++ 「還沒有……」
     -> after_boss_choice_2
 
 == after_boss_choice_1
+~ speaker = "神秘人"
 「那麼請你回答我幾個問題…回答完我自然會離開，大門也會開啟……」
 
  -> jump_to_battle
 
 == after_boss_choice_2
+~ speaker = "神秘人"
 「那就再多看看吧……」
 
 -> END
 
 
 == jump_to_battle
+~ speaker = "我"
 「你到底是誰？這裡又是什麼地方？」
+
+~ speaker = "神秘人"
 「不要急…等時機成熟…你自然就會知道的……」
+
+~ speaker = "我"
 「我憑什麼相信你……」
+
+~ speaker = "神秘人"
 「你現在最重要的是找回自己的記憶……回答完我的問題，我就會放你走……」
+
+~ speaker = "我"
 「好！我倒想看看你在搞什麼鬼…」
 
 -> END
