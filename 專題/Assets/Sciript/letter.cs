@@ -1,17 +1,22 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using static ClueData;
 
 public class LetterInteraction : MonoBehaviour
 {
     [Header("UI & Dialogue")]
-    public GameObject letterImagePanel;   // 信件圖片
+    public GameObject letterImagePanel;
     public InkDialogueManager dialogueManager;
     public TextAsset inkJSON;
 
     [Header("Overlay UI")]
-    public GameObject overlayPanel;       // 半透明遮罩
-    public Text overlayText;              // 遮罩上的文字
-    public Button returnButton;           // 返回按鈕
+    public GameObject overlayPanel;
+    public Text overlayText;
+    public Button returnButton;
+
+    [Header("線索設定")]
+    public string clueID;
+    public string clueName; // 可自訂顯示文字
 
     private bool isPlayerNear = false;
     private bool isImageShowing = false;
@@ -21,10 +26,10 @@ public class LetterInteraction : MonoBehaviour
 
     void Start()
     {
-        if (letterImagePanel != null) letterImagePanel.SetActive(false);
-        if (overlayPanel != null) overlayPanel.SetActive(false);
+        if (letterImagePanel) letterImagePanel.SetActive(false);
+        if (overlayPanel) overlayPanel.SetActive(false);
 
-        if (returnButton != null)
+        if (returnButton)
         {
             returnButton.gameObject.SetActive(false);
             returnButton.onClick.AddListener(OnReturnButtonPressed);
@@ -47,50 +52,40 @@ public class LetterInteraction : MonoBehaviour
                 }
                 else
                 {
-                    // 第二次按下 → 播放對話，但圖片保持顯示
-                    // ❌ 不要關閉圖片
-                    // letterImagePanel.SetActive(false);
-                    isImageShowing = true; // 保持 true
+                    // 第二次按下 → 播放對話
+                    isImageShowing = true;
                     hasRead = true;
 
-                    if (dialogueManager != null && inkJSON != null)
-                    {
+                    if (dialogueManager && inkJSON)
                         dialogueManager.EnterDialogueMode(inkJSON, "letter_content", OnDialogueFinished);
-                    }
                 }
             }
         }
     }
 
-    // ✅ 對話播完後 → 顯示灰色遮罩 + 返回按鈕
-    private void OnDialogueFinished()
-    {
-        if (letterImagePanel != null)
-            letterImagePanel.SetActive(false);
-
-        if (overlayPanel != null && overlayText != null && returnButton != null)
-        {
-            overlayPanel.SetActive(true);
-            returnButton.gameObject.SetActive(true);
-            isOverlayActive = true;
+    private void OnDialogueFinished() { 
+        if (letterImagePanel != null) 
+            letterImagePanel.SetActive(false); 
+        if (overlayPanel != null && overlayText != null && returnButton != null) 
+        { 
+            overlayPanel.SetActive(true); returnButton.gameObject.SetActive(true); 
+            isOverlayActive = true; } 
+        var clueData = Resources.Load<ClueData>("ClueDatabase"); 
+        if (clueData != null) 
+        { clueData.AddClue(clueID); 
+            Debug.Log($"🔍 玩家獲得線索：{clueID}");
         }
     }
 
-    // ✅ 按返回按鈕 → 關閉遮罩 → 進入 Ink 選項 → 信件物件消失
     private void OnReturnButtonPressed()
     {
         overlayPanel.SetActive(false);
         returnButton.gameObject.SetActive(false);
-        isOverlayActive = false;
 
-        if (dialogueManager != null && inkJSON != null)
-        {
+        if (dialogueManager && inkJSON)
             dialogueManager.EnterDialogueMode(inkJSON, "letter_choices");
-        }
 
         isFinished = true;
-
-        // 🚩 信件物件消失
         gameObject.SetActive(false);
     }
 
@@ -105,7 +100,6 @@ public class LetterInteraction : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isPlayerNear = false;
-
             if (letterImagePanel.activeSelf)
                 letterImagePanel.SetActive(false);
         }

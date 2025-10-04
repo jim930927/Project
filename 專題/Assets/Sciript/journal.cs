@@ -30,6 +30,8 @@ public class Journal : MonoBehaviour
 
     private int currentPage = 0;
 
+    public string clueID;
+
     void Start()
     {
         if (journalImagePanel != null) journalImagePanel.SetActive(false);
@@ -91,6 +93,13 @@ public class Journal : MonoBehaviour
 
             currentPage = 0;
             ShowCurrentPage();
+        }
+
+        var clueData = Resources.Load<ClueData>("ClueDatabase");
+        if (clueData != null)
+        {
+            clueData.AddClue(clueID);
+            Debug.Log($"🔍 玩家獲得線索：{clueID}");
         }
     }
 

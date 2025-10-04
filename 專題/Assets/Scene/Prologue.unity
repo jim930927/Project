@@ -941,7 +941,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   journalImagePanel: {fileID: 194070181}
   dialogueManager: {fileID: 1654005118}
-  inkJSON: {fileID: 4900000, guid: e76dab864702f8e47b9fc7657c46b1ac, type: 3}
+  inkJSON: {fileID: 4900000, guid: c67fe878c0be2b54fa15cc3b78367a1a, type: 3}
   overlayPanel: {fileID: 1247052936}
   overlayText: {fileID: 462941374}
   returnButton: {fileID: 1629528309}
@@ -959,6 +959,7 @@ MonoBehaviour:
     \u201C\u670B\u53CB\u201D \u7528\u8457\u6232\u8B14\u7684\u8868\u60C5\u770B\u8457\u6211\uFF0C\u5C31\u8B93\u6211\u89BA\u5F97\u5641\u5FC3\uFF0C\u5728\u4ED6\u5011\u773C\u88E1\uFF0C\u6211\u53EA\u662F\u500B\u4ED6\u5011\u5A1B\u6A02\u7528\u7684\u5DE5\u5177\u4EBA\u800C\u5DF2\uFF0C\u597D\u5E0C\u671B\u4ED6\u5011\u90FD\u6D88\u5931\u3002\r\n"
   - "2005\u5E746\u670819\u65E5\uFF08\u65E5\uFF09\r\n\u524D\u5E7E\u5929\u6211\u5077\u5077\u807D\u5230\u73ED\u4E0A\u6709\u540C\u5B78\u5728\u8A0E\u8AD6\u9670\u5EDF\u7684\u4E8B\u60C5\uFF0C\u807D\u8AAA\u51E1\u662F\u53BB\u8A31\u9858\u7684\u4EBA\u9858\u671B\u90FD\u80FD\u6210\u771F\uFF1F\r\n\u7E3D\u611F\u89BA\u6709\u9EDE\u602A\u602A\u7684\uFF0C\u9670\u5EDF...\u4E0D\u90FD\u662F\u4F9B\u990A\u5B64\u9B42\u91CE\u9B3C\u7684\u55CE\uFF1F\u8DDF\u9019\u4E9B\u4F3C\u795E\u975E\u795E\u7684\u6771\u897F\u8A31\u9858\uFF0C\u9858\u671B\u771F\u7684\u80FD\u5920\u5BE6\u73FE\u55CE\uFF1F\r\n"
   - "2005\u5E748\u67088\u65E5\uFF08\u4E00\uFF09\r\n\u4ECA\u5929\u6211\u60F3\u8D81\u6211\u53BB\u88DC\u7FD2\u7684\u6642\u9593\u5077\u5077\u53BB\u5B78\u6821\u7684\u5F8C\u5C71\u770B\u770B\u662F\u4E0D\u662F\u6709\u50B3\u8AAA\u4E2D\u7684\u9670\u5EDF\uFF0C\u6211\u6709\u4E8B\u60F3\u62DC\u8A17\u9019\u4E9B\u795E\u660E\u5011\u5E6B\u5FD9\uFF0C\u5E0C\u671B\u4E00\u5207\u9806\u5229\u3002\r\n"
+  clueID: Journal
 --- !u!1 &340171398
 GameObject:
   m_ObjectHideFlags: 0
@@ -2111,7 +2112,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 387371803}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 12, y: 12, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2120,7 +2121,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1600, y: -50}
+  m_AnchoredPosition: {x: -1619, y: -50}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &387371805
@@ -4147,10 +4148,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   letterImagePanel: {fileID: 108210335}
   dialogueManager: {fileID: 1654005118}
-  inkJSON: {fileID: 4900000, guid: e76dab864702f8e47b9fc7657c46b1ac, type: 3}
+  inkJSON: {fileID: 4900000, guid: c67fe878c0be2b54fa15cc3b78367a1a, type: 3}
   overlayPanel: {fileID: 499317882}
   overlayText: {fileID: 1485253185}
   returnButton: {fileID: 1490435209}
+  clueID: Letter
+  clueName: 
 --- !u!483693784 &712315455
 TilemapRenderer:
   m_ObjectHideFlags: 0
@@ -7322,9 +7325,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d767bad668406742be208b46fcfa390, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inkJSONAsset: {fileID: 4900000, guid: e76dab864702f8e47b9fc7657c46b1ac, type: 3}
+  inkJSONAsset: {fileID: 4900000, guid: c67fe878c0be2b54fa15cc3b78367a1a, type: 3}
   dialogueManager: {fileID: 1654005118}
   knotName: main_npc_talk
+  clueID: NPC_talk
 --- !u!61 &1226015853
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7967,7 +7971,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bookIconUI: {fileID: 142815773}
   dialogueManager: {fileID: 1654005118}
-  inkJSONAsset: {fileID: 4900000, guid: e76dab864702f8e47b9fc7657c46b1ac, type: 3}
+  inkJSONAsset: {fileID: 4900000, guid: c67fe878c0be2b54fa15cc3b78367a1a, type: 3}
   interactHint: {fileID: 1996958965}
 --- !u!114 &1463728111
 MonoBehaviour:
@@ -8206,7 +8210,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1506884479}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 12, y: 12, z: 1}
   m_ConstrainProportionsScale: 0
@@ -8215,7 +8219,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1600, y: -50}
+  m_AnchoredPosition: {x: 1602, y: -50}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1506884481
@@ -8528,7 +8532,7 @@ MonoBehaviour:
   - {fileID: 368525802}
   - {fileID: 1402468141}
   - {fileID: 681799467}
-  inkJSON: {fileID: 4900000, guid: e76dab864702f8e47b9fc7657c46b1ac, type: 3}
+  inkJSON: {fileID: 4900000, guid: c67fe878c0be2b54fa15cc3b78367a1a, type: 3}
   leftPortraitImage: {fileID: 975662441}
   rightPortraitImage: {fileID: 1057043051}
   leftDefaultPortrait: {fileID: 616736846636412051, guid: 36f6fbe1bda04e44384f49eea40fbbdf, type: 3}
@@ -8541,6 +8545,16 @@ MonoBehaviour:
     sprite: {fileID: 657828811754895370, guid: 71fc3ce213f6c644d9fb7e31f4ba6955, type: 3}
     position: 1
   dialogueEndCooldown: 1
+  leftCurtain: {fileID: 387371804}
+  rightCurtain: {fileID: 1506884480}
+  leftClosePos: {x: -425, y: -50}
+  rightClosePos: {x: 425, y: -50}
+  curtainCloseDuration: 1.2
+  battleSceneName: Fighting
+  tagClueIDs:
+  - Letter
+  - NPC_talk
+  - Journal
 --- !u!4 &1654005119
 Transform:
   m_ObjectHideFlags: 0
@@ -12447,6 +12461,59 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &1781081151
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1781081153}
+  - component: {fileID: 1781081152}
+  m_Layer: 0
+  m_Name: ClueUIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1781081152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1781081151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe70b0f1181f21943a2c7fb22c598e54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cluePanel: {fileID: 0}
+  clueText: {fileID: 0}
+  clueButtons: []
+  clueLabels: []
+  currentClueLabel: {fileID: 0}
+  fadeDuration: 0.5
+  displayTime: 2
+  clueDetailText: {fileID: 0}
+  currentClueId: 
+--- !u!4 &1781081153
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1781081151}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 960, y: 540, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1794883232
 GameObject:
   m_ObjectHideFlags: 0
@@ -12542,8 +12609,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1541627901}
-  - {fileID: 1506884480}
-  - {fileID: 387371804}
   - {fileID: 1801328586}
   - {fileID: 142815774}
   - {fileID: 817943606}
@@ -12553,6 +12618,8 @@ RectTransform:
   - {fileID: 1394700908}
   - {fileID: 499317883}
   - {fileID: 1247052937}
+  - {fileID: 1506884480}
+  - {fileID: 387371804}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -17510,7 +17577,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1f287f72258e8344982c02f61409798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inkJSONAsset: {fileID: 4900000, guid: e76dab864702f8e47b9fc7657c46b1ac, type: 3}
+  inkJSONAsset: {fileID: 4900000, guid: c67fe878c0be2b54fa15cc3b78367a1a, type: 3}
   dialogueManager: {fileID: 1654005118}
 --- !u!114 &2126328118
 MonoBehaviour:
@@ -17621,3 +17688,4 @@ SceneRoots:
   - {fileID: 1654005119}
   - {fileID: 179574539}
   - {fileID: 888020176}
+  - {fileID: 1781081153}

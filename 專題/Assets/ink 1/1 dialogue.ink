@@ -1,8 +1,9 @@
 VAR talked_to_boss = false
 VAR speaker = "???"
 
+== start ==
+~ speaker = "我"
 這是……舞台？為什麼我會在這種地方？
-
 -> END
 
 == book_found ==
@@ -161,32 +162,16 @@ VAR speaker = "???"
 == after_boss_choice_1
 ~ speaker = "神秘人"
 「那麼請你回答我幾個問題…回答完我自然會離開，大門也會開啟……」
-
  -> jump_to_battle
 
 == after_boss_choice_2
 ~ speaker = "神秘人"
 「那就再多看看吧……」
-
 -> END
 
 
 == jump_to_battle
-~ speaker = "我"
-「你到底是誰？這裡又是什麼地方？」
-
-~ speaker = "神秘人"
-「不要急…等時機成熟…你自然就會知道的……」
-
-~ speaker = "我"
-「我憑什麼相信你……」
-
-~ speaker = "神秘人"
-「你現在最重要的是找回自己的記憶……回答完我的問題，我就會放你走……」
-
-~ speaker = "我"
-「好！我倒想看看你在搞什麼鬼…」
-
+# jump_to_battle
 -> END
 
 

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using static ClueData;
 
 public class TalkToNPC : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class TalkToNPC : MonoBehaviour
 
     private bool isPlayerNear = false;
     private bool hasTalked = false;
+    public string clueID;
 
     void Update()
     {
@@ -17,11 +19,19 @@ public class TalkToNPC : MonoBehaviour
             {
                 hasTalked = true;
                 dialogueManager.EnterDialogueMode(inkJSONAsset, knotName);
+
+                var clueData = Resources.Load<ClueData>("ClueDatabase");
+                if (clueData != null)
+                {
+                    clueData.AddClue(clueID);
+                    Debug.Log($"🔍 玩家獲得線索：{clueID}");
+                }
             }
             else
             {
                 Debug.LogWarning("⚠️ inkJSONAsset 或 dialogueManager 未設定！");
             }
+
         }
     }
 

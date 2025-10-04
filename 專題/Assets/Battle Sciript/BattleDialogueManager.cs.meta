@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 1f00caeb5b569de43b41c4474f76b94d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - nameText: {instanceID: 0}
+  - dialogueText: {instanceID: 0}
+  - dialoguePanel: {instanceID: 0}
+  - choiceContainer: {instanceID: 0}
+  - inkJSON: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
