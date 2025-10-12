@@ -19,15 +19,12 @@ VAR current_clue = ""
 === q1 ===
 ~ speaker = "神秘人"
 「告訴我...你還記得自己是誰嗎？」
-
-* [你還記得自己是誰嗎？] #current_clue:Letter
-
++ [你還記得自己是誰嗎？] #current_clue:Letter
     {current_clue == "Letter":
         -> correct_path1
     - else:
         -> wrong_path1
     }
-
 
 === correct_path1 ===
 ~ speaker = "我"
@@ -46,7 +43,9 @@ VAR current_clue = ""
 === wrong_path1 ===
 ~ speaker = "神秘人"
 「你確定…那真的是你？」
-->END
+「仔細想想在回答吧 」
+# END
+->q1
 
 === q2 ===
 ~ speaker = "神秘人"
@@ -54,10 +53,9 @@ VAR current_clue = ""
 「想必你曾經應該也是個自由自在、無拘無束的人，但......」
 「長大後的你...依然這麼覺得嗎？」
 
-* [你從未有過壓力]
++ [你從未有過壓力]
     -> wrong_path2
-
-* [你被壓力所壟罩] #current_clue:Journal
++ [你被壓力所壟罩] #current_clue:Journal
     {current_clue == "Journal":
         -> correct_path2
     - else:
@@ -75,27 +73,28 @@ VAR current_clue = ""
 === wrong_path2 ===
 ~ speaker = "神秘人"
 「你…真的是我所認識的墨涅嗎？」
-->END
+「仔細想想在回答吧 」
+->q1
 
 === q3 ===
 ~ speaker = "神秘人"
 「那你覺得自己是個怎麼樣的人？」
-
-* [樂觀]
-    神秘人：「你真的這麼覺得……？」
-    -> END
-
-* [踏實]
-    神秘人：「你真的這麼覺得……？」
-    -> END
-    
-* [不討喜]#current_clue:NPC_talk
++ [樂觀]
+    「你真的這麼覺得……？」
+    「仔細想想在回答吧 」
+    # END
+    -> q1
++ [踏實]
+    「你真的這麼覺得……？」
+    「仔細想想在回答吧 」
+    # END
+    -> q1
++ [不討喜]#current_clue:NPC_talk
     {current_clue == "NPC_talk":
         -> correct_path3
     - else:
         -> wrong_path3
     }
-
     
 === correct_path3 ===
 ~ speaker = "神秘人"
@@ -104,11 +103,12 @@ VAR current_clue = ""
 「如果……剛剛那些木偶說的都是真的的話……那我……在學校……應該是很邊緣的……」
 -> q4
 
-
 === wrong_path3 ===
 ~ speaker = "神秘人"
 「這似乎與我問的問題無關……」
-->END
+「仔細想想在回答吧 」
+# END
+->q1
 
 === q4 ===
 ~ speaker = "神秘人"
@@ -117,16 +117,14 @@ VAR current_clue = ""
 「你...什麼意思？」
 ~ speaker = "神秘人"
 「在家裡…不受父母的愛戴……在學校…既不討喜又惹人厭……長年都是獨自一個人，我說的沒錯吧？」
-
-* [你...是個孤獨的人]#requires:Journal
++ [你...是個孤獨的人]#requires:Journal
     {current_clue == "Journal":
         -> correct_path4
     - else:
         -> wrong_path4
     }
     
-
-* [你...不是個孤獨的人]
++ [你...不是個孤獨的人]
     -> wrong_path4
     
     
@@ -148,22 +146,20 @@ VAR current_clue = ""
 === wrong_path4 ===
 ~ speaker = "神秘人"
 「你是不知道這些...還是不敢面對？」
-->END
+「仔細想想在回答吧 」
+# END
+->q1
 
 === q5 ===
 「不過即使經歷了這麼多事，你依舊愛著自己，對吧？」
-
-* [你愛著自己]
++ [你愛著自己]
     -> wrong_path5
-
-* [你不愛自己]#requires:Journal
++ [你不愛自己]#requires:Journal
     {current_clue == "Journal":
         -> correct_path5
     - else:
         -> wrong_path5
     }
-    
-    
     
 === correct_path5 ===
 「怎麼？難道我說的不對嗎？」
@@ -191,7 +187,9 @@ VAR current_clue = ""
 === wrong_path5 ===
 ~ speaker = "神秘人"
 「你似乎對自己還不夠了解...」
-->END
+「仔細想想在回答吧 」
+# END
+->q1
 
 === final===
 ~ speaker = "神秘人"
@@ -203,6 +201,7 @@ VAR current_clue = ""
 「我說過...等時機成熟…你自然就會知道的……」
 ~ speaker = "我"
 （算了…繼續往前吧……看看這到底是怎麼回事……）」
+# DONE
 -> DONE
 
 

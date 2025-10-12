@@ -18,6 +18,9 @@ public class Journal : MonoBehaviour
     public Button nextPageButton;
     public Button prevPageButton;
 
+    [Header("模式設定")]
+    public bool isReReading = false;
+
     [Header("自訂每頁內容")]
     [TextArea(3, 10)]
     public List<string> pages = new List<string>(); // 自訂每頁內容
@@ -142,12 +145,14 @@ public class Journal : MonoBehaviour
         prevPageButton.gameObject.SetActive(false);
         isOverlayActive = false;
 
-        if (dialogueManager != null && inkJSON != null)
+        // ✅ 只有在不是重看模式時才啟動對話
+        if (!isReReading && dialogueManager != null && inkJSON != null)
             dialogueManager.EnterDialogueMode(inkJSON, "journal_choices");
 
         isFinished = true;
         gameObject.SetActive(false);
     }
+
 
     void OnTriggerEnter2D(Collider2D other)
     {

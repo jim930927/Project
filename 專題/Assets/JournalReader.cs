@@ -52,6 +52,11 @@ public class JournalReader : MonoBehaviour
             return;
         }
 
+        if (journalSource != null)
+        {
+            journalSource.isReReading = true;
+        }
+
         currentPage = 0;
         overlayPanel.SetActive(true);
         ShowPage();
@@ -92,6 +97,12 @@ public class JournalReader : MonoBehaviour
 
     void CloseReader()
     {
+        if (journalSource != null)
+        {
+            journalSource.isReReading = false;
+        }
+
+
         if (overlayPanel != null)
             overlayPanel.SetActive(false);
 

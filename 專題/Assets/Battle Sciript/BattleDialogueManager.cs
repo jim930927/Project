@@ -147,6 +147,32 @@ public class BattleDialogueManager : MonoBehaviour
         }
         else
         {
+            // 🧩 當劇情走完，安全檢查 story 與 tags
+            if (story != null)
+            {
+                // 安全取 currentTags
+                List<string> tags = story.currentTags ?? new List<string>();
+                if (tags.Contains("DONE"))
+                {
+                    Debug.Log("✅ DONE tag detected, loading NextScene...");
+                    UnityEngine.SceneManagement.SceneManager.LoadScene("Second scene");
+                    return;
+                }
+
+                // 若沒有 Tag，再嘗試用路徑判斷（保險用）
+                string currentPath = "";
+                try { currentPath = story.state.currentPathString; } catch { }
+
+                if (!string.IsNullOrEmpty(currentPath))
+                {
+                    if (currentPath.Contains("DONE"))
+                    {
+                        UnityEngine.SceneManagement.SceneManager.LoadScene("Second scene");
+                        return;
+                    }
+                }
+            }
+
             EndDialogue();
         }
 

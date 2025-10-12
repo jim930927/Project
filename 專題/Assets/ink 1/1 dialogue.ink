@@ -139,7 +139,7 @@ EXTERNAL UnlockTalk()
 
     * 「陰廟...？所以...我去許願了？」
         「可是我為什麼一點印象都沒有？」
-        【獲得線索 “有點舊的日記本”】
+        【獲得線索 “日記殘頁-1”】
         ~ UnlockJournal()
         -> END
 ~ journal_choices_done = true

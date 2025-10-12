@@ -1739,12 +1739,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 68448580}
-  - {fileID: 1675030756}
   - {fileID: 420945168}
   - {fileID: 480964780}
+  - {fileID: 418234257}
+  - {fileID: 1675030756}
   - {fileID: 199134495}
   - {fileID: 1041194149}
-  - {fileID: 418234257}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2252,7 +2252,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
