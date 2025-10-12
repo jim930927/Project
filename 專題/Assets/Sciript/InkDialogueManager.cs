@@ -34,13 +34,13 @@ public class InkDialogueManager : MonoBehaviour
     [Header("布幕設定（只關閉時使用）")]
     public RectTransform leftCurtain;
     public RectTransform rightCurtain;
-    public Vector2 leftClosePos = new Vector2(0, 0);     // 左布幕關閉目的地
-    public Vector2 rightClosePos = new Vector2(0, 0);    // 右布幕關閉目的地
+    public Vector2 leftClosePos = new Vector2(0, 0);
+    public Vector2 rightClosePos = new Vector2(0, 0);
     public float curtainCloseDuration = 1.2f;
     public string battleSceneName = "BattleScene";
 
     [Header("對應線索 ID")]
-    public string[] tagClueIDs; // 每個標籤對應線索ID
+    public string[] tagClueIDs;
 
     private Vector2 leftOriginPos;
     private Vector2 rightOriginPos;
@@ -65,7 +65,7 @@ public class InkDialogueManager : MonoBehaviour
         HidePortraits();
         InitCurtain();
 
-        // 遊戲開始後自動進入對話模式（從 Ink 的 === start ===）
+        // 自動啟動 Ink 劇本
         if (inkJSON != null)
         {
             Debug.Log("🎬 自動啟動 Ink 劇本，從 === start === 開始");
@@ -75,7 +75,6 @@ public class InkDialogueManager : MonoBehaviour
         {
             Debug.LogWarning("⚠️ Ink JSON 未指派，無法自動啟動對話。");
         }
-
     }
 
     void Update()
@@ -122,6 +121,7 @@ public class InkDialogueManager : MonoBehaviour
         {
             inkJSON = newInkJSON;
             story = new Story(inkJSON.text);
+            BindExternalBookFunctions(); // 🔹 綁定 Ink 外部函式
         }
 
         if (!string.IsNullOrEmpty(knotName))
@@ -140,6 +140,40 @@ public class InkDialogueManager : MonoBehaviour
         ShowPortraits();
         ResetPortraits();
         ContinueStory();
+    }
+
+    // 🔹 Ink 外部函式綁定區
+    private void BindExternalBookFunctions()
+    {
+        if (story == null) return;
+
+        var bookUI = FindObjectOfType<BookUIManager>();
+        if (bookUI == null)
+        {
+            Debug.LogWarning("⚠️ 找不到 BookUIManager，無法綁定 Ink 外部函式");
+            return;
+        }
+
+        // 信件
+        story.BindExternalFunction("UnlockLetter", () =>
+        {
+            bookUI.pickupLetter = true;
+            Debug.Log("📖 Ink 已解鎖：信件");
+        });
+
+        // 日記
+        story.BindExternalFunction("UnlockJournal", () =>
+        {
+            bookUI.pickupJournal = true;
+            Debug.Log("📖 Ink 已解鎖：日記");
+        });
+
+        // 主線對話
+        story.BindExternalFunction("UnlockTalk", () =>
+        {
+            bookUI.talkedToNPC = true;
+            Debug.Log("📖 Ink 已解鎖：主線對話");
+        });
     }
 
     public void ContinueStory()
@@ -162,10 +196,7 @@ public class InkDialogueManager : MonoBehaviour
             }
 
             nameText.text = speakerName;
-
-            // 切換立繪
             UpdatePortrait(speakerName);
-
             DisplayChoices();
         }
         else
@@ -287,9 +318,9 @@ public class InkDialogueManager : MonoBehaviour
                 pm.canMove = canMove;
         }
     }
+
     bool AllCluesCollected()
     {
-        // 嘗試從場景中的 ClueData 取得蒐集狀態
         var clueData = FindObjectOfType<ClueData>();
         if (clueData == null)
         {
@@ -297,11 +328,9 @@ public class InkDialogueManager : MonoBehaviour
             return false;
         }
 
-        // 若沒有指定 tagClueIDs，直接通過
         if (tagClueIDs == null || tagClueIDs.Length == 0)
             return true;
 
-        // 逐一檢查線索
         foreach (var id in tagClueIDs)
         {
             if (!clueData.HasClue(id))
