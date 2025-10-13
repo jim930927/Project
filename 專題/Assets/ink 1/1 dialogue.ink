@@ -108,35 +108,28 @@ EXTERNAL UnlockTalk()
 == journal_content
 ~ speaker = "我"
 「這是……一本日記？」
-~ speaker = ""
 翻開椅子上的日記
 -> END
 
 
 == journal_choices
 { journal_choices_done:
-    ~ speaker = ""
     -> END
 - else:
     ~ speaker = "我"
     「這篇日記到後面就沒有任何記載了......」
-
     「......」
-
     「這真的是我寫的嗎...」
-
     * 「總感覺我好像不是很受歡迎...」
         「不受父母愛戴...也沒有真心的朋友」
         「真可笑...」
         -> END
-
     * 「這些人真可惡！我到底是招誰惹誰了」
         「真想讓所有傷害過我的人都消失在這世界上...」
         「......」
         「我...為什麼會有這樣的想法......？」
         「真可怕......」
         -> END
-
     * 「陰廟...？所以...我去許願了？」
         「可是我為什麼一點印象都沒有？」
         【獲得線索 “日記殘頁-1”】
@@ -150,13 +143,11 @@ EXTERNAL UnlockTalk()
 == boss_talk_repeat
 ~ speaker = "神秘人"
 「你…找到屬於自己的記憶了嗎……」
-
 ~ speaker = "我"
 + 「我想…我大概知道了……」
     -> after_boss_choice_1
 + 「還沒有……」
     -> after_boss_choice_2
-
 
 == after_boss_choice_1
 ~ speaker = "神秘人"
