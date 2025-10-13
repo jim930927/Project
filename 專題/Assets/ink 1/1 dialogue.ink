@@ -1,6 +1,7 @@
 VAR talked_to_boss = false
 VAR journal_choices_done = false
 VAR speaker = "???"
+VAR hp = 3
 EXTERNAL UnlockLetter()
 EXTERNAL UnlockJournal()
 EXTERNAL UnlockTalk()
@@ -120,23 +121,29 @@ EXTERNAL UnlockTalk()
     「這篇日記到後面就沒有任何記載了......」
     「......」
     「這真的是我寫的嗎...」
+
     * 「總感覺我好像不是很受歡迎...」
+       ~ hp += 1
         「不受父母愛戴...也沒有真心的朋友」
         「真可笑...」
+        ~ journal_choices_done = true
         -> END
+
     * 「這些人真可惡！我到底是招誰惹誰了」
+        ~ hp -= 1
         「真想讓所有傷害過我的人都消失在這世界上...」
         「......」
         「我...為什麼會有這樣的想法......？」
         「真可怕......」
+        ~ journal_choices_done = true
         -> END
+
     * 「陰廟...？所以...我去許願了？」
         「可是我為什麼一點印象都沒有？」
-        【獲得線索 “日記殘頁-1”】
+        【獲得線索 “日記殘頁”】
         ~ UnlockJournal()
+        ~ journal_choices_done = true
         -> END
-~ journal_choices_done = true
--> END
 }
 
 

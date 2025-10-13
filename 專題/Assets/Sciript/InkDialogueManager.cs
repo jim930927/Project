@@ -17,6 +17,9 @@ public class InkDialogueManager : MonoBehaviour
     public GameObject choiceContainer;
     public Button[] choiceButtons;
 
+    [Header("HP Mirror（Ink→Unity）")]
+    [SerializeField] private HP hpRef;   // 在 Inspector 指到「hp」物件（掛著 HP.cs 的那個）
+
     [Header("Ink 劇本")]
     public TextAsset inkJSON;
 
@@ -113,6 +116,20 @@ public class InkDialogueManager : MonoBehaviour
         }
     }
 
+    void SyncHpFromInk()
+    {
+        if (story?.variablesState == null) return;
+        if (hpRef == null) hpRef = FindFirstObjectByType<HP>();  // 備援
+
+        if (hpRef != null)
+        {
+            object v = null;
+            try { v = story.variablesState["hp"]; } catch { }
+            if (v != null) hpRef.hp = Mathf.Max(0, System.Convert.ToInt32(v));
+        }
+    }
+
+
     public void EnterDialogueMode(TextAsset newInkJSON, string knotName = "", Action onComplete = null)
     {
         if (newInkJSON == null) return;
@@ -122,6 +139,22 @@ public class InkDialogueManager : MonoBehaviour
             inkJSON = newInkJSON;
             story = new Story(inkJSON.text);
             BindExternalBookFunctions(); // 🔹 綁定 Ink 外部函式
+            story.ObserveVariable("hp", (string name, object value) =>
+            {
+                if (hpRef == null) hpRef = FindFirstObjectByType<HP>(); // 備援抓場上第一個 HP
+                if (hpRef == null) return;
+                hpRef.hp = Mathf.Max(0, System.Convert.ToInt32(value)); // 無上限，保底 0
+            });
+
+            // === ② 初次同步一次（避免剛進入時 Inspector 沒顯示）===
+            try
+            {
+                var v = story.variablesState["hp"];
+                if (hpRef == null) hpRef = FindFirstObjectByType<HP>();
+                if (hpRef != null && v != null)
+                    hpRef.hp = Mathf.Max(0, System.Convert.ToInt32(v));
+            }
+            catch { /* hp 可能尚未在 Ink 宣告 */ }
         }
 
         if (!string.IsNullOrEmpty(knotName))
@@ -174,6 +207,38 @@ public class InkDialogueManager : MonoBehaviour
             bookUI.talkedToNPC = true;
             Debug.Log("📖 Ink 已解鎖：主線對話");
         });
+
+        var hp = FindObjectOfType<HP>();
+
+        if (hp != null)
+        {
+            // Ink 呼叫：~ HP_Add(n)
+            story.BindExternalFunction("HP_Add", (int amount) =>
+            {
+                hp.hp += amount;
+                if (hp.hp < 0) hp.hp = 0; // 無上限，只保底 0
+                Debug.Log($"❤️ HP 現在為：{hp.hp}");
+            });
+
+            // Ink 呼叫：~ HP_Set(n)
+            story.BindExternalFunction("HP_Set", (int value) =>
+            {
+                hp.hp = value < 0 ? 0 : value;
+                Debug.Log($"❤️ HP 設定為：{hp.hp}");
+            });
+
+            // Ink 呼叫：VAR cur = HP_Get()
+            story.BindExternalFunction("HP_Get", () =>
+            {
+                return hp.hp;
+            });
+
+            Debug.Log("🩸 Ink 血量外部函式已綁定完成");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ 找不到 HP 物件，血量控制未綁定");
+        }
     }
 
     public void ContinueStory()
