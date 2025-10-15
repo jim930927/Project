@@ -10,7 +10,7 @@ public class ClueData : ScriptableObject
         public string id;
         public string name;
         [TextArea(2, 5)]
-        public string detail; // 🧩 新增：線索詳細說明
+        public string detail;
         public bool collected;
     }
 
@@ -58,5 +58,27 @@ public class ClueData : ScriptableObject
         {
             Debug.LogWarning($"⚠️ 找不到線索 {id}，無法設定詳細內容");
         }
+    }
+
+    // ✅ 新增：檢查所有線索是否收集完成
+    public bool AllCluesCollected()
+    {
+        if (clues == null || clues.Count == 0)
+        {
+            Debug.LogWarning("⚠️ 尚未設定任何線索！");
+            return false;
+        }
+
+        foreach (var c in clues)
+        {
+            if (!c.collected)
+            {
+                Debug.Log($"❌ 尚未收集線索：{c.name}");
+                return false;
+            }
+        }
+
+        Debug.Log("✅ 所有線索都已收集！");
+        return true;
     }
 }

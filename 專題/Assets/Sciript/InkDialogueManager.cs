@@ -1,10 +1,11 @@
-using UnityEngine;
-using UnityEngine.UI;
-using Ink.Runtime;
-using System.Collections.Generic;
-using System;
-using UnityEngine.SceneManagement;
 using DG.Tweening;
+using Ink.Runtime;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class InkDialogueManager : MonoBehaviour
 {
@@ -45,6 +46,8 @@ public class InkDialogueManager : MonoBehaviour
     [Header("對應線索 ID")]
     public string[] tagClueIDs;
 
+    public ClueData clueDatabase;
+
     private Vector2 leftOriginPos;
     private Vector2 rightOriginPos;
     private bool curtainInitialized = false;
@@ -71,8 +74,9 @@ public class InkDialogueManager : MonoBehaviour
         // 自動啟動 Ink 劇本
         if (inkJSON != null)
         {
-            Debug.Log("🎬 自動啟動 Ink 劇本，從 === start === 開始");
-            EnterDialogueMode(inkJSON, "start");
+            Debug.Log("🎬 自動啟動 Ink 劇本，從 === CG === 開始，播放cg");
+            EnterDialogueMode(inkJSON, "CG");
+
         }
         else
         {
@@ -138,6 +142,10 @@ public class InkDialogueManager : MonoBehaviour
         {
             inkJSON = newInkJSON;
             story = new Story(inkJSON.text);
+            story.BindExternalFunction("canStartBattle", () =>
+            {
+                return clueDatabase.AllCluesCollected();
+            });
             BindExternalBookFunctions(); // 🔹 綁定 Ink 外部函式
             story.ObserveVariable("hp", (string name, object value) =>
             {
@@ -262,10 +270,37 @@ public class InkDialogueManager : MonoBehaviour
 
             nameText.text = speakerName;
             UpdatePortrait(speakerName);
+            // 🔹 Ink Tag 檢查：播放 CG
+            if (story.currentTags.Contains("play_cg"))
+            {
+                Debug.Log("🎬 偵測到 #play_cg，播放開場影片");
+                StartCoroutine(PlayCGThenContinue());
+                return; // 暫停 Ink，等影片播完再繼續
+            }
+
             DisplayChoices();
         }
         else
         {
+            string currentPath = story.state.currentPathString;
+
+            if (!string.IsNullOrEmpty(currentPath) && currentPath.Contains("boss_talk_first"))
+            {
+                Debug.Log("👁️ boss_talk_first 結束，顯示血量 UI");
+                if (hpRef == null) hpRef = FindFirstObjectByType<HP>();
+                if (hpRef != null)
+                    hpRef.ShowHPUI(true);
+            }
+
+            if (story.currentTags.Contains("show_hp"))
+            {
+                if (hpRef == null) hpRef = FindFirstObjectByType<HP>();
+                if (hpRef != null)
+                    hpRef.ShowHPUI(true);
+
+            }
+
+
             // 🔍 檢查 Ink 是否要跳轉戰鬥
             if (story.currentTags.Contains("jump_to_battle"))
             {
@@ -293,6 +328,14 @@ public class InkDialogueManager : MonoBehaviour
             onDialogueComplete?.Invoke();
             onDialogueComplete = null;
         }
+
+        // 🔹 Tag 檢查：播放 CG
+        if (story.currentTags.Contains("play_cg"))
+        {
+            Debug.Log("🎬 偵測到 #play_cg，播放開場 CG！");
+            StartCoroutine(PlayCGThenContinue());
+        }
+
     }
 
     private System.Collections.IEnumerator CloseCurtainThenSwitchScene()
@@ -310,6 +353,15 @@ public class InkDialogueManager : MonoBehaviour
 
     void DisplayChoices()
     {
+        // 🔹 Ink Tag 檢查：播放 CG
+        if (story.currentTags.Contains("play_cg"))
+        {
+            Debug.Log("🎬 偵測到 #play_cg，播放開場影片");
+            StartCoroutine(PlayCGThenContinue());
+            return; // 暫停 Ink，等待影片播完再繼續
+        }
+
+
         List<Choice> choices = story.currentChoices;
         choiceContainer.SetActive(choices.Count > 0);
 
@@ -408,6 +460,93 @@ public class InkDialogueManager : MonoBehaviour
         Debug.Log("✅ 全部線索已收集！");
         return true;
     }
+
+    private IEnumerator PlayCGThenContinue()
+    {
+        dialoguePanel.SetActive(false);
+        SetPlayerCanMove(false);
+
+        GameObject cgPanel = GameObject.Find("CGPanel");
+        if (cgPanel == null)
+        {
+            Debug.LogWarning("⚠️ 找不到 CGPanel，無法播放影片");
+            yield break;
+        }
+
+        var video = cgPanel.GetComponent<UnityEngine.Video.VideoPlayer>();
+        var raw = cgPanel.GetComponent<UnityEngine.UI.RawImage>();
+
+        if (video == null)
+        {
+            Debug.LogWarning("⚠️ CGPanel 上沒有 VideoPlayer");
+            yield break;
+        }
+
+        cgPanel.SetActive(true);
+
+        // 🔹 確保 Canvas 顯示在最上層
+        Canvas canvas = cgPanel.GetComponentInParent<Canvas>();
+        if (canvas != null)
+        {
+            canvas.sortingOrder = 999; // 確保在最上層
+        }
+
+        // 🔹 準備影片
+        video.Prepare();
+        while (!video.isPrepared)
+        {
+            yield return null;
+        }
+
+        Debug.Log("🎞 影片已準備完成");
+
+        // 🔹 強制更新 RawImage 的貼圖
+        if (raw != null)
+        {
+            raw.texture = video.targetTexture;
+            raw.color = Color.white;
+            raw.enabled = true;
+        }
+
+        // 🔹 播放影片
+        video.Play();
+        Debug.Log("▶️ CG 開始播放");
+
+        // 等待影片真正開始
+        yield return new WaitUntil(() => video.isPlaying);
+
+        bool videoFinished = false;
+        video.loopPointReached += (vp) => videoFinished = true;
+
+        // 🔹 等待播放完成或跳過
+        while (!videoFinished)
+        {
+            if (Input.anyKeyDown)
+            {
+                Debug.Log("⏭ 玩家跳過 CG");
+                video.Stop();
+                videoFinished = true;
+            }
+            yield return null;
+        }
+
+        Debug.Log("⏹ CG 播放完畢");
+
+        // 停止影片並釋放 RenderTexture
+        video.Stop();
+        if (video.targetTexture != null)
+            video.targetTexture.Release();
+
+        cgPanel.SetActive(false);
+
+        dialoguePanel.SetActive(true);
+        ContinueStory(); // Ink 自動跳到 -> start
+    }
+
+
+
+
+
 }
 
 [System.Serializable]

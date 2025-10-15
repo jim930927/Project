@@ -5,10 +5,18 @@ VAR hp = 3
 EXTERNAL UnlockLetter()
 EXTERNAL UnlockJournal()
 EXTERNAL UnlockTalk()
+EXTERNAL canStartBattle()
+
+
+== CG ==
+#play_cg
+->start
 
 == start ==
 ~ speaker = "我"
-這是……舞台？為什麼我會在這種地方？
+......
+這裡是……舞台？為什麼我會在這種地方？
+那裡...好像有個人，先去問問怎麼離開這裡好了
 -> END
 
 
@@ -53,6 +61,7 @@ EXTERNAL UnlockTalk()
 「你以後就知道了......」
 
 ~ talked_to_boss = true
+#show_hp
 -> END
 
 
@@ -158,9 +167,13 @@ EXTERNAL UnlockTalk()
 
 == after_boss_choice_1
 ~ speaker = "神秘人"
-「那麼請你回答我幾個問題…回答完我自然會離開，大門也會開啟……」
--> jump_to_battle
-
+{ canStartBattle():
+    「那麼請你回答我幾個問題…回答完我自然會離開，大門也會開啟……」
+    -> jump_to_battle
+- else:
+    「看起來你還沒有準備好...再多看看吧」
+    -> END
+}
 
 == after_boss_choice_2
 ~ speaker = "神秘人"
