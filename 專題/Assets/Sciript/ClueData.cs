@@ -9,12 +9,23 @@ public class ClueData : ScriptableObject
     {
         public string id;
         public string name;
+
         [TextArea(2, 5)]
-        public string detail;
+        public string detail; // 簡短描述
+
+        [TextArea(5, 20)]
+        public string fullContent; // 可作為第一頁預設內容
+
+        [Tooltip("自訂每一頁的完整內容（優先於 fullContent）")]
+        public List<string> pages = new List<string>(); // 🆕 多頁內容
+
         public bool collected;
     }
 
     public List<Clue> clues = new List<Clue>();
+
+    public delegate void ClueAddedHandler(Clue clue);
+    public event ClueAddedHandler OnClueAdded;
 
     public bool HasClue(string id)
     {
@@ -38,29 +49,36 @@ public class ClueData : ScriptableObject
         }
 
         Debug.Log($"📜 獲得線索：{clue.name}");
+        OnClueAdded?.Invoke(clue);
         ClueUIManager.Instance?.ShowClue(clue.name);
     }
 
     public void ResetAll()
     {
-        foreach (var c in clues) c.collected = false;
+        foreach (var c in clues)
+            c.collected = false;
     }
 
-    public void SetClueDetail(string id, string newDetail)
+    public void SetClueFullContent(string id, string newContent)
     {
         Clue clue = clues.Find(c => c.id == id);
         if (clue != null)
         {
-            clue.detail = newDetail;
-            Debug.Log($"📝 已更新線索「{clue.name}」的詳細內容：{newDetail}");
-        }
-        else
-        {
-            Debug.LogWarning($"⚠️ 找不到線索 {id}，無法設定詳細內容");
+            clue.fullContent = newContent;
+            Debug.Log($"📖 已更新線索「{clue.name}」的完整內容。");
         }
     }
 
-    // ✅ 新增：檢查所有線索是否收集完成
+    public void SetCluePages(string id, List<string> newPages)
+    {
+        Clue clue = clues.Find(c => c.id == id);
+        if (clue != null)
+        {
+            clue.pages = newPages;
+            Debug.Log($"📑 已設定線索「{clue.name}」的頁面內容，共 {newPages.Count} 頁。");
+        }
+    }
+
     public bool AllCluesCollected()
     {
         if (clues == null || clues.Count == 0)

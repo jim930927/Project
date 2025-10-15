@@ -105,7 +105,7 @@ public class JournalReader : MonoBehaviour
 
         if (overlayPanel != null)
             overlayPanel.SetActive(false);
-
+        /*
         // 關閉書中閱讀後，恢復場景的 Journal 腳本
         var bookUI = FindFirstObjectByType<BookUIManager>();
         if (bookUI != null && bookUI.journalScript != null)
@@ -113,6 +113,7 @@ public class JournalReader : MonoBehaviour
             bookUI.journalScript.enabled = true;
             Debug.Log("▶️ 已恢復 Journal.cs");
         }
+        */
     }
 
 }

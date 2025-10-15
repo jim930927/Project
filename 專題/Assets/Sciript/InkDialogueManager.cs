@@ -201,7 +201,7 @@ public class InkDialogueManager : MonoBehaviour
             Debug.LogWarning("⚠️ 找不到 BookUIManager，無法綁定 Ink 外部函式");
             return;
         }
-
+        /*
         // 信件
         story.BindExternalFunction("UnlockLetter", () =>
         {
@@ -222,7 +222,7 @@ public class InkDialogueManager : MonoBehaviour
             bookUI.talkedToNPC = true;
             Debug.Log("📖 Ink 已解鎖：主線對話");
         });
-
+        */
         var hp = FindObjectOfType<HP>();
 
         if (hp != null)
