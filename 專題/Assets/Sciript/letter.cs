@@ -14,6 +14,9 @@ public class LetterInteraction : MonoBehaviour
     public Text overlayText;
     public Button returnButton;
 
+    [Header("模式設定")]
+    public bool isReReading = false;
+
     [Header("線索設定")]
     public string clueID;
     public string clueName; // 可自訂顯示文字
@@ -82,10 +85,11 @@ public class LetterInteraction : MonoBehaviour
         overlayPanel.SetActive(false);
         returnButton.gameObject.SetActive(false);
 
-        if (dialogueManager && inkJSON)
+        if (!isReReading && dialogueManager != null && inkJSON != null)
             dialogueManager.EnterDialogueMode(inkJSON, "letter_choices");
 
         isFinished = true;
+        isReReading = true;
         gameObject.SetActive(false);
     }
 

@@ -62,6 +62,8 @@ public class InkDialogueManager : MonoBehaviour
 
     private Action onDialogueComplete;
 
+    private bool firstTagCheck = true; // 新增這個在 class 層級
+
     void Start()
     {
         dialoguePanel.SetActive(false);
@@ -83,6 +85,8 @@ public class InkDialogueManager : MonoBehaviour
             Debug.LogWarning("⚠️ Ink JSON 未指派，無法自動啟動對話。");
         }
     }
+
+   
 
     void Update()
     {
@@ -134,6 +138,8 @@ public class InkDialogueManager : MonoBehaviour
     }
 
 
+
+
     public void EnterDialogueMode(TextAsset newInkJSON, string knotName = "", Action onComplete = null)
     {
         if (newInkJSON == null) return;
@@ -181,6 +187,7 @@ public class InkDialogueManager : MonoBehaviour
         ShowPortraits();
         ResetPortraits();
         ContinueStory();
+
     }
 
     // 🔹 Ink 外部函式綁定區
@@ -253,10 +260,27 @@ public class InkDialogueManager : MonoBehaviour
     {
         if (story != null && story.canContinue)
         {
+            // 1️⃣ 先從 Ink 拿出下一句台詞
             string text = story.Continue().Trim();
             dialogueText.text = text;
 
-            // 從 Ink 變數抓 speaker
+            // 🔹 檢查是否有 #play_music 標籤
+            foreach (var tag in story.currentTags)
+            {
+                if (tag.StartsWith("play_music"))
+                {
+                    string[] parts = tag.Split(' ');
+                    if (parts.Length > 1)
+                    {
+                        string musicName = parts[1];
+                        Debug.Log($"🎵 偵測到音樂標籤：{musicName}");
+                        PlayMusic(musicName);
+                    }
+                }
+            }
+
+
+            // 3️⃣ 抓說話者名字（如果 Ink 有設定變數 speaker）
             string speakerName = "";
             try
             {
@@ -270,7 +294,8 @@ public class InkDialogueManager : MonoBehaviour
 
             nameText.text = speakerName;
             UpdatePortrait(speakerName);
-            // 🔹 Ink Tag 檢查：播放 CG
+
+            // 4️⃣ 如果有 CG TAG，播放影片
             if (story.currentTags.Contains("play_cg"))
             {
                 Debug.Log("🎬 偵測到 #play_cg，播放開場影片");
@@ -278,10 +303,12 @@ public class InkDialogueManager : MonoBehaviour
                 return; // 暫停 Ink，等影片播完再繼續
             }
 
+            // 5️⃣ 顯示選項
             DisplayChoices();
         }
         else
         {
+            // 對話結束後的處理 ↓↓↓
             string currentPath = story.state.currentPathString;
 
             if (!string.IsNullOrEmpty(currentPath) && currentPath.Contains("boss_talk_first"))
@@ -297,11 +324,8 @@ public class InkDialogueManager : MonoBehaviour
                 if (hpRef == null) hpRef = FindFirstObjectByType<HP>();
                 if (hpRef != null)
                     hpRef.ShowHPUI(true);
-
             }
 
-
-            // 🔍 檢查 Ink 是否要跳轉戰鬥
             if (story.currentTags.Contains("jump_to_battle"))
             {
                 Debug.Log("⚔️ Ink 觸發戰鬥場景切換！");
@@ -316,27 +340,18 @@ public class InkDialogueManager : MonoBehaviour
                 return;
             }
 
-            // 🕹️ 正常結束對話
             dialoguePanel.SetActive(false);
             choiceContainer.SetActive(false);
             dialogueIsPlaying = false;
             SetPlayerCanMove(true);
-
             dialogueEndTimer = dialogueEndCooldown;
             HidePortraits();
 
             onDialogueComplete?.Invoke();
             onDialogueComplete = null;
         }
-
-        // 🔹 Tag 檢查：播放 CG
-        if (story.currentTags.Contains("play_cg"))
-        {
-            Debug.Log("🎬 偵測到 #play_cg，播放開場 CG！");
-            StartCoroutine(PlayCGThenContinue());
-        }
-
     }
+
 
     private System.Collections.IEnumerator CloseCurtainThenSwitchScene()
     {
@@ -500,7 +515,7 @@ public class InkDialogueManager : MonoBehaviour
 
         Debug.Log("🎞 影片已準備完成");
 
-        // 🔹 強制更新 RawImage 的貼圖
+        // 🔹 更新 RawImage 貼圖
         if (raw != null)
         {
             raw.texture = video.targetTexture;
@@ -512,7 +527,7 @@ public class InkDialogueManager : MonoBehaviour
         video.Play();
         Debug.Log("▶️ CG 開始播放");
 
-        // 等待影片真正開始
+        // 等影片真正開始
         yield return new WaitUntil(() => video.isPlaying);
 
         bool videoFinished = false;
@@ -539,12 +554,32 @@ public class InkDialogueManager : MonoBehaviour
 
         cgPanel.SetActive(false);
 
+        // ✅ 關鍵修正：讓 Ink 前進一行並觸發 Tag（例如 #play_music）
+        if (story.canContinue)
+        {
+            Debug.Log("📖 CG 結束，繼續 Ink 劇情（應該跳到 == start ==）");
+            ContinueStory();
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ CG 結束後 Ink 無法繼續！");
+        }
+
         dialoguePanel.SetActive(true);
-        ContinueStory(); // Ink 自動跳到 -> start
     }
 
-
-
+    private void PlayMusic(string musicName)
+    {
+        var bgmManager = FindObjectOfType<BGMManager>();
+        if (bgmManager != null)
+        {
+            bgmManager.PlayMusic(musicName);
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ 找不到 BGMManager，無法播放音樂：" + musicName);
+        }
+    }
 
 
 }

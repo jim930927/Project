@@ -5,7 +5,7 @@ using System.Collections;
 
 public class HP : MonoBehaviour
 {
-    public int hp = 3;
+    public int hp = 4;
 
     [Header("血量 UI")]
     public Image hpImage;

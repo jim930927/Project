@@ -3,6 +3,9 @@ VAR current_props = ""
 VAR offense_rules = ""
 VAR room = ""
 
+== CG ==
+#play_cg
+->start
 
 ~ room = "主角房間"
 == start ==

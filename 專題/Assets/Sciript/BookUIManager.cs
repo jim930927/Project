@@ -7,6 +7,7 @@ public class BookUIManager : MonoBehaviour
     public GameObject bookPanel;         // 書本主面板
     public Button bookIconButton;        // 書右下角按鈕
     public Button closeButton;           // 書內部 X 關閉按鈕
+    public Button LetterReturnButton;
 
     [Header("三個線索按鈕")]
     public Button letterButton;          // 信件按鈕（固定放在BookPanel上）
@@ -27,6 +28,11 @@ public class BookUIManager : MonoBehaviour
     public bool pickupLetter = false;
     public bool pickupJournal = false;
     public bool talkedToNPC = false;
+
+    [Header("NPC對話")]
+    public Button talkReturnButton;
+    public GameObject talkOverlayPanel;
+    public Text talktext;
 
     void Start()
     {
@@ -64,6 +70,12 @@ public class BookUIManager : MonoBehaviour
         // Overlay 面板預設隱藏
         if (letterOverlayPanel) letterOverlayPanel.SetActive(false);
         if (journalOverlayPanel) journalOverlayPanel.SetActive(false);
+
+        if (talkReturnButton)
+        {
+            talkReturnButton.gameObject.SetActive(false);
+            talkReturnButton.onClick.AddListener(OntalkReturnButtonClicked);
+        }
     }
 
     void Update()
@@ -88,6 +100,7 @@ public class BookUIManager : MonoBehaviour
     {
         if (letterOverlayPanel != null)
             letterOverlayPanel.SetActive(true);
+            LetterReturnButton.gameObject.SetActive(true);
     }
 
     public void CloseLetterOverlay()
@@ -133,6 +146,14 @@ public class BookUIManager : MonoBehaviour
     // === 主線按鈕 ===
     void OnTalkButtonClicked()
     {
-        Debug.Log("💬 主線對話按鈕被點擊（可綁定 NPC 對話事件）");
+        talkOverlayPanel.SetActive(true);
+        talkReturnButton.gameObject.SetActive(true);
+
+    }
+
+    void OntalkReturnButtonClicked()
+    {
+        talkOverlayPanel.SetActive(false);
+        talkReturnButton.gameObject.SetActive(false);
     }
 }
