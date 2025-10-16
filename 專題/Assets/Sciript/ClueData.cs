@@ -99,4 +99,22 @@ public class ClueData : ScriptableObject
         Debug.Log("✅ 所有線索都已收集！");
         return true;
     }
+    
+    // ✅ 新增：檢查是否收集了指定的線索
+public bool HasCollectedClues(params string[] requiredIds)
+    {
+        foreach (string id in requiredIds)
+        {
+            Clue clue = clues.Find(c => c.id == id);
+            if (clue == null || !clue.collected)
+            {
+                Debug.Log($"❌ 尚未收集線索：{id}");
+                return false;
+            }
+        }
+
+        Debug.Log("✅ 已收集指定的所有線索！");
+        return true;
+    }
+
 }

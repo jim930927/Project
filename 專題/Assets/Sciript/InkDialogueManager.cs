@@ -3,15 +3,17 @@ using Ink.Runtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static ClueData;
 
 public class InkDialogueManager : MonoBehaviour
 {
     [Header("UI 元件")]
-    public Text nameText;
-    public Text dialogueText;
+    public TextMeshProUGUI nameText;
+    public TextMeshProUGUI dialogueText;
     public GameObject dialoguePanel;
 
     [Header("選項 UI")]
@@ -150,8 +152,10 @@ public class InkDialogueManager : MonoBehaviour
             story = new Story(inkJSON.text);
             story.BindExternalFunction("canStartBattle", () =>
             {
-                return clueDatabase.AllCluesCollected();
+                // ✅ 改成只檢查特定線索
+                return clueDatabase.HasCollectedClues("Letter", "Journal", "NPC_talk");
             });
+
             BindExternalBookFunctions(); // 🔹 綁定 Ink 外部函式
             story.ObserveVariable("hp", (string name, object value) =>
             {
@@ -201,28 +205,7 @@ public class InkDialogueManager : MonoBehaviour
             Debug.LogWarning("⚠️ 找不到 BookUIManager，無法綁定 Ink 外部函式");
             return;
         }
-        /*
-        // 信件
-        story.BindExternalFunction("UnlockLetter", () =>
-        {
-            bookUI.pickupLetter = true;
-            Debug.Log("📖 Ink 已解鎖：信件");
-        });
 
-        // 日記
-        story.BindExternalFunction("UnlockJournal", () =>
-        {
-            bookUI.pickupJournal = true;
-            Debug.Log("📖 Ink 已解鎖：日記");
-        });
-
-        // 主線對話
-        story.BindExternalFunction("UnlockTalk", () =>
-        {
-            bookUI.talkedToNPC = true;
-            Debug.Log("📖 Ink 已解鎖：主線對話");
-        });
-        */
         var hp = FindObjectOfType<HP>();
 
         if (hp != null)
@@ -451,6 +434,7 @@ public class InkDialogueManager : MonoBehaviour
         }
     }
 
+
     bool AllCluesCollected()
     {
         var clueData = FindObjectOfType<ClueData>();
@@ -579,6 +563,16 @@ public class InkDialogueManager : MonoBehaviour
         {
             Debug.LogWarning("⚠️ 找不到 BGMManager，無法播放音樂：" + musicName);
         }
+    }
+
+    public void JumpToKnot(string knotName)
+    {
+        if (story == null) return;
+
+        story.ChoosePathString(knotName);
+        dialogueIsPlaying = true;
+        dialoguePanel.SetActive(true);
+        ContinueStory();
     }
 
 

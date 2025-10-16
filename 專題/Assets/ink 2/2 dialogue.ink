@@ -2,17 +2,18 @@ VAR speaker = "???"
 VAR current_props = ""
 VAR offense_rules = ""
 VAR room = ""
+VAR hp = ""
 
 == CG ==
 #play_cg
 ->start
 
-~ room = "主角房間"
 == start ==
 ~ speaker = " "
+「......」
 微弱晨光透過縫隙灑進，周圍安靜的可怕，唯獨鬧鐘發出了「滴答」的聲響。
 ~ speaker = "我"
-「剛剛那是...我的記憶嗎？」」
+「剛剛那是...我的記憶嗎？」
 抬頭看了看周圍
 「這裡是...我家嗎？」
 「......」
@@ -54,9 +55,9 @@ VAR room = ""
 #save
 -> END
 
-== bedside_journal ==
+== Journal1 ==
 「床頭櫃裡好像藏著什麼東西？」
-（墨涅在床頭櫃裡發現了幾頁殘缺的日記）
+（在床頭櫃裡發現了幾頁殘缺的日記）
 -> END
 
 == journal_end ==

@@ -9,8 +9,8 @@ using TMPro;
 public class BattleDialogueManager : MonoBehaviour
 {
     [Header("UI")]
-    public Text nameText;
-    public Text dialogueText;
+    public TextMeshProUGUI nameText;
+    public TextMeshProUGUI dialogueText;
     public GameObject dialoguePanel;
 
     [Header("選項 UI")]
