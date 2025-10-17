@@ -53,6 +53,9 @@ TagManager:
   - name: "\u7269\u4EF6"
     uniqueID: 2119614441
     locked: 0
+  - name: "\u9053\u5177"
+    uniqueID: 3344445273
+    locked: 0
   - name: NPC
     uniqueID: 2991064173
     locked: 0
