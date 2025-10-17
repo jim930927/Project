@@ -245,22 +245,29 @@ public class BookUIManager : MonoBehaviour
     {
         if (clueDetailPanel != null)
             clueDetailPanel.SetActive(false);
+        PreviewImageManager.Instance.HideImage();
 
         if (inkManager != null)
         {
             if (!string.IsNullOrEmpty(pendingReturnKnot))
             {
+                inkManager.ShowPortraits();   // 🟩 新增
+                inkManager.ResetPortraits();  // 🟩 新增
                 inkManager.JumpToKnot(pendingReturnKnot);
                 pendingReturnKnot = "";
             }
             else
             {
+                inkManager.ShowPortraits();   // 🟩 新增
+                inkManager.ResetPortraits();  // 🟩 新增
                 inkManager.ContinueStory();
             }
         }
     }
 
+
     // ✅ 舊 CluePickup 相容用：開啟線索畫面
+    // ✅ 撿到線索時直接顯示內容（不開整本書）
     public void OpenClueOverlay(string clueID, string returnKnotName = "")
     {
         var clue = clueData.clues.Find(c => c.id == clueID);
@@ -272,12 +279,35 @@ public class BookUIManager : MonoBehaviour
 
         pendingReturnKnot = returnKnotName;
 
-        // 打開書頁並切到線索分頁
-        OpenBook();
-        SwitchTab("clue");
+        // ✅ 不打開整本書，只打開線索內容面板
+        clueDetailPanel?.SetActive(true);
 
-        // 顯示該線索內容
-        ShowClueDetail(clue);
+        // 顯示該線索的內容（支援分頁）
+        currentClue = clue;
+        currentPage = 0;
+        UpdateCluePage();
     }
+
+    // ✅ 撿到道具時直接顯示內容（不開整本書）
+    public void OpenItemOverlay(string itemID, string returnKnotName = "")
+    {
+        var item = itemData.items.Find(i => i.id == itemID);
+        if (item == null)
+        {
+            Debug.LogWarning($"⚠️ 找不到道具：{itemID}");
+            return;
+        }
+
+        pendingReturnKnot = returnKnotName;
+
+        // ✅ 不打開整本書，只打開細節視窗
+        clueDetailPanel?.SetActive(true);
+
+        // 顯示該道具的內容（支援分頁）
+        currentItem = item;
+        currentItemPage = 0;
+        UpdateItemPage();
+    }
+
 
 }

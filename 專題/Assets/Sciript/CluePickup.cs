@@ -17,6 +17,10 @@ public class CluePickup : MonoBehaviour
     public string startKnotName = "";    // 撿取時要播放的開場
     public string returnKnotName = "";   // 看完線索後要接續的 Knot
 
+    [Header("圖片設定")]
+    public Sprite clueImage; // 顯示線索圖片
+
+
     private bool playerInRange = false;
     private bool collected = false;
 
@@ -57,6 +61,26 @@ public class CluePickup : MonoBehaviour
 
         clueData.AddClue(clueID, clueName);
         collected = true;
+
+        // ✅ 播放 Ink 對話
+        if (inkManager != null && inkStoryAsset != null)
+        {
+            // 顯示圖片
+            if (clueImage != null && PreviewImageManager.Instance != null)
+                PreviewImageManager.Instance.ShowImage(clueImage);
+
+            inkManager.EnterDialogueMode(inkStoryAsset, startKnotName, () =>
+            {
+                // 對話結束 → 關閉圖片
+                if (PreviewImageManager.Instance != null)
+                    PreviewImageManager.Instance.HideImage();
+
+                // 顯示線索 UI
+                var bookUI = FindObjectOfType<BookUIManager>();
+                if (bookUI != null)
+                    bookUI.OpenClueOverlay(clueID, returnKnotName);
+            });
+        }
 
 
         // ✅ 撿起線索，更新 ClueData

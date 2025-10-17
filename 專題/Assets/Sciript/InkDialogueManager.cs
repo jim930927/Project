@@ -88,8 +88,6 @@ public class InkDialogueManager : MonoBehaviour
         }
     }
 
-   
-
     void Update()
     {
         if (dialogueEndTimer > 0f)
@@ -138,9 +136,6 @@ public class InkDialogueManager : MonoBehaviour
             if (v != null) hpRef.hp = Mathf.Max(0, System.Convert.ToInt32(v));
         }
     }
-
-
-
 
     public void EnterDialogueMode(TextAsset newInkJSON, string knotName = "", Action onComplete = null)
     {
@@ -335,7 +330,6 @@ public class InkDialogueManager : MonoBehaviour
         }
     }
 
-
     private System.Collections.IEnumerator CloseCurtainThenSwitchScene()
     {
         if (!curtainInitialized) InitCurtain();
@@ -387,7 +381,7 @@ public class InkDialogueManager : MonoBehaviour
         ContinueStory();
     }
 
-    void UpdatePortrait(string speakerName)
+    public void UpdatePortrait(string speakerName)
     {
         leftPortraitImage.sprite = leftDefaultPortrait;
         rightPortraitImage.sprite = rightDefaultPortrait;
@@ -405,19 +399,19 @@ public class InkDialogueManager : MonoBehaviour
         }
     }
 
-    void HidePortraits()
+    public void HidePortraits()
     {
         if (leftPortraitImage != null) leftPortraitImage.gameObject.SetActive(false);
         if (rightPortraitImage != null) rightPortraitImage.gameObject.SetActive(false);
     }
 
-    void ShowPortraits()
+    public void ShowPortraits()
     {
         if (leftPortraitImage != null) leftPortraitImage.gameObject.SetActive(true);
         if (rightPortraitImage != null) rightPortraitImage.gameObject.SetActive(true);
     }
 
-    void ResetPortraits()
+    public void ResetPortraits()
     {
         if (leftPortraitImage != null) leftPortraitImage.sprite = leftDefaultPortrait;
         if (rightPortraitImage != null) rightPortraitImage.sprite = rightDefaultPortrait;
@@ -433,8 +427,6 @@ public class InkDialogueManager : MonoBehaviour
                 pm.canMove = canMove;
         }
     }
-
-
     bool AllCluesCollected()
     {
         var clueData = FindObjectOfType<ClueData>();

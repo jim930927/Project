@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using static ClueData;
 
 public class ItemPickup : MonoBehaviour
 {
@@ -29,6 +30,10 @@ public class ItemPickup : MonoBehaviour
 
     [Tooltip("看完道具後要回到的 Knot 名稱（可空）")]
     public string returnKnotName = "";
+
+    [Header("圖片設定")]
+    public Sprite itemImage; // 顯示線索圖片
+
 
     private bool playerInRange = false;
     private bool collected = false;
@@ -71,6 +76,25 @@ public class ItemPickup : MonoBehaviour
         itemData.AddItem(itemID, itemName);
         collected = true;
 
+        if (inkManager != null && inkStoryAsset != null)
+        {
+            // 顯示圖片
+            if (itemImage != null && PreviewImageManager.Instance != null)
+                PreviewImageManager.Instance.ShowImage(itemImage);
+
+            inkManager.EnterDialogueMode(inkStoryAsset, startKnotName, () =>
+            {
+                // 對話結束 → 關閉圖片
+                if (PreviewImageManager.Instance != null)
+                    PreviewImageManager.Instance.HideImage();
+
+                var bookUI = FindObjectOfType<BookUIManager>();
+                if (bookUI != null)
+                    bookUI.OpenItemOverlay(itemID, returnKnotName);
+            });
+        }
+
+
         Debug.Log($"🎒 撿取道具：{itemID}");
 
         // ✅ 如果有 Ink 對話，播放劇情後再顯示道具內容
@@ -81,9 +105,7 @@ public class ItemPickup : MonoBehaviour
                 // 劇情結束後顯示道具細節
                 var bookUI = FindObjectOfType<BookUIManager>();
                 if (bookUI != null)
-                    bookUI.OpenBook(); // 打開書
-                // 直接切換到道具頁
-                bookUI.SendMessage("SwitchTab", "item", SendMessageOptions.DontRequireReceiver);
+                    bookUI.OpenItemOverlay(itemID, returnKnotName); // 傳入要返回的 knot
             });
         }
         else
