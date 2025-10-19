@@ -52,6 +52,20 @@ public class ItemData : ScriptableObject
         OnItemAdded?.Invoke(item);
     }
 
+    // 新增：移除 / 消耗道具（例如使用鑰匙後讓它消失）
+    public void RemoveItem(string id)
+    {
+        Debug.Log($"正在嘗試移除 {id}，是否存在？" + HasItem(id));
+
+        Item item = items.Find(i => i.id == id);
+        if (item != null && item.collected)
+        {
+            item.collected = false;
+            Debug.Log($"🗑️ 道具已被移除：{item.name} ({id})");
+            // 若需要，可以在這裡擴充 OnItemRemoved 事件
+        }
+    }
+
     public void ResetAll()
     {
         foreach (var i in items)

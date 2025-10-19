@@ -48,7 +48,12 @@ public class InkDialogueManager : MonoBehaviour
     [Header("對應線索 ID")]
     public string[] tagClueIDs;
 
+    [Header("線索/道具")]
     public ClueData clueDatabase;
+    public ItemData itemDatabase;
+    public bool doorUnlocked = false;
+
+    public Story GetStory() => story;
 
     private Vector2 leftOriginPos;
     private Vector2 rightOriginPos;
@@ -114,6 +119,7 @@ public class InkDialogueManager : MonoBehaviour
         }
     }
 
+
     void InitCurtain()
     {
         if (leftCurtain != null && rightCurtain != null && !curtainInitialized)
@@ -145,10 +151,43 @@ public class InkDialogueManager : MonoBehaviour
         {
             inkJSON = newInkJSON;
             story = new Story(inkJSON.text);
+
             story.BindExternalFunction("canStartBattle", () =>
             {
                 // ✅ 改成只檢查特定線索
                 return clueDatabase.HasCollectedClues("Letter", "Journal", "NPC_talk");
+            });
+
+            story.BindExternalFunction("CheckHasItem", (string itemId) => {
+                return itemDatabase != null && itemDatabase.HasItem(itemId);
+            });
+
+
+
+            // ✅ 解鎖門
+            story.BindExternalFunction("UnlockDoor", (string doorID) =>
+            {
+                if (!string.IsNullOrEmpty(doorID))
+                {
+                    DoorManager.Instance?.UnlockDoor(doorID);
+                    Debug.Log($"🗝️ Ink 呼叫 UnlockDoor：{doorID}");
+                }
+            });
+
+            // ✅ 讓 Ink 能檢查目前持有的物品
+            story.BindExternalFunction(
+                "GetHeldItem", () =>
+            {
+                if (itemDatabase != null && itemDatabase.HasItem("key_room"))
+                   return "key_room";
+                if (itemDatabase != null && itemDatabase.HasItem("key_parent"))
+                    return "key_parent";
+                return "";
+            });
+
+            // 讓 Ink 設定門已開
+            story.BindExternalFunction("SetDoorUnlocked", () => {
+                doorUnlocked = true;
             });
 
             BindExternalBookFunctions(); // 🔹 綁定 Ink 外部函式
@@ -158,6 +197,22 @@ public class InkDialogueManager : MonoBehaviour
                 if (hpRef == null) return;
                 hpRef.hp = Mathf.Max(0, System.Convert.ToInt32(value)); // 無上限，保底 0
             });
+
+            // ✅ 改成一次性同步兩把鑰匙
+            if (itemDatabase != null)
+            {
+                string have = "";
+                if (itemDatabase.HasItem("key_parent"))
+                    have = "key_parent";
+                else if (itemDatabase.HasItem("key_room"))
+                    have = "key_room";
+
+                story.variablesState["have_items"] = have;
+                Debug.Log($"🧩 已同步 have_items：{have}");
+            }
+
+
+
 
             // === ② 初次同步一次（避免剛進入時 Inspector 沒顯示）===
             try
@@ -317,6 +372,48 @@ public class InkDialogueManager : MonoBehaviour
                 }
                 return;
             }
+
+            // 讀取 Ink 變數 UnlockDoor（安全寫法）
+            object unlockObj = null;
+            try
+            {
+                unlockObj = story.variablesState["Unlock_door"];
+            }
+            catch
+            {
+                unlockObj = null;
+            }
+
+            bool inkSaysUnlocked = false;
+            if (unlockObj != null)
+            {
+                // Ink 可能回傳 bool、int、string 等，先嘗試轉 bool
+                if (unlockObj is bool)
+                {
+                    inkSaysUnlocked = (bool)unlockObj;
+                }
+                else
+                {
+                    bool parsed;
+                    if (bool.TryParse(unlockObj.ToString(), out parsed))
+                        inkSaysUnlocked = parsed;
+                    else
+                    {
+                        // 若 Ink 用 0/1 表示，也可嘗試轉 int
+                        int intVal;
+                        if (int.TryParse(unlockObj.ToString(), out intVal))
+                            inkSaysUnlocked = (intVal != 0);
+                    }
+                }
+            }
+
+            if (inkSaysUnlocked)
+            {
+                doorUnlocked = true; // 你的 InkDialogueManager 層級旗標
+                Debug.Log("🚪 Ink 變數 UnlockDoor 為 true，門已解鎖");
+            }
+
+
 
             dialoguePanel.SetActive(false);
             choiceContainer.SetActive(false);
@@ -565,6 +662,43 @@ public class InkDialogueManager : MonoBehaviour
         dialogueIsPlaying = true;
         dialoguePanel.SetActive(true);
         ContinueStory();
+    }
+
+    public void SyncHaveItemsToInk()
+    {
+        if (story == null)
+        {
+            Debug.LogWarning("⚠️ SyncHaveItemsToInk: story 尚未建立");
+            return;
+        }
+
+        if (itemDatabase == null)
+        {
+            Debug.LogWarning("⚠️ SyncHaveItemsToInk: itemDatabase 未指派");
+            return;
+        }
+
+        try
+        {
+            // ✅ 改成一次性同步兩把鑰匙
+            if (itemDatabase != null)
+            {
+                string have = "";
+                if (itemDatabase.HasItem("key_parent"))
+                    have = "key_parent";
+                else if (itemDatabase.HasItem("key_room"))
+                    have = "key_room";
+
+                story.variablesState["have_items"] = have;
+                Debug.Log($"🧩 已同步 have_items：{have}");
+            }
+
+            Debug.Log($"🧩 已同步 have_items: {story.variablesState["have_items"]}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("⚠️ 更新 Ink 變數 have_items 發生錯誤: " + e.Message);
+        }
     }
 
 

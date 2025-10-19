@@ -1,8 +1,12 @@
 VAR speaker = "???"
-VAR current_props = ""
+VAR have_items = ""
 VAR offense_rules = ""
 VAR room = ""
 VAR hp = ""
+VAR Unlock_door = false
+
+EXTERNAL UnlockDoor(door_id)
+
 
 == CG ==
 #play_cg
@@ -21,10 +25,11 @@ VAR hp = ""
 「我得找到那些缺失的部分……否則，我連自己是誰都無法確定。」
 -> END
 
-== door ==
+== main_room ==
 「門是鎖的...？鑰匙在哪」
 + 使用鑰匙開門
-    {current_props == "key_room":
+    {have_items == "key_room":
+    ~ UnlockDoor("main_room")
         -> have_key
     - else:
         -> no_key 
@@ -34,11 +39,13 @@ VAR hp = ""
 == have_key ==
 【使用道具：房間鑰匙】
 使用鑰匙打開了門
+~ Unlock_door = true
 ->END
 
 == no_key ==
 「要先找到鑰匙才行...」
 ->END
+
 
 == wardrobe ==
 裡面放著些許衣服，大多是長袖長褲
@@ -146,7 +153,6 @@ VAR hp = ""
 「......」
 「我為什麼會這麼害怕……是因為我不想被懲罰，還是因為我怕失去他們的認同？」
 ->END
-
 
 ~ room = "屋內探索"
 ~ speaker = "我"
@@ -297,7 +303,7 @@ VAR hp = ""
 
 == gas_stove
 瓦斯爐上面放著一個平底鍋，上面還殘留了些許溫度，似乎前一段時間使用過。
-{current_props == "water_letter":
+{have_items == "water_letter":
     -> water_letter
 - else:
     -> END
@@ -339,3 +345,38 @@ VAR hp = ""
 == cloth_wash
 普通的洗衣機
 ->END
+
+
+
+
+
+== parent_room ==
+「房間門緊鎖，似乎需要一把鑰匙，在手碰到門把的時候，有一股不明的壓迫感從門後傳來，似乎在警告什麼。」
++ 使用鑰匙開門
+    {have_items == "key_parent":
+    ~ UnlockDoor("parent_room")
+        -> have_parent_key
+    - else:
+        -> no_parent_key 
+    }
+->END
+
+== have_parent_key ==
+【使用道具：父母房間的鑰匙】
+使用鑰匙打開了門
+~ Unlock_door = true
+->END
+
+== no_parent_key ==
+「要先找到鑰匙...」
+->END
+
+
+
+
+
+
+
+
+
+
