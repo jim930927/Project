@@ -4,11 +4,11 @@ public class Player : MonoBehaviour
 {
     public float moveSpeed = 5f;
     private Rigidbody2D rb;
-    private Vector2 movement;
+    public Vector2 movement;
 
     [Header("動畫控制")]
     public Animator animator;
-    private Vector2 lastDirection = Vector2.down;
+    public Vector2 lastDirection = Vector2.down;
 
     [Header("移動控制")]
     public bool canMove = true; // 可由外部如對話系統控制

@@ -26,6 +26,9 @@ public class InkDialogueManager : MonoBehaviour
     [Header("Ink 劇本")]
     public TextAsset inkJSON;
 
+    [Header("存檔UI控制器")]
+    public SaveUIManager saveUI;
+
     [Header("角色立繪區域")]
     public Image leftPortraitImage;
     public Image rightPortraitImage;
@@ -59,7 +62,7 @@ public class InkDialogueManager : MonoBehaviour
     private Vector2 rightOriginPos;
     private bool curtainInitialized = false;
 
-    private Story story;
+    public Story story;
     private bool canContinue = false;
     private float inputDelay = 0.5f;
     private float inputTimer = 0f;
@@ -151,6 +154,10 @@ public class InkDialogueManager : MonoBehaviour
         {
             inkJSON = newInkJSON;
             story = new Story(inkJSON.text);
+
+            story.BindExternalFunction("SaveGame", () => {
+                saveUI.OpenSaveMenu(story.state.ToJson());
+            });
 
             story.BindExternalFunction("canStartBattle", () =>
             {

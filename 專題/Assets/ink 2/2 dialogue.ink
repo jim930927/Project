@@ -6,6 +6,7 @@ VAR hp = ""
 VAR Unlock_door = false
 
 EXTERNAL UnlockDoor(door_id)
+EXTERNAL SaveGame()
 
 
 == CG ==
@@ -59,8 +60,9 @@ EXTERNAL UnlockDoor(door_id)
 
 == mirror ==
 站在鏡子前面，記住了自己現在的模樣
-#save
+~ SaveGame() 
 -> END
+
 
 == Journal1 ==
 ~ speaker = "我"
