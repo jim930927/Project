@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
+using DG.Tweening;
+using System;
 
 [RequireComponent(typeof(Collider2D))]
 public class SceneInteractable : MonoBehaviour
@@ -11,6 +15,10 @@ public class SceneInteractable : MonoBehaviour
     private bool isPlayerInside = false;
     private GameObject player;
 
+
+    [Header("互動限制")]
+    public bool canInteract = true; // 是否允許互動
+
     void Start()
     {
         dialogueManager = FindFirstObjectByType<InkDialogueManager>();
@@ -21,15 +29,18 @@ public class SceneInteractable : MonoBehaviour
         if (!isPlayerInside || player == null || dialogueManager == null)
             return;
 
-        // ✅ 按下互動鍵時觸發對話
+        // ✅ 不可互動就直接 return
+        if (!canInteract) return;
+
         if (Input.GetKeyDown(interactKey))
         {
-            // 如果對話正在播放就不重複開
-            if (!dialogueManager.dialogueIsPlaying)
+            if (!dialogueManager.dialogueIsPlaying && canInteract)
             {
+                canInteract = false; // 🔹 暫時鎖定互動
                 dialogueManager.EnterDialogueMode(dialogueManager.inkJSON, interactionNode, OnDialogueEnd);
             }
         }
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -54,8 +65,15 @@ public class SceneInteractable : MonoBehaviour
     private void OnDialogueEnd()
     {
         Debug.Log($"🗨️ 結束互動：{interactionNode}");
-        // 可在這裡加特效或改變物件狀態（例如亮燈、顯示提示）
+        StartCoroutine(UnlockInteraction());
     }
+
+    private IEnumerator UnlockInteraction()
+    {
+        yield return new WaitForSeconds(0.5f); // 避免立即重觸發
+        canInteract = true;
+    }
+
 
     // 🔹 可視化提示（在 Scene 模式下顯示互動點）
     private void OnDrawGizmos()

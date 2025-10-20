@@ -796,7 +796,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &509003375
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1190,9 +1190,7 @@ MonoBehaviour:
   - {fileID: 703340013}
   - {fileID: 1418101310}
   - {fileID: 1848312113}
-  inkManager: {fileID: 1077293359}
-  player: {fileID: 834885465}
-  loadbotton: {fileID: 1431826117}
+  openButton: {fileID: 1431826117}
   closeButton: {fileID: 1603860810}
 --- !u!4 &724798285
 Transform:
@@ -2244,7 +2242,7 @@ MonoBehaviour:
   - {fileID: 253089341}
   - {fileID: 1859307318}
   - {fileID: 411589915}
-  hpRef: {fileID: 1529848885}
+  hpRef: {fileID: 0}
   inkJSON: {fileID: 4900000, guid: 5253456c747fdc44aa5a801f83a06531, type: 3}
   saveUI: {fileID: 0}
   leftPortraitImage: {fileID: 0}
@@ -2272,6 +2270,7 @@ MonoBehaviour:
   clueDatabase: {fileID: 11400000, guid: 7b90fe4aaccb5634d892a3aa92abaf94, type: 2}
   itemDatabase: {fileID: 11400000, guid: 2c30294bcd788e64cba5edbdfb80302e, type: 2}
   doorUnlocked: 0
+  justLoaded: 0
 --- !u!4 &1077293360
 Transform:
   m_ObjectHideFlags: 0
@@ -3498,59 +3497,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1461492259}
   m_CullTransparentMesh: 1
---- !u!1 &1529848884
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1529848886}
-  - component: {fileID: 1529848885}
-  m_Layer: 0
-  m_Name: HP
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1529848885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1529848884}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4edc4237c44920f4d94237d2f23f0d16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hp: 4
-  hpImage: {fileID: 0}
-  hp_0: {fileID: -205913479492284020, guid: fa92ba999fd459c498d55edfbbf7f820, type: 3}
-  hp_1_3: {fileID: 5528347048959285143, guid: fa236120891709349865ee406c693b94, type: 3}
-  hp_4_9: {fileID: 748397228901374339, guid: 80580a8c868c29a4e93f11c6545ad8c4, type: 3}
-  hp_10: {fileID: -1218678174492963619, guid: 0d68c4fcb7b9c174da44abdd8f760900, type: 3}
-  hpHintPanel: {fileID: 0}
-  hintDuration: 3
-  fadeTime: 0.5
---- !u!4 &1529848886
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1529848884}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 907, y: 567, z: -32.852833}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1603860808
 GameObject:
   m_ObjectHideFlags: 0
@@ -5030,4 +4976,3 @@ SceneRoots:
   - {fileID: 724798285}
   - {fileID: 834885471}
   - {fileID: 1077293360}
-  - {fileID: 1529848886}

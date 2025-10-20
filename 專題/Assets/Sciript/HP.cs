@@ -5,19 +5,25 @@ using System.Collections;
 
 public class HP : MonoBehaviour
 {
-    public int hp = 4;
+    public int hp = 3;
 
     [Header("血量 UI")]
     public Image hpImage;
+    public string hpImageName = "HPImage";
+
     public Sprite hp_0;
     public Sprite hp_1_3;
     public Sprite hp_4_9;
     public Sprite hp_10;
 
-    [Header("提示 UI")]
-    public GameObject hpHintPanel;         // 👉 指向提示框的Panel
-    public float hintDuration = 3f;        // 顯示時間
-    public float fadeTime = 0.5f;          // 淡入淡出時間
+    [Header("提示 UI（可選）")]
+    public GameObject hpHintPanel;
+    public string hpHintPanelName = "HPHintPanel";
+
+    public float hintDuration = 3f;
+    public float fadeTime = 0.5f;
+
+    public bool hasShownHP = false;
 
     private static HP instance;
 
@@ -38,11 +44,7 @@ public class HP : MonoBehaviour
 
     void Start()
     {
-        if (hpImage != null)
-            hpImage.gameObject.SetActive(false);  // 一開始隱藏
-
-        if (hpHintPanel != null)
-            hpHintPanel.SetActive(false);         // 一開始隱藏
+        StartCoroutine(InitUI()); // 🔹 延遲初始化確保能抓到第一場景 UI
     }
 
     void Update()
@@ -67,33 +69,74 @@ public class HP : MonoBehaviour
 
     public void ShowHPUI(bool show)
     {
+        if (hpImage == null)
+            FindHPUI();
+
         if (hpImage != null)
             hpImage.gameObject.SetActive(show);
 
         if (show)
-            ShowHPHint(); // 顯示提示框
+        {
+            hasShownHP = true;
+            ShowHPHint();
+        }
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (hpImage == null)
-        {
-            var found = GameObject.Find("HPImage");
-            if (found != null)
-                hpImage = found.GetComponent<Image>();
-        }
-
-        if (hpHintPanel == null)
-        {
-            var foundHint = GameObject.Find("HPHintPanel");
-            if (foundHint != null)
-                hpHintPanel = foundHint;
-        }
-
-        UpdateHpUI();
+        // 🔹 延遲 0.1 秒再綁定，確保 Canvas 已載入
+        StartCoroutine(DelayedFindUI());
     }
 
-    // 🔹 顯示提示框
+    IEnumerator DelayedFindUI()
+    {
+        yield return new WaitForSeconds(0.1f); // 等待新場景的 UI 初始化
+        FindHPUI();
+        FindHintUI();
+
+        UpdateHpUI();
+
+        if (hasShownHP && hpImage != null)
+            hpImage.gameObject.SetActive(true);
+    }
+
+    IEnumerator InitUI()
+    {
+        // 等待第一個場景的 UI 載入
+        yield return new WaitForSeconds(0.1f);
+        FindHPUI();
+        FindHintUI();
+
+        if (!hasShownHP && hpImage != null)
+            hpImage.gameObject.SetActive(false);
+    }
+
+    void FindHPUI()
+    {
+        Image[] allImages = FindObjectsOfType<Image>(true);
+        foreach (var img in allImages)
+        {
+            if (img.name == hpImageName)
+            {
+                hpImage = img;
+                Debug.Log($"🩸 在場景中找到血量圖像：{hpImage.name}");
+                return;
+            }
+        }
+        Debug.LogWarning("⚠️ 沒找到血量圖像：" + hpImageName);
+    }
+
+
+    void FindHintUI()
+    {
+        var foundHint = GameObject.Find(hpHintPanelName);
+        if (foundHint != null)
+        {
+            hpHintPanel = foundHint;
+            Debug.Log($"💬 綁定血量提示框：{hpHintPanel.name}");
+        }
+    }
+
     void ShowHPHint()
     {
         if (hpHintPanel == null) return;
@@ -116,7 +159,6 @@ public class HP : MonoBehaviour
         }
         cg.alpha = 1;
 
-        // 停留
         yield return new WaitForSeconds(hintDuration);
 
         // 淡出

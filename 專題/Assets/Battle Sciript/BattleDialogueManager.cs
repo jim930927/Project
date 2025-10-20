@@ -154,10 +154,21 @@ public class BattleDialogueManager : MonoBehaviour
                 List<string> tags = story.currentTags ?? new List<string>();
                 if (tags.Contains("DONE"))
                 {
-                    Debug.Log("✅ DONE tag detected, loading NextScene...");
-                    UnityEngine.SceneManagement.SceneManager.LoadScene("Second scene");
+                    Debug.Log("✅ DONE tag detected, play outro before loading scene...");
+                    if (fightAnimator != null)
+                    {
+                        StartCoroutine(fightAnimator.PlayBattleOutro(() =>
+                        {
+                            UnityEngine.SceneManagement.SceneManager.LoadScene("Second scene");
+                        }));
+                    }
+                    else
+                    {
+                        UnityEngine.SceneManagement.SceneManager.LoadScene("Second scene");
+                    }
                     return;
                 }
+
 
                 // 若沒有 Tag，再嘗試用路徑判斷（保險用）
                 string currentPath = "";
@@ -241,8 +252,26 @@ public class BattleDialogueManager : MonoBehaviour
         dialogueIsPlaying = false;
         dialoguePanel.SetActive(false);
         if (choiceContainer != null) choiceContainer.SetActive(false);
-        onDialogueComplete?.Invoke();
-        onDialogueComplete = null;
+
         Debug.Log("🏁 對話結束");
+
+        if (fightAnimator != null)
+        {
+            Debug.Log("🎬 播放結束布幕動畫");
+            StartCoroutine(fightAnimator.PlayBattleOutro(() =>
+            {
+                Debug.Log("🎞️ 結束布幕動畫播放完畢");
+                onDialogueComplete?.Invoke();
+                onDialogueComplete = null;
+            }));
+        }
+        else
+        {
+            Debug.Log("⚠️ fightAnimator 沒有被指定");
+            onDialogueComplete?.Invoke();
+            onDialogueComplete = null;
+        }
     }
+
+
 }

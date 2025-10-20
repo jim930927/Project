@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -9,7 +9,7 @@ public class SaveUIManager : MonoBehaviour
 {
     public GameObject saveMenu;
     public Button[] slotButtons;
-    public TextMeshProUGUI[] slotInfoTexts; // Åã¥Ü¨C­Ó¦sÀÉ¸ê°T (¥i¥ÎText©ÎTMP_Text)
+    public TextMeshProUGUI[] slotInfoTexts;
     private string currentStoryJson;
     public Button closeButton;
 
@@ -23,13 +23,12 @@ public class SaveUIManager : MonoBehaviour
         saveMenu.SetActive(false);
     }
 
-
+    // InkDialogueManager å‘¼å« ~SaveGame() æ™‚æœƒå‚³å…¥ story JSON
     public void OpenSaveMenu(string storyJson)
     {
         currentStoryJson = storyJson;
         saveMenu.SetActive(true);
 
-        // §ó·s«ö¶s»P¸ê°T
         for (int i = 0; i < slotButtons.Length; i++)
         {
             int index = i;
@@ -46,27 +45,28 @@ public class SaveUIManager : MonoBehaviour
         data.sceneName = SceneManager.GetActiveScene().name;
         data.saveTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
 
-        string savePath = Application.persistentDataPath + $"/save_{slotIndex}.json";
-        File.WriteAllText(savePath, JsonUtility.ToJson(data, true));
+        string path = Application.persistentDataPath + $"/save_{slotIndex}.json";
+        File.WriteAllText(path, JsonUtility.ToJson(data, true));
 
-        Debug.Log($"¤w¦s¤J¦sÀÉ¼Ñ {slotIndex + 1}");
+        Debug.Log($"ğŸ’¾ å·²å­˜å…¥å­˜æª”æ§½ {slotIndex + 1}");
+        Debug.Log("å­˜æª”ä½ç½®ï¼š" + Application.persistentDataPath);
         UpdateSlotInfo(slotIndex);
         saveMenu.SetActive(false);
     }
 
     public void UpdateSlotInfo(int slotIndex)
     {
-        string savePath = Application.persistentDataPath + $"/save_{slotIndex}.json";
-        if (File.Exists(savePath))
+        string path = Application.persistentDataPath + $"/save_{slotIndex}.json";
+        if (File.Exists(path))
         {
-            string json = File.ReadAllText(savePath);
+            string json = File.ReadAllText(path);
             SaveData data = JsonUtility.FromJson<SaveData>(json);
             slotInfoTexts[slotIndex].text =
-                $"¦sÀÉ®É¶¡¡G{data.saveTime}\n³õ´º¡G{data.sceneName}";
+                $"å­˜æª”æ™‚é–“ï¼š{data.saveTime}\nå ´æ™¯ï¼š{data.sceneName}";
         }
         else
         {
-            slotInfoTexts[slotIndex].text = "©|¥¼¦sÀÉ";
+            slotInfoTexts[slotIndex].text = "å°šæœªå­˜æª”";
         }
     }
 }

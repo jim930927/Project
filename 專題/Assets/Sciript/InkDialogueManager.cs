@@ -56,6 +56,10 @@ public class InkDialogueManager : MonoBehaviour
     public ItemData itemDatabase;
     public bool doorUnlocked = false;
 
+    public bool justLoaded = false;  // ← 新增：判斷是否剛載入存檔
+    private bool canAutoContinue = true; // ← 控制是否自動Continue
+
+
     public Story GetStory() => story;
 
     private Vector2 leftOriginPos;
@@ -74,6 +78,9 @@ public class InkDialogueManager : MonoBehaviour
 
     private bool firstTagCheck = true; // 新增這個在 class 層級
 
+    public static bool shouldAutoStartInk = true;  // 控制 Start() 是否自動啟動
+
+
     void Start()
     {
         dialoguePanel.SetActive(false);
@@ -84,16 +91,16 @@ public class InkDialogueManager : MonoBehaviour
         InitCurtain();
 
         // 自動啟動 Ink 劇本
-        if (inkJSON != null)
+        if (inkJSON != null && shouldAutoStartInk && !justLoaded)
         {
-            Debug.Log("🎬 自動啟動 Ink 劇本，從 === CG === 開始，播放cg");
+            Debug.Log("🎬 自動啟動 Ink 劇本，從 === CG === 開始");
             EnterDialogueMode(inkJSON, "CG");
-
         }
         else
         {
-            Debug.LogWarning("⚠️ Ink JSON 未指派，無法自動啟動對話。");
+            Debug.Log("🟡 跳過自動啟動 Ink 劇本（因為是從存檔載入）");
         }
+
     }
 
     void Update()
@@ -148,6 +155,14 @@ public class InkDialogueManager : MonoBehaviour
 
     public void EnterDialogueMode(TextAsset newInkJSON, string knotName = "", Action onComplete = null)
     {
+        if (justLoaded)
+        {
+            // 代表是從存檔載入的，不要重播開場 CG 或重新初始化 Ink
+            Debug.Log("🟡 已從存檔載入，跳過自動對話初始化");
+            justLoaded = false;
+            return;
+        }
+
         if (newInkJSON == null) return;
 
         if (story == null || inkJSON != newInkJSON)
@@ -158,6 +173,45 @@ public class InkDialogueManager : MonoBehaviour
             story.BindExternalFunction("SaveGame", () => {
                 saveUI.OpenSaveMenu(story.state.ToJson());
             });
+
+            story.BindExternalFunction("ChangeBedImage", (string state) =>
+            {
+                var bed = GameObject.FindObjectOfType<BedController>();
+                if (bed != null)
+                    bed.ChangeImage(state);
+            });
+
+            story.BindExternalFunction("OpenChestUI", () =>
+            {
+                var chest = GameObject.FindObjectOfType<ChestController>();
+                if (chest != null)
+                {
+                    chest.Interact();
+                }
+            });
+
+
+            story.BindExternalFunction("MovePlayer", (string target) =>
+            {
+                var player = GameObject.FindWithTag("Player");
+                if (player != null)
+                {
+                    var moveTarget = GameObject.Find(target);
+                    if (moveTarget != null)
+                    {
+                        player.transform.position = moveTarget.transform.position;
+                    }
+                }
+            });
+
+
+            story.BindExternalFunction("SpawnObject", (string objName) =>
+            {
+                var bed = GameObject.FindObjectOfType<BedController>();
+                if (bed != null)
+                    bed.SpawnObject(objName);
+            });
+
 
             story.BindExternalFunction("canStartBattle", () =>
             {
@@ -180,6 +234,31 @@ public class InkDialogueManager : MonoBehaviour
                     Debug.Log($"🗝️ Ink 呼叫 UnlockDoor：{doorID}");
                 }
             });
+
+            // === 生成 NPC 外部函式 ===
+            story.BindExternalFunction("SpawnNPC", (string npcName) =>
+            {
+                // 尋找場景中的出生點
+                var spawnPoint = GameObject.Find($"{npcName}SpawnPoint");
+                if (spawnPoint == null)
+                {
+                    Debug.LogWarning($"⚠️ 找不到 {npcName}SpawnPoint，NPC 將生成在 (0,0,0)");
+                }
+
+                // 從 Resources 載入 NPC prefab
+                GameObject npcPrefab = Resources.Load<GameObject>($"NPCs/{npcName}");
+                if (npcPrefab != null)
+                {
+                    Vector3 spawnPos = spawnPoint != null ? spawnPoint.transform.position : Vector3.zero;
+                    GameObject npc = GameObject.Instantiate(npcPrefab, spawnPos, Quaternion.identity);
+                    Debug.Log($"👤 已生成 NPC：{npcName}，位置：{spawnPos}");
+                }
+                else
+                {
+                    Debug.LogWarning($"⚠️ 無法找到 NPC Prefab：{npcName}（請放在 Resources/NPCs 下）");
+                }
+            });
+
 
             // ✅ 讓 Ink 能檢查目前持有的物品
             story.BindExternalFunction(
@@ -519,6 +598,16 @@ public class InkDialogueManager : MonoBehaviour
     {
         if (leftPortraitImage != null) leftPortraitImage.sprite = leftDefaultPortrait;
         if (rightPortraitImage != null) rightPortraitImage.sprite = rightDefaultPortrait;
+    }
+
+    public void ForceEndDialogue()
+    {
+        dialoguePanel.SetActive(false);
+        choiceContainer.SetActive(false);
+        HidePortraits();
+        SetPlayerCanMove(true);
+        dialogueIsPlaying = false;
+        Debug.Log("🟢 對話強制結束");
     }
 
     void SetPlayerCanMove(bool canMove)

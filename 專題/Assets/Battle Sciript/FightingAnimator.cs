@@ -79,6 +79,15 @@ public class FightingAnimator : MonoBehaviour
         }
     }
 
+    public IEnumerator PlayBattleOutro(Action onComplete = null)
+    {
+        // 布幕關閉動畫
+        leftCurtain.DOAnchorPosX(-425f, curtainDuration).SetEase(Ease.InOutQuad);
+        rightCurtain.DOAnchorPosX(425f, curtainDuration).SetEase(Ease.InOutQuad);
+        yield return new WaitForSeconds(curtainDuration + 0.2f);
+
+        onComplete?.Invoke();
+    }
 
     public IEnumerator RaiseQuestions()
     {

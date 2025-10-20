@@ -1,81 +1,87 @@
-using Ink.Runtime;
+ï»¿using Ink.Runtime;
 using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections;
 
 public class LoadUIManager : MonoBehaviour
 {
     public GameObject loadMenu;
     public Button[] loadButtons;
     public TextMeshProUGUI[] loadInfoTexts;
-    public InkDialogueManager inkManager;
-    public GameObject player;
 
-    public Button loadbotton;
+    public Button openButton;
     public Button closeButton;
 
-    public void CloseMenu()
+    private void Start()
     {
-        loadMenu.SetActive(false);
-    }
-
-    public void OpenMenu()
-    {
-        loadMenu.SetActive(true);
-    }
-
-    void Start()
-    {
-        // §ó·s©Ò¦³Åª¨ú¼Ñ¸ê°T
         for (int i = 0; i < loadButtons.Length; i++)
         {
             int index = i;
             UpdateSlotInfo(index);
             loadButtons[i].onClick.AddListener(() => LoadSlot(index));
         }
-        loadbotton?.onClick.AddListener(OpenMenu);
+
+        openButton?.onClick.AddListener(OpenMenu);
         closeButton?.onClick.AddListener(CloseMenu);
     }
 
+    public void OpenMenu() => loadMenu.SetActive(true);
+    public void CloseMenu() => loadMenu.SetActive(false);
+
     void UpdateSlotInfo(int index)
     {
-        string savePath = Application.persistentDataPath + $"/save_{index}.json";
-        if (File.Exists(savePath))
+        string path = Application.persistentDataPath + $"/save_{index}.json";
+        if (File.Exists(path))
         {
-            string json = File.ReadAllText(savePath);
+            string json = File.ReadAllText(path);
             SaveData data = JsonUtility.FromJson<SaveData>(json);
-            loadInfoTexts[index].text = $"®É¶¡¡G{data.saveTime}\n³õ´º¡G{data.sceneName}";
+            loadInfoTexts[index].text = $"æ™‚é–“ï¼š{data.saveTime}\nå ´æ™¯ï¼š{data.sceneName}";
         }
         else
         {
-            loadInfoTexts[index].text = "©|¥¼¦sÀÉ";
+            loadInfoTexts[index].text = "å°šæœªå­˜æª”";
         }
     }
 
     void LoadSlot(int index)
     {
-        string savePath = Application.persistentDataPath + $"/save_{index}.json";
-        if (!File.Exists(savePath))
+        string path = Application.persistentDataPath + $"/save_{index}.json";
+        if (!File.Exists(path))
         {
-            Debug.LogWarning("¸Ó¦sÀÉ¤£¦s¦b¡I");
+            Debug.LogWarning("è©²å­˜æª”ä¸å­˜åœ¨ï¼");
             return;
         }
 
-        string json = File.ReadAllText(savePath);
+        string json = File.ReadAllText(path);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
 
+        InkDialogueManager.shouldAutoStartInk = false; // ğŸš« ä¸è¦è®“æ–°å ´æ™¯è‡ªå‹•æ’­æ”¾ Ink
         SceneManager.LoadScene(data.sceneName);
+        StartCoroutine(LoadInkAfterScene(data));
 
-        // ¦b³õ´º¤Á´«§¹«á¸ü¤J Ink ¼@±¡»Pª±®a¦ì¸m
-        StartCoroutine(LoadAfterScene(data));
     }
 
-    System.Collections.IEnumerator LoadAfterScene(SaveData data)
+    private IEnumerator LoadInkAfterScene(SaveData data)
     {
-        yield return null; // µ¥«İ³õ´º¸ü¤J
-        inkManager.story.state.LoadJson(data.storyState);
-        Debug.Log("Åª¨ú§¹¦¨¡I");
+        yield return null; // ç­‰å ´æ™¯è¼‰å…¥
+
+        InkDialogueManager inkManager = FindObjectOfType<InkDialogueManager>();
+        if (inkManager != null)
+        {
+            if (inkManager.story == null)
+                inkManager.story = new Ink.Runtime.Story(inkManager.inkJSON.text);
+
+            inkManager.story.state.LoadJson(data.storyState);
+            inkManager.justLoaded = true;
+
+            Debug.Log("âœ… æˆåŠŸè¼‰å…¥ Ink åŠ‡æƒ…ç‹€æ…‹");
+        }
+
+        // æ¢å¾©å…è¨±è‡ªå‹•å•Ÿå‹•ï¼ˆçµ¦ä¸‹ä¸€æ¬¡æ–°å ´æ™¯ç”¨ï¼‰
+        InkDialogueManager.shouldAutoStartInk = true;
     }
+
 }

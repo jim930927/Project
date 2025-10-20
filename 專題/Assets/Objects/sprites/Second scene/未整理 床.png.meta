@@ -1,19 +1,10 @@
 fileFormatVersion: 2
-guid: b6c74fa0d740b5b48b3b7c178ad6ff45
+guid: 2ce1e6ccb173f3a43ab3ca4488ce9b04
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1218678174492963619
-    second: LAMP.high_0
-  - first:
-      213: 3095385200281156114
-    second: LAMP.high_1
-  - first:
-      213: 582770711282251848
-    second: LAMP.high_2
-  - first:
-      213: -5505707004530306824
-    second: LAMP.high_3
+      213: 4599834939127357324
+    second: "\u672A\u6574\u7406 \u5E8A_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -109,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: LAMP.high_0
+      name: "\u672A\u6574\u7406 \u5E8A_0"
       rect:
         serializedVersion: 2
-        x: 943
-        y: 1309
-        width: 14
-        height: 71
+        x: 721
+        y: 599
+        width: 112
+        height: 192
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,74 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ddc43d938a2661fe0800000000000000
-      internalID: -1218678174492963619
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LAMP.high_1
-      rect:
-        serializedVersion: 2
-        x: 980
-        y: 165
-        width: 1056
-        height: 2588
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 21a72c9807405fa20800000000000000
-      internalID: 3095385200281156114
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LAMP.high_2
-      rect:
-        serializedVersion: 2
-        x: 931
-        y: 886
-        width: 25
-        height: 106
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 848fa7fcfda661800800000000000000
-      internalID: 582770711282251848
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: LAMP.high_3
-      rect:
-        serializedVersion: 2
-        x: 2081
-        y: 979
-        width: 41
-        height: 271
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8f0579d56acc793b0800000000000000
-      internalID: -5505707004530306824
+      spriteID: c8fdd149185e5df30800000000000000
+      internalID: 4599834939127357324
       vertices: []
       indices: 
       edges: []
@@ -209,11 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      LAMP.high_0: -1218678174492963619
-      LAMP.high_1: 3095385200281156114
-      LAMP.high_2: 582770711282251848
-      LAMP.high_3: -5505707004530306824
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

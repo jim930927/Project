@@ -7,7 +7,11 @@ VAR Unlock_door = false
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
-
+EXTERNAL ChangeBedImage(bed_type)
+EXTERNAL MovePlayer(bed_side)
+EXTERNAL SpawnObject(chest)
+EXTERNAL OpenChestUI()
+EXTERNAL SpawnNPC(Guide) 
 
 == CG ==
 #play_cg
@@ -26,7 +30,13 @@ EXTERNAL SaveGame()
 「我得找到那些缺失的部分……否則，我連自己是誰都無法確定。」
 -> END
 
+== trash_can
+~ speaker = " "
+一個垃圾桶，裡面是空的
+-> END
+
 == main_room ==
+~ speaker = "我"
 「門是鎖的...？鑰匙在哪」
 + 使用鑰匙開門
     {have_items == "key_room":
@@ -38,25 +48,24 @@ EXTERNAL SaveGame()
 -> END
 
 == have_key ==
+~ speaker = "我"
 【使用道具：房間鑰匙】
 使用鑰匙打開了門
 ~ Unlock_door = true
 ->END
 
 == no_key ==
+~ speaker = "我"
 「要先找到鑰匙才行...」
 ->END
 
 
 == wardrobe ==
+~ speaker = "我"
 裡面放著些許衣服，大多是長袖長褲
 「衣服好少，而且怎麼沒有幾件短袖...」
 「似乎可以躲進去...但現在沒這個必要」
 -> END
-
-== bed ==
-床上凌亂的被子，留有些許溫度
-->END
 
 == mirror ==
 站在鏡子前面，記住了自己現在的模樣
@@ -86,6 +95,7 @@ EXTERNAL SaveGame()
  ~ speaker = "我"
 【獲得道具“家規”】
 「為什麼這裡會有這種東西？不知道觸發規則會怎樣……好像也跟出去無關。」
+ ~ SpawnNPC("Guide")
 一個幽暗身影出現在旁邊
 「你是剛剛的那個......？」
 ~ speaker = "引路人"
@@ -95,29 +105,43 @@ EXTERNAL SaveGame()
 【現在開始可以向AI引路人問問題（他只會回答遊戲相關的問題）或許他知道一些重要的線索】
 ->END
 
-== bed_second ==
-+ 查看被子
+== bed ==
+~ speaker = "我"
+* 查看被子
+    ~ ChangeBedImage("bed_quilt")
     床上凌亂的被子，留有些許溫度
-    ->quilt
-+ 查看床底下
-    床底下藏著箱子，上面有一個4位數密碼鎖
+    -> quilt
+* 查看床底下
+    ~ MovePlayer("bed_side")
+    ~ SpawnObject("chest")
+    床底下藏著箱子，將箱子拿了出來，上面有一個4位數密碼鎖
     「鎖住了...密碼是多少呢...是某個日期嗎」
     -> END
 
 == quilt ==
-+ 整理被子
-    觸犯規則的話...總感覺會有不好的事發生」
-    把被子折成了豆腐塊
+~ speaker = "我"
+* 整理被子
+    「不整理的話...總感覺會有不好的事發生」
+    ~ ChangeBedImage("bed_neat")
+    #no_foul
     ->END
-+ 放著不動
+* 放著不動
     「還是放著不動吧...應該...會沒事吧」
+    #foul
     ->END
 
-== chest_open ==
-裡面放著一本繪本、病歷、獎狀、鑰匙
-當他翻開其中畫著睡蓮池的一頁時，鑰匙掉了出來
-當指尖碰觸到一把金屬鑰匙，上面泛著微光，似乎被時間磨平了棱角。
+== chest ==
 ~ speaker = "我"
+箱子的密碼是多少呢...
+~ OpenChestUI()
+-> END
+
+== chest_open ==
+~ speaker = "我"
+1月23日...我的生日嗎..
+裡面放著一本繪本、病歷、獎狀
+翻開其中畫著睡蓮池的一頁時，一把鑰匙掉了出來
+當指尖碰觸到一把金屬鑰匙，上面泛著微光，似乎被時間磨平了棱角。
 「這些東西……是我的嗎？」
 ~ speaker = "引路人"
 「用它，解開這扇門的鎖。繼續尋找你失去的記憶吧。」
