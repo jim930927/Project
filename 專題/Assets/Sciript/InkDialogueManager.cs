@@ -155,6 +155,7 @@ public class InkDialogueManager : MonoBehaviour
 
     public void EnterDialogueMode(TextAsset newInkJSON, string knotName = "", Action onComplete = null)
     {
+        SetPlayerCanMove(false);
         if (justLoaded)
         {
             // 代表是從存檔載入的，不要重播開場 CG 或重新初始化 Ink
@@ -174,11 +175,42 @@ public class InkDialogueManager : MonoBehaviour
                 saveUI.OpenSaveMenu(story.state.ToJson());
             });
 
+            // 建立 Story 後，同步 / 建立 Ink 內的 hp 變數（若不存在就設一個）
+            if (hpRef == null) hpRef = FindFirstObjectByType<HP>();
+            try
+            {
+                // 嘗試讀取，若讀不到會丟例外
+                var maybe = story.variablesState["hp"];
+            }
+            catch
+            {
+                // hp 尚未宣告於 Ink，幫它建立（用目前 Unity 的 hp 值）
+                if (hpRef != null)
+                {
+                    story.variablesState["hp"] = hpRef.hp;
+                    Debug.Log($"🩸 為新 Story 建立 hp（由 Unity 同步）：{hpRef.hp}");
+                }
+                else
+                {
+                    // 若 Unity 也沒有 hp，給一個合理的預設（例如 3）
+                    story.variablesState["hp"] = 4;
+                    Debug.Log("🩸 為新 Story 建立 hp（預設為 3）");
+                }
+            }
+
+
             story.BindExternalFunction("ChangeBedImage", (string state) =>
             {
                 var bed = GameObject.FindObjectOfType<BedController>();
                 if (bed != null)
                     bed.ChangeImage(state);
+            });
+
+            story.BindExternalFunction("ChangeToiletImage", (string state) =>
+            {
+                var toilet = GameObject.FindObjectOfType<toiletController>();
+                if (toilet != null)
+                    toilet.ChangeImage(state);
             });
 
             story.BindExternalFunction("OpenChestUI", () =>
@@ -322,7 +354,6 @@ public class InkDialogueManager : MonoBehaviour
         dialogueIsPlaying = true;
         canContinue = false;
         inputTimer = 0f;
-        SetPlayerCanMove(false);
 
         ShowPortraits();
         ResetPortraits();
@@ -415,11 +446,16 @@ public class InkDialogueManager : MonoBehaviour
             UpdatePortrait(speakerName);
 
             // 4️⃣ 如果有 CG TAG，播放影片
-            if (story.currentTags.Contains("play_cg"))
+            foreach (var tag in story.currentTags)
             {
-                Debug.Log("🎬 偵測到 #play_cg，播放開場影片");
-                StartCoroutine(PlayCGThenContinue());
-                return; // 暫停 Ink，等影片播完再繼續
+                if (tag.StartsWith("play_cg"))
+                {
+                    string[] parts = tag.Split(' ');
+                    string cgName = parts.Length > 1 ? parts[1] : "DefaultCG";
+                    Debug.Log($"🎬 偵測到 #play_cg，播放影片：{cgName}");
+                    StartCoroutine(PlayCGThenContinue(cgName));
+                    return;
+                }
             }
 
             // 5️⃣ 顯示選項
@@ -610,7 +646,7 @@ public class InkDialogueManager : MonoBehaviour
         Debug.Log("🟢 對話強制結束");
     }
 
-    void SetPlayerCanMove(bool canMove)
+    public void SetPlayerCanMove(bool canMove)
     {
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
@@ -620,6 +656,9 @@ public class InkDialogueManager : MonoBehaviour
                 pm.canMove = canMove;
         }
     }
+
+
+
     bool AllCluesCollected()
     {
         var clueData = FindObjectOfType<ClueData>();
@@ -644,8 +683,7 @@ public class InkDialogueManager : MonoBehaviour
         Debug.Log("✅ 全部線索已收集！");
         return true;
     }
-
-    private IEnumerator PlayCGThenContinue()
+    private IEnumerator PlayCGThenContinue(string cgName = "DefaultCG")
     {
         dialoguePanel.SetActive(false);
         SetPlayerCanMove(false);
@@ -657,52 +695,92 @@ public class InkDialogueManager : MonoBehaviour
             yield break;
         }
 
-        var video = cgPanel.GetComponent<UnityEngine.Video.VideoPlayer>();
-        var raw = cgPanel.GetComponent<UnityEngine.UI.RawImage>();
+        // 取得所有 RawImage，準備控制顯示
+        var raws = cgPanel.GetComponentsInChildren<UnityEngine.UI.RawImage>(true);
+        foreach (var r in raws) r.gameObject.SetActive(false);
 
-        if (video == null)
+        // 根據名稱找要顯示的那個 RawImage
+        UnityEngine.UI.RawImage targetRaw = null;
+        foreach (var r in raws)
         {
-            Debug.LogWarning("⚠️ CGPanel 上沒有 VideoPlayer");
+            if (r.name.Equals(cgName, StringComparison.OrdinalIgnoreCase) ||
+                r.name.Contains(cgName, StringComparison.OrdinalIgnoreCase))
+            {
+                targetRaw = r;
+                break;
+            }
+        }
+
+        // 找不到特定名稱時就用第一個 RawImage
+        if (targetRaw == null && raws.Length > 0)
+            targetRaw = raws[0];
+
+        if (targetRaw == null)
+        {
+            Debug.LogWarning($"⚠️ 找不到對應的 RawImage 來播放 CG：{cgName}");
             yield break;
         }
 
-        cgPanel.SetActive(true);
-
-        // 🔹 確保 Canvas 顯示在最上層
+        // 啟用目標畫面
+        targetRaw.gameObject.SetActive(true);
         Canvas canvas = cgPanel.GetComponentInParent<Canvas>();
-        if (canvas != null)
+        if (canvas != null) canvas.sortingOrder = 999;
+
+        // 找 VideoPlayer（可掛在父物件或 RawImage 上）
+        var video = cgPanel.GetComponent<UnityEngine.Video.VideoPlayer>();
+        if (video == null)
+            video = targetRaw.GetComponent<UnityEngine.Video.VideoPlayer>();
+
+        if (video == null)
         {
-            canvas.sortingOrder = 999; // 確保在最上層
+            Debug.LogWarning("⚠️ 找不到 VideoPlayer，無法播放影片");
+            yield break;
         }
 
-        // 🔹 準備影片
+        // 載入影片
+        var clip = Resources.Load<UnityEngine.Video.VideoClip>($"CG/{cgName}");
+        Debug.Log($"🧩 嘗試載入影片：Resources/CG/{cgName}.mp4，結果：{clip}");
+
+        if (clip != null)
+        {
+            video.source = UnityEngine.Video.VideoSource.VideoClip;
+            video.clip = clip;
+            Debug.Log($"🎞 已載入影片：{clip.name}");
+        }
+        else
+        {
+            Debug.LogWarning($"⚠️ 找不到影片：Resources/CG/{cgName}.mp4，改用原本 clip");
+        }
+
+        // 預備播放
         video.Prepare();
+        int waitCount = 0;
         while (!video.isPrepared)
         {
             yield return null;
+            waitCount++;
+            if (waitCount > 300) // 約 5 秒
+            {
+                Debug.LogWarning("⚠️ 等待影片準備超時");
+                yield break;
+            }
         }
 
-        Debug.Log("🎞 影片已準備完成");
+        Debug.Log("🎬 影片準備完成，開始播放");
 
-        // 🔹 更新 RawImage 貼圖
-        if (raw != null)
+        if (targetRaw != null)
         {
-            raw.texture = video.targetTexture;
-            raw.color = Color.white;
-            raw.enabled = true;
+            targetRaw.texture = video.targetTexture;
+            targetRaw.color = Color.white;
+            targetRaw.enabled = true;
         }
 
-        // 🔹 播放影片
         video.Play();
-        Debug.Log("▶️ CG 開始播放");
-
-        // 等影片真正開始
-        yield return new WaitUntil(() => video.isPlaying);
+        Debug.Log($"▶️ 播放 CG：{cgName}");
 
         bool videoFinished = false;
         video.loopPointReached += (vp) => videoFinished = true;
 
-        // 🔹 等待播放完成或跳過
         while (!videoFinished)
         {
             if (Input.anyKeyDown)
@@ -714,28 +792,32 @@ public class InkDialogueManager : MonoBehaviour
             yield return null;
         }
 
-        Debug.Log("⏹ CG 播放完畢");
+        Debug.Log("⏹ CG 播放結束");
 
-        // 停止影片並釋放 RenderTexture
         video.Stop();
         if (video.targetTexture != null)
             video.targetTexture.Release();
 
-        cgPanel.SetActive(false);
+        // 關閉所有 CG 畫面
+        foreach (var r in raws) r.gameObject.SetActive(false);
 
-        // ✅ 關鍵修正：讓 Ink 前進一行並觸發 Tag（例如 #play_music）
+        // 還原對話
         if (story.canContinue)
         {
-            Debug.Log("📖 CG 結束，繼續 Ink 劇情（應該跳到 == start ==）");
+            Debug.Log($"📖 CG ({cgName}) 結束，繼續 Ink 劇情");
             ContinueStory();
         }
         else
         {
-            Debug.LogWarning("⚠️ CG 結束後 Ink 無法繼續！");
+            Debug.LogWarning($"⚠️ CG ({cgName}) 結束後 Ink 無法繼續！");
         }
 
         dialoguePanel.SetActive(true);
+        SetPlayerCanMove(true);
     }
+
+
+
 
     private void PlayMusic(string musicName)
     {

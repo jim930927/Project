@@ -74,7 +74,7 @@ public class SceneInteractable : MonoBehaviour
         canInteract = true;
     }
 
-
+    /*
     // 🔹 可視化提示（在 Scene 模式下顯示互動點）
     private void OnDrawGizmos()
     {
@@ -83,4 +83,5 @@ public class SceneInteractable : MonoBehaviour
         if (!string.IsNullOrEmpty(interactionNode))
             UnityEditor.Handles.Label(transform.position + Vector3.up * 0.5f, interactionNode);
     }
+    */
 }

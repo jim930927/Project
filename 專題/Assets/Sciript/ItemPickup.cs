@@ -82,6 +82,8 @@ public class ItemPickup : MonoBehaviour
             if (itemImage != null && PreviewImageManager.Instance != null)
                 PreviewImageManager.Instance.ShowImage(itemImage);
 
+            inkManager.SetPlayerCanMove(false);
+
             inkManager.EnterDialogueMode(inkStoryAsset, startKnotName, () =>
             {
                 // 對話結束 → 關閉圖片
@@ -91,6 +93,7 @@ public class ItemPickup : MonoBehaviour
                 var bookUI = FindObjectOfType<BookUIManager>();
                 if (bookUI != null)
                     bookUI.OpenItemOverlay(itemID, returnKnotName);
+
             });
         }
 
@@ -102,6 +105,7 @@ public class ItemPickup : MonoBehaviour
         {
             inkManager.EnterDialogueMode(inkStoryAsset, startKnotName, () =>
             {
+                inkManager.SetPlayerCanMove(false);
                 // 劇情結束後顯示道具細節
                 var bookUI = FindObjectOfType<BookUIManager>();
                 if (bookUI != null)

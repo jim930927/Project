@@ -30,6 +30,10 @@ public class Portal : MonoBehaviour
 
     void Update()
     {
+        // ✅ 若正在對話 → 禁止任何傳送動作
+        if (dialogueManager != null && dialogueManager.dialogueIsPlaying)
+            return;
+
         if (isTeleporting) return;
         if (!isPlayerInside || player == null) return;
 
@@ -50,7 +54,7 @@ public class Portal : MonoBehaviour
                 return;
             }
 
-            // ✅ 未解鎖 → 啟動 Ink 對話（即使玩家有鑰匙）
+            // ✅ 未解鎖 → 啟動 Ink 對話（由 Ink 控制是否能開門）
             if (!dialogueManager.dialogueIsPlaying)
             {
                 try
@@ -58,17 +62,16 @@ public class Portal : MonoBehaviour
                     var story = dialogueManager.GetStory();
                     if (story != null && dialogueManager.itemDatabase != null)
                     {
-                        // 將當前持有的鑰匙資訊同步給 Ink
                         story.variablesState["have_items"] = GetHeldKey();
                     }
                 }
                 catch { }
 
-                // 不再直接解鎖，由 Ink 劇本控制
                 dialogueManager.EnterDialogueMode(dialogueManager.inkJSON, $"{doorGroupID}", OnDoorDialogueEnd);
             }
         }
     }
+
 
     private string GetHeldKey()
     {
@@ -107,6 +110,7 @@ public class Portal : MonoBehaviour
                 yield break;
             }
         }
+
 
         if (fader != null)
         {
@@ -222,9 +226,10 @@ public class Portal : MonoBehaviour
             Debug.Log($"🚪 門 {doorGroupID} 仍然鎖著。");
         }
 
-        // ✅ 避免剛結束對話馬上又重新觸發 Update
-        yield return new WaitForSeconds(0.5f);
+        // ✅ 避免對話剛結束又立刻傳送
+        yield return new WaitForSeconds(1f);
         isTeleporting = false;
+
     }
 
 }

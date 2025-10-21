@@ -132,6 +132,20 @@ public class BattleDialogueManager : MonoBehaviour
             if (dialogueText != null)
                 dialogueText.text = line;
 
+            foreach (var tag in story.currentTags)
+            {
+                if (tag.StartsWith("play_music"))
+                {
+                    string[] parts = tag.Split(' ');
+                    if (parts.Length > 1)
+                    {
+                        string musicName = parts[1];
+                        Debug.Log($"🎵 偵測到音樂標籤：{musicName}");
+                        PlayMusic(musicName);
+                    }
+                }
+            }
+
             string speakerName = "";
             try
             {
@@ -247,6 +261,18 @@ public class BattleDialogueManager : MonoBehaviour
         ContinueStory();
     }
 
+    private void PlayMusic(string musicName)
+    {
+        var bgmManager = FindObjectOfType<BGMManager>();
+        if (bgmManager != null)
+        {
+            bgmManager.PlayMusic(musicName);
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ 找不到 BGMManager，無法播放音樂：" + musicName);
+        }
+    }
     private void EndDialogue()
     {
         dialogueIsPlaying = false;

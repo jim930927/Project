@@ -3,6 +3,7 @@ VAR current_clue = ""
 
 
 === start ===
+#play_music battle_theme
 ~ speaker = "我"
 「你到底是誰？這裡又是什麼地方？」
 ~ speaker = "神秘人"

@@ -2,19 +2,21 @@ VAR speaker = "???"
 VAR have_items = ""
 VAR offense_rules = ""
 VAR room = ""
-VAR hp = ""
 VAR Unlock_door = false
+VAR hp = ""
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
 EXTERNAL ChangeBedImage(bed_type)
+EXTERNAL ChangeToiletImage(toilet_type)
 EXTERNAL MovePlayer(bed_side)
 EXTERNAL SpawnObject(chest)
 EXTERNAL OpenChestUI()
 EXTERNAL SpawnNPC(Guide) 
+EXTERNAL HP_Add(hp)
 
 == CG ==
-#play_cg
+#play_cg openingCG
 ->start
 
 == start ==
@@ -28,6 +30,7 @@ EXTERNAL SpawnNPC(Guide)
 「......」
 「不行...記憶很模糊！什麼都想不起來...」
 「我得找到那些缺失的部分……否則，我連自己是誰都無法確定。」
+#play_music second_theme
 -> END
 
 == trash_can
@@ -45,6 +48,7 @@ EXTERNAL SpawnNPC(Guide)
     - else:
         -> no_key 
     }
++ 取消
 -> END
 
 == have_key ==
@@ -61,8 +65,9 @@ EXTERNAL SpawnNPC(Guide)
 
 
 == wardrobe ==
-~ speaker = "我"
+~ speaker = " "
 裡面放著些許衣服，大多是長袖長褲
+~ speaker = "我"
 「衣服好少，而且怎麼沒有幾件短袖...」
 「似乎可以躲進去...但現在沒這個必要」
 -> END
@@ -75,14 +80,15 @@ EXTERNAL SpawnNPC(Guide)
 
 == Journal1 ==
 ~ speaker = "我"
-「床頭櫃裡好像藏著什麼東西？」
-（在床頭櫃裡發現了幾頁殘缺的日記）
+「床頭櫃裡好像有什麼東西？」
+床頭櫃裡放著幾張殘缺的日記
 -> END
 
 == journal_end ==
  ~ speaker = "我"
 「這是之前那本日記缺少的前幾頁？」
 「那些日記裡的聲音……像是在告訴我『你必須成為某種樣子』，可我真的想那樣嗎？如果那不是我想要的樣子，那日記裡的『我』又是誰？」
+~ speaker = " "
 【獲得線索：日記殘頁-2】
 -> END
 
@@ -92,11 +98,14 @@ EXTERNAL SpawnNPC(Guide)
 ->END
 
 == note_end ==
- ~ speaker = "我"
+~ speaker = " "
 【獲得道具“家規”】
+~ speaker = "我"
 「為什麼這裡會有這種東西？不知道觸發規則會怎樣……好像也跟出去無關。」
  ~ SpawnNPC("Guide")
+ ~ speaker = " "
 一個幽暗身影出現在旁邊
+~ speaker = "我"
 「你是剛剛的那個......？」
 ~ speaker = "引路人"
 「繼續前進、繼續探尋，找到最真實的你吧」
@@ -105,6 +114,7 @@ EXTERNAL SpawnNPC(Guide)
 【現在開始可以向AI引路人問問題（他只會回答遊戲相關的問題）或許他知道一些重要的線索】
 ->END
 
+    
 == bed ==
 ~ speaker = "我"
 * 查看被子
@@ -117,6 +127,8 @@ EXTERNAL SpawnNPC(Guide)
     床底下藏著箱子，將箱子拿了出來，上面有一個4位數密碼鎖
     「鎖住了...密碼是多少呢...是某個日期嗎」
     -> END
+    
+    
 
 == quilt ==
 ~ speaker = "我"
@@ -126,6 +138,7 @@ EXTERNAL SpawnNPC(Guide)
     #no_foul
     ->END
 * 放著不動
+    ~ HP_Add(1)
     「還是放著不動吧...應該...會沒事吧」
     #foul
     ->END
@@ -137,8 +150,13 @@ EXTERNAL SpawnNPC(Guide)
 -> END
 
 == chest_open ==
+#play_cg chestCG
+->chest_inside
+
+== chest_inside ==
 ~ speaker = "我"
-1月23日...我的生日嗎..
+「......」
+「1月23日...我的生日嗎...」
 裡面放著一本繪本、病歷、獎狀
 翻開其中畫著睡蓮池的一頁時，一把鑰匙掉了出來
 當指尖碰觸到一把金屬鑰匙，上面泛著微光，似乎被時間磨平了棱角。
@@ -181,7 +199,7 @@ EXTERNAL SpawnNPC(Guide)
 ->END
 
 ~ room = "屋內探索"
-~ speaker = "我"
+~ speaker = " "
 == warehouse
 倉庫門緊鎖，似乎需要一把鑰匙。
 ->END
@@ -196,10 +214,6 @@ EXTERNAL SpawnNPC(Guide)
 
 == sofa
 坐起來很舒服老舊的沙發，上面有長期使用的痕跡
-->END
-
-== parents_room
-房間門緊鎖，似乎需要一把鑰匙，在手碰到門把的時候，有一股不明的壓迫感從門後傳來，似乎在警告什麼。
 ->END
 
 == glass_cabinet
@@ -221,23 +235,30 @@ EXTERNAL SpawnNPC(Guide)
 
 ~ room = "浴室"
 ~ speaker = "我"
-== toilet
+== toilet ==
+~ speaker = "我"
 馬桶蓋蓋著，要打開它嗎？
-+ 要
++ 打開
+    ~ ChangeToiletImage("toilet_open")
     裡面比想像中乾淨，沒有什麼髒污跟異味。
     ->END
-+ 不要
-    馬桶裡應該不會有什麼重要線索，還是讓它保持原狀吧。
++ 關著
+    ~ ChangeToiletImage("toilet_close")
+    「馬桶裡應該不會有什麼重要線索，還是讓它保持原狀吧。」
     ->END
-
+    
+    
 == tub
+~ speaker = " "
 浴缸上佈滿水痕，看起來用了好幾年了。
 ->END
 
 == sink
 洗手台裡放滿了水，水上面放了一張被水浸濕的信封，還有幾根不知道是甚麼動物的毛
+~ speaker = "我"
 「為什麼這洗手台上有這麼多的毛啊...？」
 用手觸碰了水裡的毛
+#SINK_MEMORY
 ->END
 
 == sink_memory
@@ -270,38 +291,38 @@ EXTERNAL SpawnNPC(Guide)
 == memory_end
 ~ speaker = "我"
 「記憶中的我違反了規則……」
-墨涅低下頭，看著自己濕透的手指。
+低下頭，看著自己濕透的手指。
 「那時候的我……真的做錯了嗎？
 他們說那是髒的、危險的……可我只看到牠在發抖、需要幫忙。
 如果幫助一條生命是錯的，那我又該怎麼分辨什麼才是對的？」
-墨涅抬起頭，看著鏡中被水霧模糊的自己。
+抬起頭，看著鏡中被水霧模糊的自己。
 「也許我害怕的……不是規則本身，而是當我違反它們時，就不再是他們心中的『好孩子』。」
 「所謂的規則……原來都是反映我在現實中被禁止的事啊……」
-（撿起信封）
+（撿起水中的信封）
 「這信封完全濕掉了...如果強行打開，絕對會破掉，要想個辦法把它變乾...」
 【獲得道具：被水浸濕的信封】
 ->END
 
 ~ room = "廚房"
-~ speaker = "我"
 == refrigerator
+~ speaker = " "
 普通的冰箱。
 + 打開冰箱
+    ~ speaker = "我"
     「看看裡面有什麼好吃的」
-    「肚子好餓，偷偷看看有沒有什麼好吃的」
     ~ speaker = "媽媽"
     「墨涅你在幹嘛？」
     ~ speaker = "我"
-    墨涅：「啊...我......」
+    「啊...我......」
     ~ speaker = "媽媽"
-    媽媽：「我不是警告過你半夜不准吃東西了嗎？」
+    「我不是警告過你半夜不准吃東西了嗎？」
     ~ speaker = "我"
-    墨涅：「可是...我讀書讀到現在...肚子餓了嘛......」
+    「可是...我讀書讀到現在...肚子餓了嘛......」
     ~ speaker = "媽媽"
-    媽媽：「......」
-    媽媽：「那就趕快去睡覺！剩下的明天再讀！」
+    「......」
+    「那就趕快去睡覺！剩下的明天再讀！」
     ~ speaker = "我"
-    墨涅：「......」
+    「好......」
     （回憶結束）
     「從那之後...我好像再也沒在半夜跑到廚房了...」
     「我一直認為，他們的規則只是為了讓我服從……
@@ -309,8 +330,8 @@ EXTERNAL SpawnNPC(Guide)
     或者，我只是想把每一次的限制都解讀成惡意，這樣我才有理由反抗。」
     ->END
 + 不打開冰箱
-    現在肚子不餓，不用找吃的」
-   「嗯？冰箱上好像有什麼東西」
+    「現在肚子不餓，不用找吃的」
+    「嗯？冰箱上好像有什麼東西」
     「這是...又一個日記殘頁？」
 ->journal_3
 
@@ -324,6 +345,7 @@ EXTERNAL SpawnNPC(Guide)
 ->END
 
 == kitchen_sink
+~ speaker = " "
 水池裡有一點水珠，似乎最近有使用過，底下的櫥櫃很空似乎可以躲藏。
 ->END
 
@@ -357,6 +379,7 @@ EXTERNAL SpawnNPC(Guide)
 ~ speaker = "我"
 上面放著三種不同款式的菜刀
 「奇怪...為什麼我看到這個菜刀會有種想拿的衝動......？」
+#KNIFE_MEMORY
 ->END
 
 ~ room = "洗衣間"
@@ -371,6 +394,33 @@ EXTERNAL SpawnNPC(Guide)
 == cloth_wash
 普通的洗衣機
 ->END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

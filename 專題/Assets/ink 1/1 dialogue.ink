@@ -2,12 +2,16 @@ VAR talked_to_boss = false
 VAR journal_choices_done = false
 VAR speaker = "???"
 VAR hp = 4
+VAR Scene = ""
+
 EXTERNAL UnlockLetter()
 EXTERNAL UnlockJournal()
 EXTERNAL UnlockTalk()
 EXTERNAL canStartBattle()
 
 
+
+~ Scene = 1
 == CG ==
 #play_cg
 ->start
@@ -249,4 +253,11 @@ EXTERNAL canStartBattle()
 == jump_to_battle
 # jump_to_battle
 -> END
+
+
+
+
+
+
+~ Scene = 2
 

@@ -36,6 +36,26 @@ public class BookUIManager : MonoBehaviour
     public InkDialogueManager inkManager;
     private string pendingReturnKnot = "";
 
+    [Header("線索兩頁容器")]
+    public Transform clueLeftContainer;
+    public Transform clueRightContainer;
+    public Button cluePrevPageButton;
+    public Button clueNextPageButton;
+
+    [Header("道具兩頁容器")]
+    public Transform itemLeftContainer;
+    public Transform itemRightContainer;
+    public Button itemPrevPageButton;
+    public Button itemNextPageButton;
+
+    [Header("頁面設定")]
+    public int cluesPerPage = 9; // 左頁顯示幾個
+    public int itemsPerPage = 9; // 左頁顯示幾個
+    private int currentClueListPage = 0;
+    private int currentItemListPage = 0;
+
+
+
     // 線索系統
     private List<Button> clueButtons = new List<Button>();
     private Dictionary<string, ClueData.Clue> clueLookup = new Dictionary<string, ClueData.Clue>();
@@ -61,6 +81,11 @@ public class BookUIManager : MonoBehaviour
 
         clueTabButton?.onClick.AddListener(() => SwitchTab("clue")); // 🟦 新增
         itemTabButton?.onClick.AddListener(() => SwitchTab("item")); // 🟦 新增
+
+        clueNextPageButton?.onClick.AddListener(NextClueListPage);
+        cluePrevPageButton?.onClick.AddListener(PrevClueListPage);
+        itemNextPageButton?.onClick.AddListener(NextItemListPage);
+        itemPrevPageButton?.onClick.AddListener(PrevItemListPage);
 
         GenerateClueButtons();
         GenerateItemButtons(); // 🟦 新增
@@ -115,25 +140,65 @@ public class BookUIManager : MonoBehaviour
     // ===================== 線索 =====================
     void GenerateClueButtons()
     {
-        if (clueData == null || clueButtonContainer == null || clueButtonPrefab == null) return;
+        if (clueData == null || clueLeftContainer == null || clueRightContainer == null || clueButtonPrefab == null)
+            return;
 
-        foreach (Transform child in clueButtonContainer)
-            Destroy(child.gameObject);
+        // 清空左右頁
+        foreach (Transform child in clueLeftContainer) Destroy(child.gameObject);
+        foreach (Transform child in clueRightContainer) Destroy(child.gameObject);
 
         clueButtons.Clear();
         clueLookup.Clear();
 
-        foreach (var clue in clueData.clues)
-        {
-            Button newButton = Instantiate(clueButtonPrefab, clueButtonContainer);
-            newButton.GetComponentInChildren<Text>().text = clue.name;
-            newButton.gameObject.SetActive(clue.collected);
+        // 篩出已收集線索
+        var collectedClues = clueData.clues.FindAll(c => c.collected);
+        int total = collectedClues.Count;
+        int cluesPerDoublePage = cluesPerPage * 2; // 一次顯示左右兩頁總共的數量
+        int totalPages = Mathf.CeilToInt(total / (float)cluesPerDoublePage);
 
+        // 確保頁數在合法範圍
+        currentClueListPage = Mathf.Clamp(currentClueListPage, 0, Mathf.Max(totalPages - 1, 0));
+
+        // 計算當前要顯示的線索範圍
+        int startIndex = currentClueListPage * cluesPerDoublePage;
+        int endIndex = Mathf.Min(startIndex + cluesPerDoublePage, total);
+
+        // 取出這一組線索
+        var currentSet = collectedClues.GetRange(startIndex, endIndex - startIndex);
+
+        // 左右分頁顯示
+        for (int i = 0; i < currentSet.Count; i++)
+        {
+            var clue = currentSet[i];
+            Transform targetContainer = (i < cluesPerPage) ? clueLeftContainer : clueRightContainer;
+
+            Button newButton = Instantiate(clueButtonPrefab, targetContainer);
+            newButton.GetComponentInChildren<Text>().text = clue.name;
             newButton.onClick.AddListener(() => ShowClueDetail(clue));
+
             clueButtons.Add(newButton);
             clueLookup[clue.id] = clue;
         }
+
+        // 控制上一頁／下一頁按鈕顯示
+        cluePrevPageButton?.gameObject.SetActive(currentClueListPage > 0);
+        clueNextPageButton?.gameObject.SetActive(currentClueListPage < totalPages - 1);
     }
+
+    void NextClueListPage()
+    {
+        currentClueListPage++;
+        GenerateClueButtons();
+    }
+
+    void PrevClueListPage()
+    {
+        currentClueListPage--;
+        GenerateClueButtons();
+    }
+
+
+
 
     void ShowClueDetail(ClueData.Clue clue)
     {
@@ -181,25 +246,57 @@ public class BookUIManager : MonoBehaviour
     // ===================== 道具 =====================
     void GenerateItemButtons()
     {
-        if (itemData == null || itemButtonContainer == null || itemButtonPrefab == null) return;
+        if (itemData == null || itemLeftContainer == null || itemRightContainer == null || itemButtonPrefab == null)
+            return;
 
-        foreach (Transform child in itemButtonContainer)
-            Destroy(child.gameObject);
+        foreach (Transform child in itemLeftContainer) Destroy(child.gameObject);
+        foreach (Transform child in itemRightContainer) Destroy(child.gameObject);
 
         itemButtons.Clear();
         itemLookup.Clear();
 
-        foreach (var item in itemData.items)
-        {
-            Button newButton = Instantiate(itemButtonPrefab, itemButtonContainer);
-            newButton.GetComponentInChildren<Text>().text = item.name;
-            newButton.gameObject.SetActive(item.collected);
+        var collectedItems = itemData.items.FindAll(i => i.collected);
+        int total = collectedItems.Count;
+        int itemsPerDoublePage = itemsPerPage * 2;
+        int totalPages = Mathf.CeilToInt(total / (float)itemsPerDoublePage);
 
+        currentItemListPage = Mathf.Clamp(currentItemListPage, 0, Mathf.Max(totalPages - 1, 0));
+
+        int startIndex = currentItemListPage * itemsPerDoublePage;
+        int endIndex = Mathf.Min(startIndex + itemsPerDoublePage, total);
+        var currentSet = collectedItems.GetRange(startIndex, endIndex - startIndex);
+
+        for (int i = 0; i < currentSet.Count; i++)
+        {
+            var item = currentSet[i];
+            Transform targetContainer = (i < itemsPerPage) ? itemLeftContainer : itemRightContainer;
+
+            Button newButton = Instantiate(itemButtonPrefab, targetContainer);
+            newButton.GetComponentInChildren<Text>().text = item.name;
             newButton.onClick.AddListener(() => ShowItemDetail(item));
+
             itemButtons.Add(newButton);
             itemLookup[item.id] = item;
         }
+
+        itemPrevPageButton?.gameObject.SetActive(currentItemListPage > 0);
+        itemNextPageButton?.gameObject.SetActive(currentItemListPage < totalPages - 1);
     }
+
+    void NextItemListPage()
+    {
+        currentItemListPage++;
+        GenerateItemButtons();
+    }
+
+    void PrevItemListPage()
+    {
+        currentItemListPage--;
+        GenerateItemButtons();
+    }
+
+
+
 
     void ShowItemDetail(ItemData.Item item)
     {
@@ -263,6 +360,7 @@ public class BookUIManager : MonoBehaviour
                 inkManager.ContinueStory();
             }
         }
+        inkManager.SetPlayerCanMove(false);
     }
 
 
@@ -277,6 +375,7 @@ public class BookUIManager : MonoBehaviour
             return;
         }
 
+        inkManager.SetPlayerCanMove(false);
         pendingReturnKnot = returnKnotName;
 
         // ✅ 不打開整本書，只打開線索內容面板
@@ -297,6 +396,8 @@ public class BookUIManager : MonoBehaviour
             Debug.LogWarning($"⚠️ 找不到道具：{itemID}");
             return;
         }
+
+        inkManager.SetPlayerCanMove(false);
 
         pendingReturnKnot = returnKnotName;
 
