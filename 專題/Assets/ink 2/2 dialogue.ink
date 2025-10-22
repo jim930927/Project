@@ -4,6 +4,7 @@ VAR offense_rules = ""
 VAR room = ""
 VAR Unlock_door = false
 VAR hp = ""
+VAR bed_interact = 0
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
@@ -114,21 +115,27 @@ EXTERNAL HP_Add(hp)
 【現在開始可以向AI引路人問問題（他只會回答遊戲相關的問題）或許他知道一些重要的線索】
 ->END
 
-    
+
 == bed ==
 ~ speaker = "我"
-* 查看被子
-    ~ ChangeBedImage("bed_quilt")
-    床上凌亂的被子，留有些許溫度
-    -> quilt
-* 查看床底下
-    ~ MovePlayer("bed_side")
-    ~ SpawnObject("chest")
-    床底下藏著箱子，將箱子拿了出來，上面有一個4位數密碼鎖
-    「鎖住了...密碼是多少呢...是某個日期嗎」
+~ bed_interact += 1
+
+// 檢查是否超過互動次數
+{ bed_interact > 2:
+    「我已經看過這裡，不需要再浪費時間。」
     -> END
-    
-    
+- else:
+    * 查看被子
+        ~ ChangeBedImage("bed_quilt")
+        床上凌亂的被子，留有些許溫度
+        -> quilt
+    * 查看床底下
+        ~ MovePlayer("bed_side")
+        ~ SpawnObject("chest")
+        床底下藏著箱子，將箱子拿了出來，上面有一個4位數密碼鎖
+        「鎖住了...密碼是多少呢...是某個日期嗎」
+        -> END
+}  
 
 == quilt ==
 ~ speaker = "我"
