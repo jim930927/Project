@@ -10,6 +10,7 @@ public class BGMManager : MonoBehaviour
         AudioClip clip = System.Array.Find(bgmClips, c => c.name == name);
         if (clip != null)
         {
+            Debug.LogWarning("播放音樂：");
             audioSource.clip = clip;
             audioSource.loop = true;
             audioSource.Play();

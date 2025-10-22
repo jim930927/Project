@@ -54,7 +54,7 @@ public class BookUIManager : MonoBehaviour
     private int currentClueListPage = 0;
     private int currentItemListPage = 0;
 
-
+    public bool closeBook = false;
 
     // 線索系統
     private List<Button> clueButtons = new List<Button>();
@@ -78,6 +78,8 @@ public class BookUIManager : MonoBehaviour
         nextPageButton?.onClick.AddListener(NextPage);
         prevPageButton?.onClick.AddListener(PrevPage);
         closeDetailButton?.onClick.AddListener(CloseClueDetailPanel);
+
+
 
         clueTabButton?.onClick.AddListener(() => SwitchTab("clue")); // 🟦 新增
         itemTabButton?.onClick.AddListener(() => SwitchTab("item")); // 🟦 新增
@@ -114,12 +116,16 @@ public class BookUIManager : MonoBehaviour
         bookPanel?.SetActive(true);
         RefreshClueButtons();
         RefreshItemButtons();
+        inkManager.SetPlayerCanMove(false);
+        closeBook = true;
     }
 
     public void CloseBook()
     {
+        closeBook = false;
         bookPanel?.SetActive(false);
         clueDetailPanel?.SetActive(false);
+        inkManager.SetPlayerCanMove(true);
     }
 
     // 🟦 標籤切換
@@ -357,10 +363,10 @@ public class BookUIManager : MonoBehaviour
             {
                 inkManager.ShowPortraits();   // 🟩 新增
                 inkManager.ResetPortraits();  // 🟩 新增
+                if (closeBook == false)
                 inkManager.ContinueStory();
             }
         }
-        inkManager.SetPlayerCanMove(false);
     }
 
 

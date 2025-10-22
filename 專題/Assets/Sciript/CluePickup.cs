@@ -62,53 +62,36 @@ public class CluePickup : MonoBehaviour
         clueData.AddClue(clueID, clueName);
         collected = true;
 
-        // ✅ 播放 Ink 對話
         if (inkManager != null && inkStoryAsset != null)
         {
-            // 顯示圖片
+            // ✅ 顯示圖片
             if (clueImage != null && PreviewImageManager.Instance != null)
+            {
+                Debug.Log("👉 [CluePickup] 呼叫 ShowImage：" + clueImage.name);
                 PreviewImageManager.Instance.ShowImage(clueImage);
+            }
+
+
+            inkManager.SetPlayerCanMove(false);
 
             inkManager.EnterDialogueMode(inkStoryAsset, startKnotName, () =>
             {
-                // 對話結束 → 關閉圖片
-                if (PreviewImageManager.Instance != null)
-                    PreviewImageManager.Instance.HideImage();
-
                 // 顯示線索 UI
                 var bookUI = FindObjectOfType<BookUIManager>();
                 if (bookUI != null)
                     bookUI.OpenClueOverlay(clueID, returnKnotName);
             });
         }
-
-
-        // ✅ 撿起線索，更新 ClueData
-        clueData.AddClue(clueID, clueName);
-        Debug.Log($"📜 撿取線索：{clueID}");
-
-        // ✅ 播放 Ink 對話
-        if (inkManager != null && inkStoryAsset != null)
-        {
-            inkManager.EnterDialogueMode(inkStoryAsset, startKnotName, () =>
-            {
-                // Ink 結束 → 顯示線索 UI
-                var bookUI = FindObjectOfType<BookUIManager>();
-                if (bookUI != null)
-                    bookUI.OpenClueOverlay(clueID, returnKnotName); // 傳入要返回的 knot
-            });
-
-        }
         else
         {
-            Debug.LogWarning("⚠️ Ink Manager 或 Ink Story Asset 未設定，直接顯示線索內容");
+            // 沒有 Ink，直接開啟線索
             var bookUI = FindObjectOfType<BookUIManager>();
             if (bookUI != null)
                 bookUI.OpenClueOverlay(clueID);
         }
 
-
         if (destroyOnPickup)
             Destroy(gameObject);
     }
+
 }

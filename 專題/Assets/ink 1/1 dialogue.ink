@@ -2,16 +2,13 @@ VAR talked_to_boss = false
 VAR journal_choices_done = false
 VAR speaker = "???"
 VAR hp = 4
-VAR Scene = ""
+VAR have_items =""
 
 EXTERNAL UnlockLetter()
 EXTERNAL UnlockJournal()
 EXTERNAL UnlockTalk()
 EXTERNAL canStartBattle()
 
-
-
-~ Scene = 1
 == CG ==
 #play_cg
 ->start
@@ -142,7 +139,7 @@ EXTERNAL canStartBattle()
 
 
 == main_npc_talk
-~ speaker = "???"
+~ speaker = "兩個木偶"
 「欸欸！你知道B班的那個神經病嗎？」
 「我好像知道！我記得他...姓什麼來著？我想一下......喔！好像是姓...墨？」
 「喔對對對！聽說他好像有精神疾病的樣子！」
@@ -255,9 +252,4 @@ EXTERNAL canStartBattle()
 -> END
 
 
-
-
-
-
-~ Scene = 2
 

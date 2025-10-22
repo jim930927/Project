@@ -5,6 +5,8 @@ VAR room = ""
 VAR Unlock_door = false
 VAR hp = ""
 VAR bed_interact = 0
+VAR ref_interact = 0
+VAR foul = true
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
@@ -122,7 +124,7 @@ EXTERNAL HP_Add(hp)
 
 // 檢查是否超過互動次數
 { bed_interact > 2:
-    「我已經看過這裡，不需要再浪費時間。」
+    「好像沒有需要調查的地方了」
     -> END
 - else:
     * 查看被子
@@ -142,10 +144,12 @@ EXTERNAL HP_Add(hp)
 * 整理被子
     「不整理的話...總感覺會有不好的事發生」
     ~ ChangeBedImage("bed_neat")
+    ~ foul = false
     #no_foul
     ->END
 * 放著不動
     ~ HP_Add(1)
+    ~ foul = true
     「還是放著不動吧...應該...會沒事吧」
     #foul
     ->END
@@ -176,10 +180,12 @@ EXTERNAL HP_Add(hp)
 【獲得記憶碎片1/6：不受待見的榮譽】
 ->END
 
-== go_out ==
+
+
+== enemy ==
 ~ speaker = "我"
 「！！！」
-{offense_rules == "yes":
+{foul == true:
     -> offense
 - else:
     -> no_offense
@@ -189,7 +195,10 @@ EXTERNAL HP_Add(hp)
 == offense ==
 ~ speaker = "???"
 「你……不是個乖孩子。這樣……會讓你受傷的。」
+#Enemy_disappear
 ~ speaker = "我"
+「剛剛那是......?」
+「......」
 「觸犯規則果然會有危險的事嗎...」
 「那聲音……像是我腦海裡最嚴厲的部分，在審判我……」
 ->END
@@ -197,10 +206,12 @@ EXTERNAL HP_Add(hp)
 == no_offense ==
 ~ speaker = "???"
 「你……有聽話。聽話……才不會被傷害。」
+#Enemy_disappear
 ~ speaker = "我"
+「剛剛那是......?」
+「......」
 「觸犯規則果然會有危險的事嗎...」
-「他的語氣……不像是在威脅，反而像是在保證我安全。可這種安全……是不是意味著要放棄什麼？」
-低頭看著自己在顫抖的雙手
+「但他的語氣……不像是在威脅，反而像是在保證我安全。可這種安全……是不是意味著要放棄什麼？」
 「......」
 「我為什麼會這麼害怕……是因為我不想被懲罰，還是因為我怕失去他們的認同？」
 ->END
@@ -244,14 +255,14 @@ EXTERNAL HP_Add(hp)
 ~ speaker = "我"
 == toilet ==
 ~ speaker = "我"
-馬桶蓋蓋著，要打開它嗎？
+白色陶瓷馬桶，因較老舊，已逐漸泛黃
 + 打開
     ~ ChangeToiletImage("toilet_open")
     裡面比想像中乾淨，沒有什麼髒污跟異味。
     ->END
 + 關著
     ~ ChangeToiletImage("toilet_close")
-    「馬桶裡應該不會有什麼重要線索，還是讓它保持原狀吧。」
+    「馬桶裡應該不會有什麼重要線索，還是讓它蓋吧。」
     ->END
     
     
@@ -265,8 +276,8 @@ EXTERNAL HP_Add(hp)
 ~ speaker = "我"
 「為什麼這洗手台上有這麼多的毛啊...？」
 用手觸碰了水裡的毛
-#SINK_MEMORY
-->END
+#memory1
+->sink_memory
 
 == sink_memory
 洗手台坐著一隻很髒的小貓
@@ -280,7 +291,7 @@ EXTERNAL HP_Add(hp)
 「安靜點...要是被發現，我跟你都會完蛋」
 「......」
 「你跟我還真像啊...」
-大門傳來聲響，似乎有人進入了房子
+#father_appear
 ~ speaker = "我"
 「！！！」
 ~ speaker = "爸爸"
@@ -293,9 +304,10 @@ EXTERNAL HP_Add(hp)
 「可是...」
 ~ speaker = "爸爸"
 「沒有可是！把牠給我！回去你房間，你被禁足了！」
-->END
+#sink_memory_end
+->sink_memory_end
 
-== memory_end
+== sink_memory_end
 ~ speaker = "我"
 「記憶中的我違反了規則……」
 低下頭，看著自己濕透的手指。
@@ -310,37 +322,56 @@ EXTERNAL HP_Add(hp)
 【獲得道具：被水浸濕的信封】
 ->END
 
-~ room = "廚房"
 == refrigerator
+~ ref_interact += 1
 ~ speaker = " "
 普通的冰箱。
-+ 打開冰箱
-    ~ speaker = "我"
+{ ref_interact > 2:
+    「好像沒有需要調查的地方了」
+    -> END
+- else:
+    * 打開冰箱
+        #memory2
+        「......」
+        ->refrigerator_memory
+    * 不打開冰箱
+        ~ speaker = "我"
+        「現在肚子不餓，不用找吃的」
+        「嗯？冰箱上好像貼著什麼東西」
+        「這是...又一個日記殘頁？」
+        ->journal_3
+}  
+
+== refrigerator_memory
+~ speaker = "回憶裡的我"
     「看看裡面有什麼好吃的」
+    #mother_appear
     ~ speaker = "媽媽"
     「墨涅你在幹嘛？」
-    ~ speaker = "我"
+    ~ speaker = "回憶裡的我"
+    #turn_back
     「啊...我......」
     ~ speaker = "媽媽"
     「我不是警告過你半夜不准吃東西了嗎？」
-    ~ speaker = "我"
+    ~ speaker = "回憶裡的我"
     「可是...我讀書讀到現在...肚子餓了嘛......」
     ~ speaker = "媽媽"
     「......」
     「那就趕快去睡覺！剩下的明天再讀！」
-    ~ speaker = "我"
+    ~ speaker = "回憶裡的我"
     「好......」
-    （回憶結束）
-    「從那之後...我好像再也沒在半夜跑到廚房了...」
-    「我一直認為，他們的規則只是為了讓我服從……
-    可那天的媽媽，似乎真的只是怕我累壞……
-    或者，我只是想把每一次的限制都解讀成惡意，這樣我才有理由反抗。」
-    ->END
-+ 不打開冰箱
-    「現在肚子不餓，不用找吃的」
-    「嗯？冰箱上好像有什麼東西」
-    「這是...又一個日記殘頁？」
-->journal_3
+    #refrigerator_memory_end
+    ->refrigerator_memory_end
+
+== refrigerator_memory_end
+~ speaker = " "
+「......」
+~ speaker = "我"
+「從那之後...我好像再也沒在半夜跑到廚房了...」
+「我一直認為，他們的規則只是為了讓我服從……
+可那天的媽媽，似乎真的只是怕我累壞……
+或者，我只是想把每一次的限制都解讀成惡意，這樣我才有理由反抗。」
+->END
 
 == journal_3
 ~ speaker = "我"
@@ -386,8 +417,13 @@ EXTERNAL HP_Add(hp)
 ~ speaker = "我"
 上面放著三種不同款式的菜刀
 「奇怪...為什麼我看到這個菜刀會有種想拿的衝動......？」
-#KNIFE_MEMORY
-->END
+* 拿起
+    #play_cg knifeCG
+    「......」
+    ->END
++ 算了
+    「沒這個必要，還是算了吧」
+    ->END
 
 ~ room = "洗衣間"
 == cloth
@@ -401,11 +437,6 @@ EXTERNAL HP_Add(hp)
 == cloth_wash
 普通的洗衣機
 ->END
-
-
-
-
-
 
 
 

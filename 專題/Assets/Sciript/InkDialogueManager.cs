@@ -56,6 +56,18 @@ public class InkDialogueManager : MonoBehaviour
     public ItemData itemDatabase;
     public bool doorUnlocked = false;
 
+    [Header("回憶場景")]
+    public CanvasGroup blackScreenCanvasGroup; // 黑幕
+    public Transform fatherSpawnPoint;          // 爸爸出現位置
+    public Transform motherSpawnPoint;          // 媽媽出現位置
+
+    [Header("Memory System")]
+    public Transform player;
+    public Transform memoryPoint1;
+    public Transform memoryPoint2;
+    private Vector3 originalPlayerPos;
+
+
     public bool justLoaded = false;  // ← 新增：判斷是否剛載入存檔
     private bool canAutoContinue = true; // ← 控制是否自動Continue
 
@@ -458,11 +470,25 @@ public class InkDialogueManager : MonoBehaviour
                 }
             }
 
+            // 🔹 檢查是否有 #Enemy_disappear 標籤
+            foreach (var tag in story.currentTags)
+            {
+                if (tag == "Enemy_disappear")
+                {
+                    Debug.Log("💨 偵測到 #Enemy_disappear，開始讓敵人消失");
+                    HideEnemy();
+                }
+            }
+
+
             // 5️⃣ 顯示選項
             DisplayChoices();
+            HandleTags(story.currentTags);
+
         }
         else
         {
+            SetPlayerCanMove(true);
             // 對話結束後的處理 ↓↓↓
             string currentPath = story.state.currentPathString;
 
@@ -562,6 +588,7 @@ public class InkDialogueManager : MonoBehaviour
         SceneManager.LoadScene(battleSceneName);
     }
 
+
     void DisplayChoices()
     {
         // 🔹 Ink Tag 檢查：播放 CG
@@ -656,8 +683,6 @@ public class InkDialogueManager : MonoBehaviour
                 pm.canMove = canMove;
         }
     }
-
-
 
     bool AllCluesCollected()
     {
@@ -816,7 +841,122 @@ public class InkDialogueManager : MonoBehaviour
         SetPlayerCanMove(true);
     }
 
+    // -----------------------------
+    // 解析 Ink 標籤觸發事件
+    // -----------------------------
+    private void HandleTags(List<string> currentTags)
+    {
+        foreach (string tag in currentTags)
+        {
+            switch (tag)
+            {
+                case "memory1":
+                    StartCoroutine(EnterMemoryScene("memory1"));
+                    break;
+                case "memory2":
+                    StartCoroutine(EnterMemoryScene("memory2"));
+                    break;
+                case "father_appear":
+                    SpawnNPC("Father");
+                    break;
+                case "mother_appear":
+                    SpawnNPC("Mother");
+                    break;
+                case "sink_memory_end":
+                    StartCoroutine(ExitMemoryScene());
+                    break;
+                case "refrigerator_memory_end":
+                    StartCoroutine(ExitMemoryScene());
+                    break;
+                case "turn_back":
+                    TurnPlayerBack();
+                    break;
+            }
+        }
 
+
+    }
+
+
+    // -----------------------------
+    // 記憶場景切換、NPC出現
+    // -----------------------------
+    IEnumerator EnterMemoryScene(string memoryName)
+    {
+        yield return StartCoroutine(FadeScreen(true)); // 黑屏
+
+        // 記錄原始位置
+        originalPlayerPos = player.position;
+
+        // 傳送到記憶座標
+        if (memoryName == "memory1" && memoryPoint1 != null)
+            player.position = memoryPoint1.position;
+        else if (memoryName == "memory2" && memoryPoint2 != null)
+            player.position = memoryPoint2.position;
+
+        yield return StartCoroutine(FadeScreen(false)); // 淡出黑幕
+    }
+
+    IEnumerator ExitMemoryScene()
+    {
+        yield return StartCoroutine(FadeScreen(true)); // 黑屏
+
+        // 刪除 NPC（如果你有 Spawn 過）
+        DestroyAllNPCs();
+
+        // 傳回原位置
+        player.position = originalPlayerPos;
+
+        yield return StartCoroutine(FadeScreen(false)); // 淡出黑幕
+    }
+
+
+    void SpawnNPC(string npcName)
+    {
+        GameObject prefab = Resources.Load<GameObject>($"NPCs/{npcName}");
+        if (prefab == null) return;
+
+        Vector3 spawnPos = npcName == "Father" ? fatherSpawnPoint.position : motherSpawnPoint.position;
+        Instantiate(prefab, spawnPos, Quaternion.identity);
+    }
+
+
+    private void TurnPlayerBack()
+    {
+        if (player == null) return;
+
+        player.GetComponent<Animator>().SetFloat("LastY", -1);
+
+
+        Debug.Log("Player turned back (rotated 180 degrees)");
+    }
+
+
+    void DestroyAllNPCs()
+    {
+        foreach (var npc in GameObject.FindGameObjectsWithTag("NPC"))
+        {
+            Destroy(npc);
+        }
+    }
+
+    // -----------------------------
+    // 黑幕淡入淡出控制
+    // -----------------------------
+    IEnumerator FadeScreen(bool fadeIn)
+    {
+        float duration = 1f;
+        float elapsed = 0f;
+        float start = fadeIn ? 0 : 1;
+        float end = fadeIn ? 1 : 0;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            blackScreenCanvasGroup.alpha = Mathf.Lerp(start, end, elapsed / duration);
+            yield return null;
+        }
+    }
 
 
     private void PlayMusic(string musicName)
@@ -825,12 +965,38 @@ public class InkDialogueManager : MonoBehaviour
         if (bgmManager != null)
         {
             bgmManager.PlayMusic(musicName);
+            Debug.LogWarning("播放音樂：" + musicName);
         }
         else
         {
             Debug.LogWarning("⚠️ 找不到 BGMManager，無法播放音樂：" + musicName);
         }
     }
+
+    private void HideEnemy()
+    {
+        var enemy = GameObject.FindWithTag("Enemy");
+        if (enemy != null)
+        {
+            // 你可以選擇用 Destroy、SetActive(false)，或播放動畫
+            // 以下範例用淡出動畫（若你有 DOTween）
+            var sprite = enemy.GetComponent<SpriteRenderer>();
+            if (sprite != null)
+            {
+                sprite.DOFade(0f, 0.5f).OnComplete(() => enemy.SetActive(false));
+            }
+            else
+            {
+                enemy.SetActive(false);
+            }
+            Debug.Log("🧩 敵人已消失");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ 場景中找不到 tag 為 'Enemy' 的物件");
+        }
+    }
+
 
     public void JumpToKnot(string knotName)
     {

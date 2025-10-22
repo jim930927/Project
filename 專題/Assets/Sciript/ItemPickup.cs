@@ -72,58 +72,37 @@ public class ItemPickup : MonoBehaviour
             return;
         }
 
-        // ✅ 新增道具至資料庫
         itemData.AddItem(itemID, itemName);
         collected = true;
 
         if (inkManager != null && inkStoryAsset != null)
         {
-            // 顯示圖片
             if (itemImage != null && PreviewImageManager.Instance != null)
+            {
+                Debug.Log("👉 [ItemPickup] 呼叫 ShowImage：" + itemImage.name);
                 PreviewImageManager.Instance.ShowImage(itemImage);
+            }
+
 
             inkManager.SetPlayerCanMove(false);
 
             inkManager.EnterDialogueMode(inkStoryAsset, startKnotName, () =>
             {
-                // 對話結束 → 關閉圖片
-                if (PreviewImageManager.Instance != null)
-                    PreviewImageManager.Instance.HideImage();
-
                 var bookUI = FindObjectOfType<BookUIManager>();
                 if (bookUI != null)
                     bookUI.OpenItemOverlay(itemID, returnKnotName);
-
-            });
-        }
-
-
-        Debug.Log($"🎒 撿取道具：{itemID}");
-
-        // ✅ 如果有 Ink 對話，播放劇情後再顯示道具內容
-        if (inkManager != null && inkStoryAsset != null)
-        {
-            inkManager.EnterDialogueMode(inkStoryAsset, startKnotName, () =>
-            {
-                inkManager.SetPlayerCanMove(false);
-                // 劇情結束後顯示道具細節
-                var bookUI = FindObjectOfType<BookUIManager>();
-                if (bookUI != null)
-                    bookUI.OpenItemOverlay(itemID, returnKnotName); // 傳入要返回的 knot
             });
         }
         else
         {
-            // 沒有劇情，直接打開書的道具頁
+            // 沒有 Ink，直接開啟線索
             var bookUI = FindObjectOfType<BookUIManager>();
             if (bookUI != null)
-            {
-                bookUI.OpenBook();
-                bookUI.SendMessage("SwitchTab", "item", SendMessageOptions.DontRequireReceiver);
-            }
+                bookUI.OpenClueOverlay(itemID);
         }
 
         if (destroyOnPickup)
             Destroy(gameObject);
     }
+
 }
