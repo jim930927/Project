@@ -73,13 +73,12 @@ public class BookUIManager : MonoBehaviour
         if (bookPanel != null)
             bookPanel.SetActive(false);
 
+
         bookIconButton?.onClick.AddListener(OpenBook);
         closeButton?.onClick.AddListener(CloseBook);
         nextPageButton?.onClick.AddListener(NextPage);
         prevPageButton?.onClick.AddListener(PrevPage);
         closeDetailButton?.onClick.AddListener(CloseClueDetailPanel);
-
-
 
         clueTabButton?.onClick.AddListener(() => SwitchTab("clue")); // 🟦 新增
         itemTabButton?.onClick.AddListener(() => SwitchTab("item")); // 🟦 新增
@@ -114,11 +113,15 @@ public class BookUIManager : MonoBehaviour
     public void OpenBook()
     {
         bookPanel?.SetActive(true);
-        RefreshClueButtons();
-        RefreshItemButtons();
+
+        // 直接重建按鈕，避免 Refresh 與 Generate 的 index 不一致問題
+        GenerateClueButtons();
+        GenerateItemButtons();
+
         inkManager.SetPlayerCanMove(false);
         closeBook = true;
     }
+
 
     public void CloseBook()
     {
@@ -158,9 +161,12 @@ public class BookUIManager : MonoBehaviour
 
         // 篩出已收集線索
         var collectedClues = clueData.clues.FindAll(c => c.collected);
+        collectedClues.Sort((a, b) => a.collectedTime.CompareTo(b.collectedTime));
         int total = collectedClues.Count;
         int cluesPerDoublePage = cluesPerPage * 2; // 一次顯示左右兩頁總共的數量
         int totalPages = Mathf.CeilToInt(total / (float)cluesPerDoublePage);
+
+
 
         // 確保頁數在合法範圍
         currentClueListPage = Mathf.Clamp(currentClueListPage, 0, Mathf.Max(totalPages - 1, 0));
@@ -206,7 +212,7 @@ public class BookUIManager : MonoBehaviour
 
 
 
-    void ShowClueDetail(ClueData.Clue clue)
+    public void ShowClueDetail(ClueData.Clue clue)
     {
         if (clue == null) return;
         currentClue = clue;
@@ -240,6 +246,8 @@ public class BookUIManager : MonoBehaviour
 
     void RefreshClueButtons()
     {
+        GenerateClueButtons();
+        /*
         if (clueData == null) return;
         for (int i = 0; i < clueData.clues.Count; i++)
         {
@@ -247,6 +255,7 @@ public class BookUIManager : MonoBehaviour
             if (i < clueButtons.Count)
                 clueButtons[i].gameObject.SetActive(clue.collected);
         }
+        */
     }
 
     // ===================== 道具 =====================
@@ -262,6 +271,7 @@ public class BookUIManager : MonoBehaviour
         itemLookup.Clear();
 
         var collectedItems = itemData.items.FindAll(i => i.collected);
+        collectedItems.Sort((a, b) => a.collectedTime.CompareTo(b.collectedTime));
         int total = collectedItems.Count;
         int itemsPerDoublePage = itemsPerPage * 2;
         int totalPages = Mathf.CeilToInt(total / (float)itemsPerDoublePage);
@@ -335,6 +345,8 @@ public class BookUIManager : MonoBehaviour
 
     void RefreshItemButtons()
     {
+        GenerateItemButtons();
+        /*
         if (itemData == null) return;
         for (int i = 0; i < itemData.items.Count; i++)
         {
@@ -342,6 +354,7 @@ public class BookUIManager : MonoBehaviour
             if (i < itemButtons.Count)
                 itemButtons[i].gameObject.SetActive(item.collected);
         }
+        */
     }
 
     public void CloseClueDetailPanel()

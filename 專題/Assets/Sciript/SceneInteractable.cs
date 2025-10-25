@@ -14,6 +14,7 @@ public class SceneInteractable : MonoBehaviour
     private InkDialogueManager dialogueManager;
     private bool isPlayerInside = false;
     private GameObject player;
+    public Image Porpsimage;
 
 
     [Header("互動限制")]

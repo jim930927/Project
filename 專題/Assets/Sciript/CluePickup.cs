@@ -49,7 +49,7 @@ public class CluePickup : MonoBehaviour
         }
     }
 
-    void CollectClue()
+    public void CollectClue()
     {
         if (collected) return;
 

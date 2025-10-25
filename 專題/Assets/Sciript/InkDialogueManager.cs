@@ -1,5 +1,6 @@
 using DG.Tweening;
 using Ink.Runtime;
+using NUnit.Framework.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -54,6 +55,7 @@ public class InkDialogueManager : MonoBehaviour
     [Header("線索/道具")]
     public ClueData clueDatabase;
     public ItemData itemDatabase;
+    public BookUIManager bookUIManager;
     public bool doorUnlocked = false;
 
     [Header("回憶場景")]
@@ -66,6 +68,15 @@ public class InkDialogueManager : MonoBehaviour
     public Transform memoryPoint1;
     public Transform memoryPoint2;
     private Vector3 originalPlayerPos;
+
+    public Transform hidePoint1;
+    public Transform hidePoint2;
+
+    public EnemyController2D enemy2D;
+    public GameObject enemyPrefab;
+    public Transform enemyAppearPoint;
+    private EnemyController2D activeEnemy;
+    public Transform playerTransform;
 
 
     public bool justLoaded = false;  // ← 新增：判斷是否剛載入存檔
@@ -376,6 +387,43 @@ public class InkDialogueManager : MonoBehaviour
     // 🔹 Ink 外部函式綁定區
     private void BindExternalBookFunctions()
     {
+        Debug.Log("🧩 BindExternalBookFunctions() 已執行！");
+        // 🟩 Ink 呼叫：~ Get_Clue("Journal3")（撿取線索並顯示）
+        story.BindExternalFunction("Get_Clue", (string clueID) =>
+        {
+            Debug.Log("🧩 BindExternalFunctions() 已執行！");
+            var clueDB = clueDatabase;
+            var bookUI = bookUIManager;
+
+            // ✅ 加入線索到資料庫
+            clueDB.AddClue(clueID);
+
+            // ✅ 顯示線索內容（不開整本書）
+            bookUI.OpenClueOverlay(clueID);
+
+            Debug.Log($"📘 Ink 觸發撿取線索：{clueID}");
+        });
+
+        story.BindExternalFunction("ReplaceItem", (string oldItemID, string newClueID) =>
+        {
+            if (itemDatabase == null || bookUIManager == null)
+            {
+                Debug.LogWarning("⚠️ ReplaceItem: 缺少 itemData 或 bookUIManager 引用");
+                return;
+            }
+
+            // 移除舊道具
+            itemDatabase.RemoveItem(oldItemID);
+
+            // 新增新道具
+            clueDatabase.AddClue(newClueID);
+
+            // 立即顯示新道具的內容（不開整本書）
+            bookUIManager.OpenClueOverlay(newClueID);
+
+            Debug.Log($"🔄 道具已替換：{oldItemID} → {newClueID}");
+        });
+
         if (story == null) return;
 
         var bookUI = FindObjectOfType<BookUIManager>();
@@ -422,27 +470,37 @@ public class InkDialogueManager : MonoBehaviour
     {
         if (story != null && story.canContinue)
         {
+            SetPlayerCanMove(false);
+
             // 1️⃣ 先從 Ink 拿出下一句台詞
             string text = story.Continue().Trim();
-            dialogueText.text = text;
 
-            // 🔹 檢查是否有 #play_music 標籤
-            foreach (var tag in story.currentTags)
+            List<string> tags = new List<string>(story.currentTags);
+            bool onlyHasControlTags = tags.Count > 0 && string.IsNullOrEmpty(text);
+
+            HandleTags(tags);
+
+            if (onlyHasControlTags && story.canContinue)
             {
-                if (tag.StartsWith("play_music"))
+                Debug.Log("⏭ 自動略過控制用 tag 輪（沒有文字）");
+                ContinueStory();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(text))
+            {
+                // 🔹 特殊情況：如果這輪只有 tag，仍繼續下一句
+                if (story.canContinue)
                 {
-                    string[] parts = tag.Split(' ');
-                    if (parts.Length > 1)
-                    {
-                        string musicName = parts[1];
-                        Debug.Log($"🎵 偵測到音樂標籤：{musicName}");
-                        PlayMusic(musicName);
-                    }
+                    Debug.Log("⏭ 跳過空白句（僅 tag 存在）");
+                    ContinueStory(); // 遞迴繼續下一句
+                    return;
                 }
             }
 
+            dialogueText.text = text;
 
-            // 3️⃣ 抓說話者名字（如果 Ink 有設定變數 speaker）
+
             string speakerName = "";
             try
             {
@@ -453,20 +511,33 @@ public class InkDialogueManager : MonoBehaviour
             {
                 Debug.LogWarning("⚠️ Ink 變數 'speaker' 不存在");
             }
-
             nameText.text = speakerName;
             UpdatePortrait(speakerName);
 
+            foreach (var tag in tags)
+            {
+                if (tag.StartsWith("play_music"))
+                {
+                    string[] parts = tag.Split(' ');
+                    if (parts.Length > 1)
+                    {
+                        string musicName = parts[1];
+                        Debug.Log($"🎵 播放音樂：{musicName}");
+                        PlayMusic(musicName);
+                    }
+                }
+            }
+
+
             // 4️⃣ 如果有 CG TAG，播放影片
-            foreach (var tag in story.currentTags)
+            foreach (var tag in tags)
             {
                 if (tag.StartsWith("play_cg"))
                 {
                     string[] parts = tag.Split(' ');
                     string cgName = parts.Length > 1 ? parts[1] : "DefaultCG";
-                    Debug.Log($"🎬 偵測到 #play_cg，播放影片：{cgName}");
                     StartCoroutine(PlayCGThenContinue(cgName));
-                    return;
+                    return; // 暫停 Ink，等 CG 播完再繼續
                 }
             }
 
@@ -846,14 +917,18 @@ public class InkDialogueManager : MonoBehaviour
     // -----------------------------
     private void HandleTags(List<string> currentTags)
     {
+        bool shouldAutoContinue = false; // 🟩 檢查是否要自動略過空白輪
+
         foreach (string tag in currentTags)
         {
             switch (tag)
             {
                 case "memory1":
+                    originalPlayerPos = player.position;
                     StartCoroutine(EnterMemoryScene("memory1"));
                     break;
                 case "memory2":
+                    originalPlayerPos = player.position;
                     StartCoroutine(EnterMemoryScene("memory2"));
                     break;
                 case "father_appear":
@@ -864,18 +939,46 @@ public class InkDialogueManager : MonoBehaviour
                     break;
                 case "sink_memory_end":
                     StartCoroutine(ExitMemoryScene());
+                    shouldAutoContinue = true; // 🟩 這類 tag 通常沒有對話，繼續下一段
                     break;
                 case "refrigerator_memory_end":
                     StartCoroutine(ExitMemoryScene());
+                    shouldAutoContinue = true; // 🟩 同上
                     break;
                 case "turn_back":
                     TurnPlayerBack();
                     break;
+                case "Hide1":
+                    originalPlayerPos = player.position;
+                    HidePlayer("Hide1");
+                    Debug.Log($"躲藏1");
+                    break;
+                case "Hide2":
+                    originalPlayerPos = player.position;
+                    HidePlayer("Hide2");
+                    break;
+                case "Enemy_appear":
+                    if (activeEnemy == null)
+                    {
+                        GameObject enemyObj = Instantiate(enemyPrefab, enemyAppearPoint.position, Quaternion.identity);
+                        activeEnemy = enemyObj.GetComponent<EnemyController2D>();
+                        activeEnemy.player = playerTransform; // 指派玩家
+                    }
+                    else
+                    {
+                        activeEnemy.AppearAtPoint();
+                    }
+                    break;
+
+                case "start_chase":
+                    shouldAutoContinue = true; // 🟩 同上
+                    activeEnemy?.StartChase();
+                    break;
+
             }
         }
-
-
     }
+
 
 
     // -----------------------------
@@ -884,9 +987,10 @@ public class InkDialogueManager : MonoBehaviour
     IEnumerator EnterMemoryScene(string memoryName)
     {
         yield return StartCoroutine(FadeScreen(true)); // 黑屏
+        player.GetComponent<Animator>().SetFloat("LastY", 1);
 
         // 記錄原始位置
-        originalPlayerPos = player.position;
+        Debug.Log($"紀錄進入記憶前的位置：{originalPlayerPos}");
 
         // 傳送到記憶座標
         if (memoryName == "memory1" && memoryPoint1 != null)
@@ -900,12 +1004,14 @@ public class InkDialogueManager : MonoBehaviour
     IEnumerator ExitMemoryScene()
     {
         yield return StartCoroutine(FadeScreen(true)); // 黑屏
+        player.GetComponent<Animator>().SetFloat("LastY", 1);
 
         // 刪除 NPC（如果你有 Spawn 過）
         DestroyAllNPCs();
 
         // 傳回原位置
         player.position = originalPlayerPos;
+        Debug.Log("回到原座標");
 
         yield return StartCoroutine(FadeScreen(false)); // 淡出黑幕
     }
@@ -931,6 +1037,14 @@ public class InkDialogueManager : MonoBehaviour
         Debug.Log("Player turned back (rotated 180 degrees)");
     }
 
+    private void HidePlayer(string hideName)
+    {
+        Debug.Log($"躲藏2");
+        if (hideName == "Hide1" && hidePoint1 != null)
+            player.position = hidePoint1.position;
+        else if (hideName == "Hide2" && hidePoint2 != null)
+            player.position = hidePoint2.position;
+    }
 
     void DestroyAllNPCs()
     {

@@ -14,6 +14,9 @@ public class Portal : MonoBehaviour
     public string requiredKeyID = "";    // ✅ 對應的鑰匙 ID（例：key_room）
     public float cooldown = 0.8f;
 
+    [Header("敵人設定")]
+    public Transform enemySpawnPoint; // ✅ 敵人在這個傳送後會出現的位置
+
     private static float lastTeleportTime = -999f;
     private static bool isTeleporting = false;
     private bool isPlayerInside = false;
@@ -127,6 +130,23 @@ public class Portal : MonoBehaviour
             Debug.LogWarning("⚠️ 傳送時 Player 或 Portal 已被銷毀");
         }
 
+        // 🟥 敵人延遲傳送機制 ===========================
+        EnemyController2D enemy = FindAnyObjectByType<EnemyController2D>();
+        if (enemy != null)
+        {
+            // 取得目標傳送門對應的敵人生成點
+            Transform enemySpawn = targetPortal.enemySpawnPoint != null
+                ? targetPortal.enemySpawnPoint
+                : targetPortal.transform; // 若沒設定則跟玩家傳送點相同
+
+            float delayBeforeTeleport = 1.5f; // 🔸延遲秒數，可調整
+            StartCoroutine(DelayedEnemyTeleport(enemy, enemySpawn, delayBeforeTeleport));
+        }
+        // =================================================
+
+        // =====================================
+
+
         if (fader != null)
         {
             yield return StartCoroutine(fader.FadeIn());
@@ -164,6 +184,28 @@ public class Portal : MonoBehaviour
             player = null;
         }
     }
+
+    private IEnumerator DelayedEnemyTeleport(EnemyController2D enemy, Transform spawnPoint, float delay)
+    {
+        // 🔹 先暫停敵人追逐
+        enemy.StopChase();
+
+        // 🔹 延遲一段時間再傳送
+        yield return new WaitForSeconds(delay);
+
+        if (enemy == null || spawnPoint == null)
+            yield break;
+
+        // 🔹 傳送敵人
+        enemy.TeleportTo(spawnPoint);
+
+        // 🔹 傳送後立刻開始追逐
+        enemy.StartChase();
+
+        Debug.Log($"👁️ 敵人在延遲 {delay:F1} 秒後傳送並開始追逐");
+    }
+
+
 
     private void OnDoorDialogueEnd()
     {
@@ -227,7 +269,7 @@ public class Portal : MonoBehaviour
         }
 
         // ✅ 避免對話剛結束又立刻傳送
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
         isTeleporting = false;
 
     }

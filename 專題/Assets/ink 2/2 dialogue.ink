@@ -7,6 +7,8 @@ VAR hp = ""
 VAR bed_interact = 0
 VAR ref_interact = 0
 VAR foul = true
+VAR Get_item = ""
+VAR canHide = false
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
@@ -17,23 +19,27 @@ EXTERNAL SpawnObject(chest)
 EXTERNAL OpenChestUI()
 EXTERNAL SpawnNPC(Guide) 
 EXTERNAL HP_Add(hp)
+EXTERNAL Get_Clue(clue_id)
+EXTERNAL ReplaceItem(oldItemID,newItemID)
+
 
 == CG ==
+~ speaker = " "
 #play_cg openingCG
+「......」
 ->start
 
 == start ==
 ~ speaker = " "
-「......」
 微弱晨光透過縫隙灑進，周圍安靜的可怕，唯獨鬧鐘發出了「滴答」的聲響。
 ~ speaker = "我"
+#play_music second_theme
 「剛剛那是...我的記憶嗎？」
 抬頭看了看周圍
 「這裡是...我家嗎？」
 「......」
 「不行...記憶很模糊！什麼都想不起來...」
 「我得找到那些缺失的部分……否則，我連自己是誰都無法確定。」
-#play_music second_theme
 -> END
 
 == trash_can
@@ -55,7 +61,7 @@ EXTERNAL HP_Add(hp)
 -> END
 
 == have_key ==
-~ speaker = "我"
+~ speaker = ""
 【使用道具：房間鑰匙】
 使用鑰匙打開了門
 ~ Unlock_door = true
@@ -68,16 +74,34 @@ EXTERNAL HP_Add(hp)
 
 
 == wardrobe ==
+{canHide == true:
+    -> hide1
+- else:
+    -> no_hide1
+    }
+-> END
+
+
+== hide1
+#Hide1
+->END
+
+== no_hide1
 ~ speaker = " "
 裡面放著些許衣服，大多是長袖長褲
 ~ speaker = "我"
 「衣服好少，而且怎麼沒有幾件短袖...」
 「似乎可以躲進去...但現在沒這個必要」
--> END
+->END
+
+
 
 == mirror ==
-站在鏡子前面，記住了自己現在的模樣
+~ canHide = true
+~ speaker = " "
+一面鏡子
 ~ SaveGame() 
+站在鏡子前面，記住了自己現在的模樣
 -> END
 
 
@@ -121,13 +145,13 @@ EXTERNAL HP_Add(hp)
 == bed ==
 ~ speaker = "我"
 ~ bed_interact += 1
-
 // 檢查是否超過互動次數
 { bed_interact > 2:
     「好像沒有需要調查的地方了」
     -> END
 - else:
     * 查看被子
+        ~ speaker = " "
         ~ ChangeBedImage("bed_quilt")
         床上凌亂的被子，留有些許溫度
         -> quilt
@@ -135,6 +159,7 @@ EXTERNAL HP_Add(hp)
         ~ MovePlayer("bed_side")
         ~ SpawnObject("chest")
         床底下藏著箱子，將箱子拿了出來，上面有一個4位數密碼鎖
+        ~ speaker = "我"
         「鎖住了...密碼是多少呢...是某個日期嗎」
         -> END
 }  
@@ -142,21 +167,21 @@ EXTERNAL HP_Add(hp)
 == quilt ==
 ~ speaker = "我"
 * 整理被子
-    「不整理的話...總感覺會有不好的事發生」
+    #no_foul
     ~ ChangeBedImage("bed_neat")
     ~ foul = false
-    #no_foul
+    「不整理的話...總感覺會有不好的事發生」
     ->END
 * 放著不動
+    #foul
     ~ HP_Add(1)
     ~ foul = true
     「還是放著不動吧...應該...會沒事吧」
-    #foul
     ->END
 
 == chest ==
 ~ speaker = "我"
-箱子的密碼是多少呢...
+「箱子的密碼是多少呢...」
 ~ OpenChestUI()
 -> END
 
@@ -168,9 +193,11 @@ EXTERNAL HP_Add(hp)
 ~ speaker = "我"
 「......」
 「1月23日...我的生日嗎...」
+~ speaker = ""
 裡面放著一本繪本、病歷、獎狀
 翻開其中畫著睡蓮池的一頁時，一把鑰匙掉了出來
 當指尖碰觸到一把金屬鑰匙，上面泛著微光，似乎被時間磨平了棱角。
+~ speaker = "我"
 「這些東西……是我的嗎？」
 ~ speaker = "引路人"
 「用它，解開這扇門的鎖。繼續尋找你失去的記憶吧。」
@@ -216,45 +243,49 @@ EXTERNAL HP_Add(hp)
 「我為什麼會這麼害怕……是因為我不想被懲罰，還是因為我怕失去他們的認同？」
 ->END
 
-~ room = "屋內探索"
-~ speaker = " "
 == warehouse
+~ speaker = " "
 倉庫門緊鎖，似乎需要一把鑰匙。
 ->END
 
 == shrine_hall
+~ speaker = " "
 香爐裡只有幾根燒盡的香。
 ->END
 
 == TV
+~ speaker = " "
 電視打開著，畫面上循環播放著像是雪花一樣的雜訊。
 ->END
 
 == sofa
+~ speaker = " "
 坐起來很舒服老舊的沙發，上面有長期使用的痕跡
 ->END
 
 == glass_cabinet
+~ speaker = " "
 櫥櫃緊鎖著，裡面放著一幅全家福，是小時候的墨涅跟年輕時的父母，一家人笑得很開心。
 ->END
 
 == Dining_room
+~ speaker = " "
 大多數家庭常見的大紅色餐桌，似乎使用了很久，已經開始掉色了。
 ->END
 
 == calendar
+~ speaker = " "
 牆上的月曆翻到了8月。
 ->END
 
 == clock
+~ speaker = " "
 時間指向7:25，看起來像是一個悲傷的表情。
 ->END
 
 
-~ room = "浴室"
-~ speaker = "我"
 == toilet ==
-~ speaker = "我"
+~ speaker = ""
 白色陶瓷馬桶，因較老舊，已逐漸泛黃
 + 打開
     ~ ChangeToiletImage("toilet_open")
@@ -262,6 +293,7 @@ EXTERNAL HP_Add(hp)
     ->END
 + 關著
     ~ ChangeToiletImage("toilet_close")
+    ~ speaker = "我"
     「馬桶裡應該不會有什麼重要線索，還是讓它蓋吧。」
     ->END
     
@@ -275,32 +307,36 @@ EXTERNAL HP_Add(hp)
 洗手台裡放滿了水，水上面放了一張被水浸濕的信封，還有幾根不知道是甚麼動物的毛
 ~ speaker = "我"
 「為什麼這洗手台上有這麼多的毛啊...？」
+~ speaker = " "
 用手觸碰了水裡的毛
 #memory1
 ->sink_memory
 
 == sink_memory
+~ speaker = " "
+「......」
 洗手台坐著一隻很髒的小貓
 小貓意外的很安分，沒有抗拒洗澡
-~ speaker = "我"
+~ speaker = "回憶裡的我"
 「怎麼搞得這麼髒的...」
 「哈啾！...奇怪怎麼一直打噴嚏」
 ~ speaker = "貓咪"
 「喵」
-~ speaker = "我"
+~ speaker = "回憶裡的我"
 「安靜點...要是被發現，我跟你都會完蛋」
 「......」
 「你跟我還真像啊...」
 #father_appear
-~ speaker = "我"
+~ speaker = "回憶裡的我"
 「！！！」
+#turn_back
 ~ speaker = "爸爸"
 「你在幹什麼！」
-~ speaker = "我"
+~ speaker = "回憶裡的我"
 「爸...那個...我......」
 ~ speaker = "爸爸"
 「不是跟你說過不准帶野貓野狗回家的嗎？你不知道牠們有多髒嗎？身上可能會有一堆細菌或是跳蚤之類的，你怎麼怎麼講都講不聽！」
-~ speaker = "我"
+~ speaker = "回憶裡的我"
 「可是...」
 ~ speaker = "爸爸"
 「沒有可是！把牠給我！回去你房間，你被禁足了！」
@@ -308,17 +344,24 @@ EXTERNAL HP_Add(hp)
 ->sink_memory_end
 
 == sink_memory_end
+~ speaker = " "
+......
 ~ speaker = "我"
 「記憶中的我違反了規則……」
 低下頭，看著自己濕透的手指。
-「那時候的我……真的做錯了嗎？
-他們說那是髒的、危險的……可我只看到牠在發抖、需要幫忙。
-如果幫助一條生命是錯的，那我又該怎麼分辨什麼才是對的？」
+「那時候的我……真的做錯了嗎？」
+「他們說那是髒的、危險的……可我只看到牠在發抖、需要幫忙。」
+「如果幫助一條生命是錯的，那我又該怎麼分辨什麼才是對的？」
 抬起頭，看著鏡中被水霧模糊的自己。
 「也許我害怕的……不是規則本身，而是當我違反它們時，就不再是他們心中的『好孩子』。」
 「所謂的規則……原來都是反映我在現實中被禁止的事啊……」
 （撿起水中的信封）
+->END
+
+== water_latter
 「這信封完全濕掉了...如果強行打開，絕對會破掉，要想個辦法把它變乾...」
+~ speaker = ""
+~ Get_item = "water_letter"
 【獲得道具：被水浸濕的信封】
 ->END
 
@@ -327,11 +370,13 @@ EXTERNAL HP_Add(hp)
 ~ speaker = " "
 普通的冰箱。
 { ref_interact > 2:
+    ~ speaker = "我"
     「好像沒有需要調查的地方了」
     -> END
 - else:
     * 打開冰箱
         #memory2
+        ~ HP_Add(1)
         「......」
         ->refrigerator_memory
     * 不打開冰箱
@@ -339,7 +384,8 @@ EXTERNAL HP_Add(hp)
         「現在肚子不餓，不用找吃的」
         「嗯？冰箱上好像貼著什麼東西」
         「這是...又一個日記殘頁？」
-        ->journal_3
+        ~ Get_Clue("Journal3")
+        ->Journal3
 }  
 
 == refrigerator_memory
@@ -364,58 +410,79 @@ EXTERNAL HP_Add(hp)
     ->refrigerator_memory_end
 
 == refrigerator_memory_end
-~ speaker = " "
-「......」
+~ speaker = ""
+......
 ~ speaker = "我"
 「從那之後...我好像再也沒在半夜跑到廚房了...」
-「我一直認為，他們的規則只是為了讓我服從……
-可那天的媽媽，似乎真的只是怕我累壞……
-或者，我只是想把每一次的限制都解讀成惡意，這樣我才有理由反抗。」
+「我一直認為，他們的規則只是為了讓我服從……」
+「可那天的媽媽，似乎真的只是怕我累壞……」
+「或者，我只是想把每一次的限制都解讀成惡意，這樣我才有理由反抗。」
 ->END
 
-== journal_3
+== Journal3
 ~ speaker = "我"
+「......」
 「爸跟媽...常常在吵架？」
 「該不會...就是因為他們長期處的不愉快，才把氣全部出在我身上吧...」
 「那我到底算什麼...我不是他們的孩子嗎？為什麼我要承擔他們不滿的情緒？他們有尊重過我嗎...」
 「在他們眼裡...我究竟是他們的親生骨肉，還是可以隨意任由他們出氣的沙包？」
-【獲得線索：日記殘頁-2】
+~ speaker = " "
+【獲得線索：日記殘頁-4】
 ->END
 
 == kitchen_sink
+{canHide == true:
+    -> hide2
+- else:
+    -> no_hide2
+    }
+-> END
+
+== hide2
+#Hide2
+->END
+
+== no_hide2
 ~ speaker = " "
 水池裡有一點水珠，似乎最近有使用過，底下的櫥櫃很空似乎可以躲藏。
 ->END
 
+
 == gas_stove
 瓦斯爐上面放著一個平底鍋，上面還殘留了些許溫度，似乎前一段時間使用過。
-{have_items == "water_letter":
+{Get_item == "water_letter":
     -> water_letter
 - else:
     -> END
     }
 
 == water_letter
+~ Get_item = "dry_letter"
 ~ speaker = "我"
 「用火把信封烤乾試試看吧...」
+~ speaker = " "
 打開瓦斯爐把信封放置於火上面數公分高的地方進行火烤，直到信封完全乾燥
+~ speaker = "我"
 「這樣就可以了」
+~ ReplaceItem("water_letter", "dry_letter")
 ->END
 
 ==letter_end
 ~ speaker = "我"
 「......貓毛過敏...原來家裡禁止帶動物回家是因為我嗎...」
-「那天我只記得自己被罵、被禁足……卻沒想過，也許他們是真的在擔心我。
-如果這是真的……那我一直以來的怨恨，會不會有一部分，是誤會？」
+「那天我只記得自己被罵、被禁足……卻沒想過，也許他們是真的在擔心我」
+「如果這是真的……那我一直以來的怨恨，會不會有一部分，是誤會？」
 「可是……如果他們是愛我的，為什麼還要用懲罰代替解釋？...他們口中的保護，為什麼要讓我覺得自己像犯了罪？」
-「也許……真相，並不會讓我感到好受。」
+「也許……真相，並不會讓我感到好受」
+~ speaker = ""
 【獲得線索：一封老舊的信件】
 【獲得記憶碎片2/6：未曾解釋的擔心】
 ->END
 
 == knife_holder
-~ speaker = "我"
+~ speaker = ""
 上面放著三種不同款式的菜刀
+~ speaker = "我"
 「奇怪...為什麼我看到這個菜刀會有種想拿的衝動......？」
 * 拿起
     #play_cg knifeCG
@@ -427,44 +494,94 @@ EXTERNAL HP_Add(hp)
 
 ~ room = "洗衣間"
 == cloth
-~ speaker = "我"
+~ speaker = ""
 各式的衣物掛在了繩子上，基本上都乾了
+~ speaker = "我"
 「這件...應該是我的學校外套，口袋裡面好像有什麼東西...」
 「這是...缺失的日記？」
+~ speaker = ""
 懸掛在曬衣繩上的學校外套裡有幾張日記殘頁。
+~ HP_Add(1)
 ->END
 
 == cloth_wash
+~ speaker = ""
 普通的洗衣機
 ->END
 
+== clothes_basket
+~ speaker = ""
+衣物堆積在了籃子裡。
+~ speaker = "我"
+「堆了好多衣服...這到底多久沒清理了啊？」
+~ speaker = ""
+在衣物堆裡面翻找起來
+找到被揉皺的紙團
+把紙團打開，裡面掉出一把舊鑰匙
+紙團上面寫著「百物歸處，木門為鎖，灰塵作守。」
+【獲得道具：不明的鑰匙、揉皺的紙團】
+->END
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+== clothes_basket_end
+~ speaker = "我"
+「這紙團是指這把鑰匙對應的鎖嗎...」
+~ speaker = ""
+後面出現了黑影
+~ speaker = "引路人"
+「你找到了新的線索了啊...」
+* 「Ｘ！你有什麼毛病啊！」
+    ~ HP_Add(1)
+    ~ speaker = "我"
+    「可以不要每次都無聲無息地突然出現接著又莫名其妙地消失嗎，下次出現可以給我一點心理準備嗎？」
+    ~ speaker = "引路人"
+    「我只是出來提醒你，要謹記你房間裡那張寫著家規的紙條」
+    ~ speaker = "我"
+    「你還敢說...都是你！害我不小心觸犯到了規則！」
+    ~ speaker = "引路人"
+    「小心！」
+    #Enemy_appear
+    ~ speaker = "???"
+    「你...觸犯了規則......」
+    他的聲音低沉，像是從我胸腔深處傳出。
+    ~ speaker = "???"
+    「別去看……別去想……那些記憶只會讓你痛苦。」
+    ~ speaker = ""
+    這語氣不像威脅，更像勸阻。
+    ~ speaker = "我"
+    「他在擋我……可為什麼，我從他的語氣中我感覺到了害怕？」
+    ~ speaker = "引路人"
+    「現在不是說這個的時候，快跑！找個地方躲起來」
+    #start_chase
+    ~ canHide = true
+    ->END
+* 「怎麼又是你」
+    ~ HP_Add(-1)
+    ~ speaker = "我"
+    「你一直這樣跟蹤我到底有什麼目的？」
+    ~ speaker = "引路人"
+    「我只是出來提醒你，要謹記你房間裡那張寫著家規的紙條」
+     ~ speaker = "我"
+    「我的事不用你來關心，我自己可以解決」
+     ~ speaker = ""
+    語畢，引路人又消失的無影無蹤了
+     ~ speaker = "我"
+    「真是個奇怪的傢伙。算了！我還是趕快去其他地方找找看有沒有其他線索」
+    ->END
+* 「你怎麼總是神出鬼沒的」
+    ~ speaker = "引路人"
+    「我只是出來提醒你，要謹記你房間裡那張寫著家規的紙條」
+    ~ speaker = "我"
+    「知道了...」
+    語畢，引路人又消失的無影無蹤了
+    ~ speaker = "我"
+    「真是個奇怪的傢伙。算了！我還是趕快去其他地方找找看有沒有其他線索」
+    ->END
 
 
 
 
 == parent_room ==
+~ speaker = "我"
 「房間門緊鎖，似乎需要一把鑰匙，在手碰到門把的時候，有一股不明的壓迫感從門後傳來，似乎在警告什麼。」
 + 使用鑰匙開門
     {have_items == "key_parent":
@@ -476,12 +593,14 @@ EXTERNAL HP_Add(hp)
 ->END
 
 == have_parent_key ==
+~ speaker = ""
 【使用道具：父母房間的鑰匙】
 使用鑰匙打開了門
 ~ Unlock_door = true
 ->END
 
 == no_parent_key ==
+~ speaker = "我"
 「要先找到鑰匙...」
 ->END
 

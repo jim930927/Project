@@ -20,6 +20,9 @@ public class ItemData : ScriptableObject
         public List<string> pages = new List<string>();
 
         public bool collected;
+
+        public float collectedTime = 0f;
+
     }
 
     public List<Item> items = new List<Item>();
@@ -39,6 +42,7 @@ public class ItemData : ScriptableObject
         if (item != null)
         {
             item.collected = true;
+            item.collectedTime = Time.time;
             if (!string.IsNullOrEmpty(name))
                 item.name = name;
         }

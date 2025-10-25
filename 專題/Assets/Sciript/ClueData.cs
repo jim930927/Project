@@ -20,6 +20,9 @@ public class ClueData : ScriptableObject
         public List<string> pages = new List<string>(); // 🆕 多頁內容
 
         public bool collected;
+
+        public float collectedTime = 0f;
+
     }
 
     public List<Clue> clues = new List<Clue>();
@@ -39,6 +42,7 @@ public class ClueData : ScriptableObject
         if (clue != null)
         {
             clue.collected = true;
+            clue.collectedTime = Time.time;
             if (!string.IsNullOrEmpty(name))
                 clue.name = name;
         }
