@@ -5,14 +5,21 @@ public class EnemyController2D : MonoBehaviour
     [Header("基本設定")]
     public Transform player;          // 玩家位置
     public Transform appearPoint;     // 出現位置
-    public float moveSpeed = 10f;      // 追逐速度
+    public float moveSpeed = 12f;      // 追逐速度
     public bool isChasing = false;
+
+    [Header("動畫控制")]
+    public Animator animator;
+    public Vector2 lastDirection = Vector2.down;
+    public Vector2 movement;
+
 
     private Rigidbody2D rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -23,6 +30,25 @@ public class EnemyController2D : MonoBehaviour
         // 追逐玩家：使用方向向量
         Vector2 direction = (player.position - transform.position).normalized;
         rb.MovePosition(rb.position + direction * moveSpeed * Time.deltaTime);
+
+        movement = (player.position - transform.position).normalized;
+        animator.SetBool("IsMoving", movement.sqrMagnitude > 0.001f);
+
+        if (movement != Vector2.zero)
+        {
+            lastDirection = movement.normalized;
+            animator.SetFloat("MoveX", movement.x);
+            animator.SetFloat("MoveY", movement.y);
+            animator.SetBool("IsMoving", true);
+        }
+        else
+        {
+            animator.SetBool("IsMoving", false);
+            rb.linearVelocity = Vector2.zero;
+        }
+
+        animator.SetFloat("LastX", lastDirection.x);
+        animator.SetFloat("LastY", lastDirection.y);
     }
 
     // 🟥 在指定位置出現（不追）

@@ -28,8 +28,10 @@ public class BookUIManager : MonoBehaviour
     [Header("細節顯示區")]
     public GameObject clueDetailPanel;
     public Text clueDetailText;
-    public Button nextPageButton;
-    public Button prevPageButton;
+    public Button CDnextPageButton;
+    public Button CDprevPageButton;
+    public Button IDnextPageButton;
+    public Button IDprevPageButton;
     public Button closeDetailButton;
 
     [Header("Ink 整合")]
@@ -76,8 +78,14 @@ public class BookUIManager : MonoBehaviour
 
         bookIconButton?.onClick.AddListener(OpenBook);
         closeButton?.onClick.AddListener(CloseBook);
-        nextPageButton?.onClick.AddListener(NextPage);
-        prevPageButton?.onClick.AddListener(PrevPage);
+
+        CDnextPageButton?.onClick.AddListener(CDNextPage);
+        CDprevPageButton?.onClick.AddListener(CDPrevPage);
+
+        IDnextPageButton?.onClick.AddListener(IDNextPage);
+        IDprevPageButton?.onClick.AddListener(IDPrevPage);
+
+
         closeDetailButton?.onClick.AddListener(CloseClueDetailPanel);
 
         clueTabButton?.onClick.AddListener(() => SwitchTab("clue")); // 🟦 新增
@@ -210,8 +218,6 @@ public class BookUIManager : MonoBehaviour
     }
 
 
-
-
     public void ShowClueDetail(ClueData.Clue clue)
     {
         if (clue == null) return;
@@ -235,12 +241,16 @@ public class BookUIManager : MonoBehaviour
 
         clueDetailText.text = $"{pageText}\n\n<color=#999>(第 {currentPage + 1}/{pageCount} 頁)</color>";
 
-        nextPageButton.gameObject.SetActive(currentPage < pageCount - 1);
-        prevPageButton.gameObject.SetActive(currentPage > 0);
+        CDnextPageButton.gameObject.SetActive(currentPage < pageCount - 1);
+        CDprevPageButton.gameObject.SetActive(currentPage > 0);
     }
 
-    void NextPage() { currentPage++; UpdateCluePage(); }
-    void PrevPage() { currentPage--; UpdateCluePage(); }
+    void CDNextPage() { currentPage++; UpdateCluePage(); }
+    void CDPrevPage() { currentPage--; UpdateCluePage(); }
+
+    void IDNextPage() { currentItemPage++; UpdateItemPage(); }
+    void IDPrevPage() { currentItemPage--; UpdateItemPage(); }
+
 
     void OnClueAddedHandler(ClueData.Clue clue) => GenerateClueButtons();
 
@@ -337,8 +347,8 @@ public class BookUIManager : MonoBehaviour
 
         clueDetailText.text = $"{pageText}\n\n<color=#999>(第 {currentItemPage + 1}/{pageCount} 頁)</color>";
 
-        nextPageButton.gameObject.SetActive(currentItemPage < pageCount - 1);
-        prevPageButton.gameObject.SetActive(currentItemPage > 0);
+        IDnextPageButton.gameObject.SetActive(currentItemPage < pageCount - 1);
+        IDprevPageButton.gameObject.SetActive(currentItemPage > 0);
     }
 
     void OnItemAddedHandler(ItemData.Item item) => GenerateItemButtons();

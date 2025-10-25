@@ -322,7 +322,9 @@ public class InkDialogueManager : MonoBehaviour
                 if (itemDatabase != null && itemDatabase.HasItem("key_room"))
                    return "key_room";
                 if (itemDatabase != null && itemDatabase.HasItem("key_parent"))
-                    return "key_parent";
+                   return "key_parent";
+                if (itemDatabase != null && itemDatabase.HasItem("key_unknow"))
+                   return "key_unknow";
                 return "";
             });
 
@@ -339,7 +341,6 @@ public class InkDialogueManager : MonoBehaviour
                 hpRef.hp = Mathf.Max(0, System.Convert.ToInt32(value)); // 無上限，保底 0
             });
 
-            // ✅ 改成一次性同步兩把鑰匙
             if (itemDatabase != null)
             {
                 string have = "";
@@ -347,8 +348,10 @@ public class InkDialogueManager : MonoBehaviour
                     have = "key_parent";
                 else if (itemDatabase.HasItem("key_room"))
                     have = "key_room";
+                else if (itemDatabase.HasItem("key_unknow"))
+                    have = "key_unknow";
 
-                story.variablesState["have_items"] = have;
+                    story.variablesState["have_items"] = have;
                 Debug.Log($"🧩 已同步 have_items：{have}");
             }
 
@@ -948,6 +951,9 @@ public class InkDialogueManager : MonoBehaviour
                 case "turn_back":
                     TurnPlayerBack();
                     break;
+                case "turn_left":
+                    TurnPlayerLeft();
+                    break;
                 case "Hide1":
                     originalPlayerPos = player.position;
                     HidePlayer("Hide1");
@@ -1033,6 +1039,14 @@ public class InkDialogueManager : MonoBehaviour
 
         player.GetComponent<Animator>().SetFloat("LastY", -1);
 
+        Debug.Log("Player turned back (rotated 180 degrees)");
+    }
+
+    private void TurnPlayerLeft()
+    {
+        if (player == null) return;
+
+        player.GetComponent<Animator>().SetFloat("LastX", -1);
 
         Debug.Log("Player turned back (rotated 180 degrees)");
     }

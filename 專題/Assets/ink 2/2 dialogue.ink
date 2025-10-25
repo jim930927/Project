@@ -7,8 +7,11 @@ VAR hp = ""
 VAR bed_interact = 0
 VAR ref_interact = 0
 VAR foul = true
-VAR Get_item = ""
+VAR Get_letter = ""
 VAR canHide = false
+VAR CANincense = 0
+VAR Get_incense = ""
+VAR inc_interact = 0
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
@@ -35,6 +38,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 ~ speaker = "我"
 #play_music second_theme
 「剛剛那是...我的記憶嗎？」
+~ speaker = ""
 抬頭看了看周圍
 「這裡是...我家嗎？」
 「......」
@@ -52,19 +56,19 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 「門是鎖的...？鑰匙在哪」
 + 使用鑰匙開門
     {have_items == "key_room":
-    ~ UnlockDoor("main_room")
         -> have_key
     - else:
         -> no_key 
     }
-+ 取消
--> END
++ 等等
+    -> END
 
 == have_key ==
+~ UnlockDoor("main_room")
+~ Unlock_door = true
 ~ speaker = ""
 【使用道具：房間鑰匙】
 使用鑰匙打開了門
-~ Unlock_door = true
 ->END
 
 == no_key ==
@@ -191,8 +195,9 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 
 == chest_inside ==
 ~ speaker = "我"
-「......」
-「1月23日...我的生日嗎...」
+......
+......
+「1月23日...我的生日...」
 ~ speaker = ""
 裡面放著一本繪本、病歷、獎狀
 翻開其中畫著睡蓮池的一頁時，一把鑰匙掉了出來
@@ -361,7 +366,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 == water_latter
 「這信封完全濕掉了...如果強行打開，絕對會破掉，要想個辦法把它變乾...」
 ~ speaker = ""
-~ Get_item = "water_letter"
+~ Get_letter = "water_letter"
 【獲得道具：被水浸濕的信封】
 ->END
 
@@ -450,14 +455,14 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 
 == gas_stove
 瓦斯爐上面放著一個平底鍋，上面還殘留了些許溫度，似乎前一段時間使用過。
-{Get_item == "water_letter":
+{Get_letter == "water_letter":
     -> water_letter
 - else:
     -> END
     }
 
 == water_letter
-~ Get_item = "dry_letter"
+~ Get_letter = "dry_letter"
 ~ speaker = "我"
 「用火把信封烤乾試試看吧...」
 ~ speaker = " "
@@ -529,6 +534,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 後面出現了黑影
 ~ speaker = "引路人"
 「你找到了新的線索了啊...」
+~ speaker = "我"
 * 「Ｘ！你有什麼毛病啊！」
     ~ HP_Add(1)
     ~ speaker = "我"
@@ -540,6 +546,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
     ~ speaker = "引路人"
     「小心！」
     #Enemy_appear
+    #turn_left
     ~ speaker = "???"
     「你...觸犯了規則......」
     他的聲音低沉，像是從我胸腔深處傳出。
@@ -578,6 +585,134 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
     ->END
 
 
+== storehouse
+~ speaker = ""
+倉庫門緊鎖，似乎需要一把鑰匙。
++ 使用鑰匙開門
+    {have_items == "key_unknow":
+        -> have_store_key
+    - else:
+        -> no_store_key 
+    }
++ 等等
+->END
+
+== have_store_key ==
+~ UnlockDoor("storehouse")
+~ Unlock_door = true
+~ speaker = ""
+【使用道具：不明的鑰匙】
+使用鑰匙打開了門
+->END
+
+== no_store_key ==
+~ speaker = "我"
+「要先找到鑰匙...」
+->END
+
+
+
+== incense
+~ speaker = ""
+~ Get_incense = "incense"
+抽屜裡放著一包香，香的下面放著一張寫著使用指南的紙
+->END
+
+== incense_end
+~ speaker = "我"
+~ Get_incense = "incense"
+「香？怎麼會在這裡？」
+「還有...使用指南?」
+->END
+
+
+== incense_burner
+~ speaker = "我"
+{ Get_incense == "incense": 
+    { CANincense == 0:
+    -> incense_burned
+       - else:
+            -> USEincense 
+        }
+   - else:
+        -> no_incense 
+    }
+    
+== no_incense
+香爐裡只有幾根燒盡的香。
+->END
+
+== incense_burned
+~ speaker = "我"
+「感覺我以前的生活好像過得不太好...」
+「爸媽給我的壓力就像山一樣壓得我喘不過氣來，我卻沒有能力反抗」
+「就像是一隻提線木偶一樣隨意任人操控」
+「......」
+「看來...有些事還是只能請神明幫忙才行......」
+~ speaker = ""
+（面向神桌）
+~ speaker = "我"
+「拜拜的時候，拿香的規矩也是很重要的...」
+「以前跟爸爸媽媽一起拜拜時，他們總是叮囑我拿的香數量不同有不同的涵義...」
+「我究竟該拿幾支香來拜呢？」
+~ CANincense = 1
+->END
+
+
+== USEincense
+~ speaker = "我"
+~ inc_interact += 1
+「該拿幾支香來拜呢？」
+{ inc_interact > 5:
+    「不需要再拜拜了」
+    -> END
+- else:
+    ~ speaker = ""
+    *【一炷香】
+    「如果我想請神明幫忙，只點燃一支香可能不夠......」
+    ->END
+    *【三炷香】
+        ~ HP_Add(1)
+        ~ speaker = "我"
+        「我...好像只求過一次…那是我唯一主動去祈求神明的時候。」
+        「......」
+        「可那真的是我想要的嗎？還是……只是因為我想滿足他們的期待？」
+        「連祈願的方式……都要有人告訴我『正確』的做法。
+        可是，神明在意的……真的是香的數量，還是我祈求時的心意？」
+        ~ speaker = ""
+        （拿起神桌上的打火機點亮了手中的香，拜三拜，向神明祈求，隨後把香插入香爐內）
+        （角落放著祖先牌位的櫃子發出了咖噠一聲）
+        ~ speaker = "我"
+        「也許...我早就忘了自己想求什麼，只記得該怎麼做才能讓他們滿意。」
+        ->END
+    *【五炷香】
+        ~ HP_Add(-1)
+        ~ speaker = "我"
+        「節日或是法會才會用到，這好像跟我想祈求的事情無關......」
+        ->END
+    *【七炷香】
+        ~ speaker = "我"
+        「調轉生死或命運走向，我應該還不至於用到這種地步吧......」
+        ->END
+    *【九炷香】
+        ~ HP_Add(-1)
+        ~ speaker = "我"
+        「我只不過是想跟神明祈求一些事而已，不用這麼大手筆......」
+        ->END
+}  
+
+== cabinet
+~ speaker = ""
+鞋櫃裡有很多雙鞋
+~ speaker = "我"
+「有好幾雙鞋子特別髒...」
+「嗯？鞋櫃裡好像有幾張紙...」
+->END
+
+
+
+
+
 
 
 == parent_room ==
@@ -585,18 +720,19 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 「房間門緊鎖，似乎需要一把鑰匙，在手碰到門把的時候，有一股不明的壓迫感從門後傳來，似乎在警告什麼。」
 + 使用鑰匙開門
     {have_items == "key_parent":
-    ~ UnlockDoor("parent_room")
         -> have_parent_key
     - else:
         -> no_parent_key 
     }
++ 等等
 ->END
 
 == have_parent_key ==
+~ UnlockDoor("parent_room")
+~ Unlock_door = true
 ~ speaker = ""
 【使用道具：父母房間的鑰匙】
 使用鑰匙打開了門
-~ Unlock_door = true
 ->END
 
 == no_parent_key ==

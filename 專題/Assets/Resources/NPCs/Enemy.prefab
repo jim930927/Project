@@ -80,7 +80,7 @@ SpriteRenderer:
   m_SortingLayerID: -1303903123
   m_SortingLayer: 6
   m_SortingOrder: 0
-  m_Sprite: {fileID: 8706480240455196043, guid: 987ab7b17a68dba4dab98364e51af77e, type: 3}
+  m_Sprite: {fileID: 41227662756550943, guid: 987ab7b17a68dba4dab98364e51af77e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -191,5 +191,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   appearPoint: {fileID: 0}
-  moveSpeed: 10
+  moveSpeed: 12
   isChasing: 0
+  animator: {fileID: 0}
+  lastDirection: {x: 0, y: -1}
+  movement: {x: 0, y: 0}

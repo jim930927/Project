@@ -82,7 +82,7 @@ public class Portal : MonoBehaviour
             return "";
 
         // ✅ 可擴充支援多把鑰匙
-        string[] allKeys = { "key_room", "key_parent" };
+        string[] allKeys = { "key_room", "key_parent" , "key_unknow" , "key_gold"};
         foreach (var key in allKeys)
         {
             if (dialogueManager.itemDatabase.HasItem(key))
