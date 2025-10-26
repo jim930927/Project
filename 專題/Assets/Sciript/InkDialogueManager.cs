@@ -67,16 +67,21 @@ public class InkDialogueManager : MonoBehaviour
     public Transform player;
     public Transform memoryPoint1;
     public Transform memoryPoint2;
+    public Transform memoryPoint3;
     private Vector3 originalPlayerPos;
 
     public Transform hidePoint1;
     public Transform hidePoint2;
+    public Transform hidePoint3;
 
     public EnemyController2D enemy2D;
     public GameObject enemyPrefab;
     public Transform enemyAppearPoint;
     private EnemyController2D activeEnemy;
     public Transform playerTransform;
+
+    public GameObject incense;
+    public GameObject forcer;
 
 
     public bool justLoaded = false;  // ← 新增：判斷是否剛載入存檔
@@ -109,6 +114,8 @@ public class InkDialogueManager : MonoBehaviour
         dialoguePanel.SetActive(false);
         choiceContainer.SetActive(false);
         dialogueIsPlaying = false;
+
+        incense.SetActive(false);
 
         HidePortraits();
         InitCurtain();
@@ -325,6 +332,8 @@ public class InkDialogueManager : MonoBehaviour
                    return "key_parent";
                 if (itemDatabase != null && itemDatabase.HasItem("key_unknow"))
                    return "key_unknow";
+                if (itemDatabase != null && itemDatabase.HasItem("key_unknow"))
+                    return "key_gold";
                 return "";
             });
 
@@ -350,13 +359,12 @@ public class InkDialogueManager : MonoBehaviour
                     have = "key_room";
                 else if (itemDatabase.HasItem("key_unknow"))
                     have = "key_unknow";
+                else if (itemDatabase.HasItem("key_gold"))
+                    have = "key_gold";
 
-                    story.variablesState["have_items"] = have;
+                story.variablesState["have_items"] = have;
                 Debug.Log($"🧩 已同步 have_items：{have}");
             }
-
-
-
 
             // === ② 初次同步一次（避免剛進入時 Inspector 沒顯示）===
             try
@@ -388,18 +396,31 @@ public class InkDialogueManager : MonoBehaviour
     }
 
     // 🔹 Ink 外部函式綁定區
-    private void BindExternalBookFunctions()
+    public void BindExternalBookFunctions()
     {
-        Debug.Log("🧩 BindExternalBookFunctions() 已執行！");
+
+        story.BindExternalFunction("Get_Item", (string itemID) =>
+        {
+            var clueIDB = itemDatabase;
+            var bookUI = bookUIManager;
+
+            clueIDB.AddItem(itemID);
+
+            bookUI.OpenClueOverlay(itemID);
+
+            Debug.Log($"📘 Ink 觸發撿取道具：{itemID}");
+        });
+
+
         // 🟩 Ink 呼叫：~ Get_Clue("Journal3")（撿取線索並顯示）
         story.BindExternalFunction("Get_Clue", (string clueID) =>
         {
             Debug.Log("🧩 BindExternalFunctions() 已執行！");
-            var clueDB = clueDatabase;
+            var clueIDB = clueDatabase;
             var bookUI = bookUIManager;
 
             // ✅ 加入線索到資料庫
-            clueDB.AddClue(clueID);
+            clueIDB.AddClue(clueID);
 
             // ✅ 顯示線索內容（不開整本書）
             bookUI.OpenClueOverlay(clueID);
@@ -558,6 +579,16 @@ public class InkDialogueManager : MonoBehaviour
             // 5️⃣ 顯示選項
             DisplayChoices();
             HandleTags(story.currentTags);
+
+            if (string.IsNullOrEmpty(text))
+            {
+                // 若有應自動略過的tag（例如memory結束、start_chase等）
+                if (tags.Count > 0)
+                {
+                    ContinueStory(); // 自動繼續下一輪，不顯示對話框
+                    return;
+                }
+            }
 
         }
         else
@@ -934,6 +965,10 @@ public class InkDialogueManager : MonoBehaviour
                     originalPlayerPos = player.position;
                     StartCoroutine(EnterMemoryScene("memory2"));
                     break;
+                case "memory3":
+                    originalPlayerPos = player.position;
+                    StartCoroutine(EnterMemoryScene("memory3"));
+                    break;
                 case "father_appear":
                     SpawnNPC("Father");
                     break;
@@ -947,6 +982,10 @@ public class InkDialogueManager : MonoBehaviour
                 case "refrigerator_memory_end":
                     StartCoroutine(ExitMemoryScene());
                     shouldAutoContinue = true; // 🟩 同上
+                    break;
+                case "amulet_memory_end":
+                    StartCoroutine(ExitMemoryScene());
+                    shouldAutoContinue = true; // 🟩 這類 tag 通常沒有對話，繼續下一段
                     break;
                 case "turn_back":
                     TurnPlayerBack();
@@ -975,12 +1014,16 @@ public class InkDialogueManager : MonoBehaviour
                         activeEnemy.AppearAtPoint();
                     }
                     break;
-
                 case "start_chase":
                     shouldAutoContinue = true; // 🟩 同上
                     activeEnemy?.StartChase();
                     break;
-
+                case "burn":
+                    incense.SetActive(true);
+                    break;
+                case "open_forcer":
+                    if (forcer != null) forcer.SetActive(true);
+                    break;
             }
         }
     }
@@ -1003,6 +1046,8 @@ public class InkDialogueManager : MonoBehaviour
             player.position = memoryPoint1.position;
         else if (memoryName == "memory2" && memoryPoint2 != null)
             player.position = memoryPoint2.position;
+        else if (memoryName == "memory3" && memoryPoint3 != null)
+            player.position = memoryPoint3.position;
 
         yield return StartCoroutine(FadeScreen(false)); // 淡出黑幕
     }

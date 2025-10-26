@@ -10,7 +10,7 @@ VAR foul = true
 VAR Get_letter = ""
 VAR canHide = false
 VAR CANincense = 0
-VAR Get_incense = ""
+VAR Get_incense = "incense"
 VAR inc_interact = 0
 
 EXTERNAL UnlockDoor(door_id)
@@ -22,7 +22,8 @@ EXTERNAL SpawnObject(chest)
 EXTERNAL OpenChestUI()
 EXTERNAL SpawnNPC(Guide) 
 EXTERNAL HP_Add(hp)
-EXTERNAL Get_Clue(clue_id)
+EXTERNAL Get_Item(itemID)
+EXTERNAL Get_Clue(clueID)
 EXTERNAL ReplaceItem(oldItemID,newItemID)
 
 
@@ -36,14 +37,15 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 ~ speaker = " "
 微弱晨光透過縫隙灑進，周圍安靜的可怕，唯獨鬧鐘發出了「滴答」的聲響。
 ~ speaker = "我"
-#play_music second_theme
 「剛剛那是...我的記憶嗎？」
 ~ speaker = ""
 抬頭看了看周圍
+~ speaker = "我"
 「這裡是...我家嗎？」
 「......」
 「不行...記憶很模糊！什麼都想不起來...」
 「我得找到那些缺失的部分……否則，我連自己是誰都無法確定。」
+#play_music second_theme
 -> END
 
 == trash_can
@@ -672,6 +674,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
     「如果我想請神明幫忙，只點燃一支香可能不夠......」
     ->END
     *【三炷香】
+        #burn
         ~ HP_Add(1)
         ~ speaker = "我"
         「我...好像只求過一次…那是我唯一主動去祈求神明的時候。」
@@ -681,6 +684,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
         可是，神明在意的……真的是香的數量，還是我祈求時的心意？」
         ~ speaker = ""
         （拿起神桌上的打火機點亮了手中的香，拜三拜，向神明祈求，隨後把香插入香爐內）
+        #open_forcer
         （角落放著祖先牌位的櫃子發出了咖噠一聲）
         ~ speaker = "我"
         「也許...我早就忘了自己想求什麼，只記得該怎麼做才能讓他們滿意。」
@@ -700,6 +704,43 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
         「我只不過是想跟神明祈求一些事而已，不用這麼大手筆......」
         ->END
 }  
+
+
+
+== god_forcer
+打開櫃子，裡面放著一把金色的鑰匙，上面寫著 「櫥櫃鑰匙」
+~ Get_Item("key_gold")
+裡面還放著一個平安符，上面寫著「保佑闔家平安」
+#memory3
+->amulet_memory
+
+== amulet_memory
+~ speaker = ""
+......
+#change_sprite
+~ speaker = "媽媽"
+「墨涅，這個平安符你拿著」
+「這是媽媽剛剛跟廟公求來的符，它經過了太子爺的法力加持，可以保你一生平安」
+~ speaker = "回憶中的我"
+「好~」
+#amulet_memory_end
+-> amulet_memory_end
+
+== amulet_memory_end
+~ speaker = ""
+#change_sprite_back
+......
+~ speaker = "我"
+「真是諷刺啊。」
+「你們希望我平安，可又一次次把我逼到崩潰的邊緣…」
+「這算什麼…愛嗎？ 還是單純把我當作一種工具?」
+「如果平安只是指活著、不生病、不出事……那我一直以來的那些痛苦，又算什麼？你們的『平安』，是不是只是希望我乖乖待在你們規劃好的籠子裡？」
+~ speaker = ""
+拿起平安符
+~ Get_Clue("amulet")
+【獲得線索：平安符（可抵擋一次攻擊）】
+【獲得記憶碎片6/6：他們的願望】
+->END
 
 == cabinet
 ~ speaker = ""

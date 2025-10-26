@@ -5,7 +5,7 @@ public class EnemyController2D : MonoBehaviour
     [Header("基本設定")]
     public Transform player;          // 玩家位置
     public Transform appearPoint;     // 出現位置
-    public float moveSpeed = 12f;      // 追逐速度
+    public float moveSpeed = 8f;      // 追逐速度
     public bool isChasing = false;
 
     [Header("動畫控制")]

@@ -33,9 +33,12 @@ public class Portal : MonoBehaviour
 
     void Update()
     {
-        // ✅ 若正在對話 → 禁止任何傳送動作
-        if (dialogueManager != null && dialogueManager.dialogueIsPlaying)
-            return;
+        // ✅ 若正在對話或剛結束（冷卻中）→ 禁止任何傳送動作
+        if (dialogueManager != null)
+        {
+            if (dialogueManager.dialogueIsPlaying || dialogueManager.IsInCooldown)
+                return;
+        }
 
         if (isTeleporting) return;
         if (!isPlayerInside || player == null) return;
@@ -57,7 +60,7 @@ public class Portal : MonoBehaviour
                 return;
             }
 
-            // ✅ 未解鎖 → 啟動 Ink 對話（由 Ink 控制是否能開門）
+            // ✅ 未解鎖 → 啟動 Ink 對話
             if (!dialogueManager.dialogueIsPlaying)
             {
                 try
@@ -74,6 +77,7 @@ public class Portal : MonoBehaviour
             }
         }
     }
+
 
 
     private string GetHeldKey()

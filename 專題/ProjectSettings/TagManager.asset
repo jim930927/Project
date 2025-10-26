@@ -70,6 +70,9 @@ TagManager:
   - name: Player
     uniqueID: 3967421025
     locked: 0
+  - name: "\u56DE\u61B6"
+    uniqueID: 3553765841
+    locked: 0
   - name: "\u9ED1\u5E55"
     uniqueID: 888784731
     locked: 0

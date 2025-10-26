@@ -243,6 +243,9 @@ public class BookUIManager : MonoBehaviour
 
         CDnextPageButton.gameObject.SetActive(currentPage < pageCount - 1);
         CDprevPageButton.gameObject.SetActive(currentPage > 0);
+        IDnextPageButton.gameObject.SetActive(false);
+        IDprevPageButton.gameObject.SetActive(false);
+
     }
 
     void CDNextPage() { currentPage++; UpdateCluePage(); }
@@ -349,6 +352,8 @@ public class BookUIManager : MonoBehaviour
 
         IDnextPageButton.gameObject.SetActive(currentItemPage < pageCount - 1);
         IDprevPageButton.gameObject.SetActive(currentItemPage > 0);
+        CDnextPageButton.gameObject.SetActive(false);
+        CDprevPageButton.gameObject.SetActive(false);
     }
 
     void OnItemAddedHandler(ItemData.Item item) => GenerateItemButtons();
