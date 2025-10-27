@@ -9,6 +9,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static ClueData;
+using static UnityEditor.Experimental.GraphView.GraphView;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class InkDialogueManager : MonoBehaviour
 {
@@ -60,14 +62,22 @@ public class InkDialogueManager : MonoBehaviour
 
     [Header("回憶場景")]
     public CanvasGroup blackScreenCanvasGroup; // 黑幕
+    public GameObject littleblackScreen;
+    public GameObject fullblackScreen;
     public Transform fatherSpawnPoint;          // 爸爸出現位置
     public Transform motherSpawnPoint;          // 媽媽出現位置
+
+    public Transform guideSpawnPoint;
+    public Transform enemySpawnPoint;
+
+    public GameObject PlayerLaySprite;
 
     [Header("Memory System")]
     public Transform player;
     public Transform memoryPoint1;
     public Transform memoryPoint2;
     public Transform memoryPoint3;
+    public Transform memoryPoint4;
     private Vector3 originalPlayerPos;
 
     public Transform hidePoint1;
@@ -332,7 +342,7 @@ public class InkDialogueManager : MonoBehaviour
                    return "key_parent";
                 if (itemDatabase != null && itemDatabase.HasItem("key_unknow"))
                    return "key_unknow";
-                if (itemDatabase != null && itemDatabase.HasItem("key_unknow"))
+                if (itemDatabase != null && itemDatabase.HasItem("key_gold"))
                     return "key_gold";
                 return "";
             });
@@ -969,11 +979,37 @@ public class InkDialogueManager : MonoBehaviour
                     originalPlayerPos = player.position;
                     StartCoroutine(EnterMemoryScene("memory3"));
                     break;
+                case "memory4":
+                    originalPlayerPos = player.position;
+                    StartCoroutine(EnterMemoryScene("memory4"));
+                    break;
                 case "father_appear":
                     SpawnNPC("Father");
                     break;
                 case "mother_appear":
                     SpawnNPC("Mother");
+                    break;
+                case "guide_appear":
+                    Debug.Log($"生成NPC");
+                    SpawnMemory("GuideNPC");
+                    break;
+                case "enemy_appear":
+                    Debug.Log($"生成NPC");
+                    SpawnMemory("EnemyNPC");
+                    break;
+                case "lay_down":
+                    FadePlayer();
+                    PlayerLaySprite.SetActive(true);
+                    break;
+                case "wake":
+                    ShowPlayer();
+                    PlayerLaySprite.SetActive(false);
+                    break;
+                case "EnemyNPC_disspear":
+                    DestroyAllEnemyNPCs();
+                    break;
+                case "GuideNPC_disspear":
+                    DestroyAllGuideNPCs();
                     break;
                 case "sink_memory_end":
                     StartCoroutine(ExitMemoryScene());
@@ -981,11 +1017,15 @@ public class InkDialogueManager : MonoBehaviour
                     break;
                 case "refrigerator_memory_end":
                     StartCoroutine(ExitMemoryScene());
-                    shouldAutoContinue = true; // 🟩 同上
+                    shouldAutoContinue = true;
                     break;
                 case "amulet_memory_end":
                     StartCoroutine(ExitMemoryScene());
-                    shouldAutoContinue = true; // 🟩 這類 tag 通常沒有對話，繼續下一段
+                    shouldAutoContinue = true;
+                    break;
+                case "store_memory_end":
+                    StartCoroutine(ExitMemoryScene());
+                    shouldAutoContinue = true; 
                     break;
                 case "turn_back":
                     TurnPlayerBack();
@@ -1024,11 +1064,15 @@ public class InkDialogueManager : MonoBehaviour
                 case "open_forcer":
                     if (forcer != null) forcer.SetActive(true);
                     break;
+                case "black_screen":
+                    fullblackScreen.SetActive(true);
+                    break;
+                case "back_screen":
+                    fullblackScreen.SetActive(false);
+                    break;
             }
         }
     }
-
-
 
     // -----------------------------
     // 記憶場景切換、NPC出現
@@ -1037,6 +1081,7 @@ public class InkDialogueManager : MonoBehaviour
     {
         yield return StartCoroutine(FadeScreen(true)); // 黑屏
         player.GetComponent<Animator>().SetFloat("LastY", 1);
+        littleblackScreen.SetActive(true);
 
         // 記錄原始位置
         Debug.Log($"紀錄進入記憶前的位置：{originalPlayerPos}");
@@ -1048,12 +1093,15 @@ public class InkDialogueManager : MonoBehaviour
             player.position = memoryPoint2.position;
         else if (memoryName == "memory3" && memoryPoint3 != null)
             player.position = memoryPoint3.position;
+        else if (memoryName == "memory4" && memoryPoint4 != null)
+            player.position = memoryPoint4.position;
 
         yield return StartCoroutine(FadeScreen(false)); // 淡出黑幕
     }
 
     IEnumerator ExitMemoryScene()
     {
+        littleblackScreen.SetActive(false);
         yield return StartCoroutine(FadeScreen(true)); // 黑屏
         player.GetComponent<Animator>().SetFloat("LastY", 1);
 
@@ -1074,6 +1122,15 @@ public class InkDialogueManager : MonoBehaviour
         if (prefab == null) return;
 
         Vector3 spawnPos = npcName == "Father" ? fatherSpawnPoint.position : motherSpawnPoint.position;
+        Instantiate(prefab, spawnPos, Quaternion.identity);
+    }
+
+    void SpawnMemory(string npcName)
+    {
+        GameObject prefab = Resources.Load<GameObject>($"NPCs/{npcName}");
+        if (prefab == null) return;
+
+        Vector3 spawnPos = npcName == "EnemyNPC" ? enemySpawnPoint.position : guideSpawnPoint.position;
         Instantiate(prefab, spawnPos, Quaternion.identity);
     }
 
@@ -1113,6 +1170,22 @@ public class InkDialogueManager : MonoBehaviour
         }
     }
 
+    void DestroyAllEnemyNPCs()
+    {
+        foreach (var npcE in GameObject.FindGameObjectsWithTag("EnemyNPC"))
+        {
+            Destroy(npcE);
+        }
+    }
+
+    void DestroyAllGuideNPCs()
+    {
+        foreach (var npcG in GameObject.FindGameObjectsWithTag("GuideNPC"))
+        {
+            Destroy(npcG);
+        }
+    }
+
     // -----------------------------
     // 黑幕淡入淡出控制
     // -----------------------------
@@ -1146,6 +1219,47 @@ public class InkDialogueManager : MonoBehaviour
         }
     }
 
+    private void FadePlayer()
+    {
+        var player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            // 你可以選擇用 Destroy、SetActive(false)，或播放動畫
+            // 以下範例用淡出動畫（若你有 DOTween）
+            var sprite = player.GetComponent<SpriteRenderer>();
+            if (sprite != null)
+            {
+                sprite.DOFade(0f, 0.1f);
+            }
+            Debug.Log("🧩 玩家已消失");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ 場景中找不到 tag 為 'Player' 的物件");
+        }
+    }
+
+    private void ShowPlayer()
+    {
+        var player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            // 你可以選擇用 Destroy、SetActive(false)，或播放動畫
+            // 以下範例用淡出動畫（若你有 DOTween）
+            var sprite = player.GetComponent<SpriteRenderer>();
+            if (sprite != null)
+            {
+                sprite.DOFade(1f, 0.1f);
+            }
+            Debug.Log("🧩 玩家已回復");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ 場景中找不到 tag 為 'Player' 的物件");
+        }
+    }
+
+
     private void HideEnemy()
     {
         var enemy = GameObject.FindWithTag("Enemy");
@@ -1168,6 +1282,7 @@ public class InkDialogueManager : MonoBehaviour
         {
             Debug.LogWarning("⚠️ 場景中找不到 tag 為 'Enemy' 的物件");
         }
+
     }
 
 
@@ -1205,6 +1320,8 @@ public class InkDialogueManager : MonoBehaviour
                     have = "key_parent";
                 else if (itemDatabase.HasItem("key_room"))
                     have = "key_room";
+                else if (itemDatabase.HasItem("key_store"))
+                    have = "key_store";
 
                 story.variablesState["have_items"] = have;
                 Debug.Log($"🧩 已同步 have_items：{have}");

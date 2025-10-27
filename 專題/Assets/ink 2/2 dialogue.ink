@@ -10,8 +10,9 @@ VAR foul = true
 VAR Get_letter = ""
 VAR canHide = false
 VAR CANincense = 0
-VAR Get_incense = "incense"
+VAR Get_incense = ""
 VAR inc_interact = 0
+VAR key_gold = false
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
@@ -138,6 +139,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
  ~ SpawnNPC("Guide")
  ~ speaker = " "
 一個幽暗身影出現在旁邊
+#turn_back
 ~ speaker = "我"
 「你是剛剛的那個......？」
 ~ speaker = "引路人"
@@ -211,7 +213,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 ~ speaker = ""
 【獲得道具：房間鑰匙】
 【獲得線索：墨涅的繪本、一份病歷、幾張藝術比賽的獎狀】
-【獲得記憶碎片1/6：不受待見的榮譽】
+【獲得記憶碎片1/8：不受待見的榮譽】
 ->END
 
 
@@ -268,11 +270,6 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 == sofa
 ~ speaker = " "
 坐起來很舒服老舊的沙發，上面有長期使用的痕跡
-->END
-
-== glass_cabinet
-~ speaker = " "
-櫥櫃緊鎖著，裡面放著一幅全家福，是小時候的墨涅跟年輕時的父母，一家人笑得很開心。
 ->END
 
 == Dining_room
@@ -383,7 +380,6 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 - else:
     * 打開冰箱
         #memory2
-        ~ HP_Add(1)
         「......」
         ->refrigerator_memory
     * 不打開冰箱
@@ -391,8 +387,8 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
         「現在肚子不餓，不用找吃的」
         「嗯？冰箱上好像貼著什麼東西」
         「這是...又一個日記殘頁？」
-        ~ Get_Clue("Journal3")
-        ->Journal3
+        ~ Get_Clue("Journal2")
+        ->Journal2
 }  
 
 == refrigerator_memory
@@ -423,10 +419,11 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 「從那之後...我好像再也沒在半夜跑到廚房了...」
 「我一直認為，他們的規則只是為了讓我服從……」
 「可那天的媽媽，似乎真的只是怕我累壞……」
+~ HP_Add(1)
 「或者，我只是想把每一次的限制都解讀成惡意，這樣我才有理由反抗。」
 ->END
 
-== Journal3
+== Journal2
 ~ speaker = "我"
 「......」
 「爸跟媽...常常在吵架？」
@@ -434,7 +431,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 「那我到底算什麼...我不是他們的孩子嗎？為什麼我要承擔他們不滿的情緒？他們有尊重過我嗎...」
 「在他們眼裡...我究竟是他們的親生骨肉，還是可以隨意任由他們出氣的沙包？」
 ~ speaker = " "
-【獲得線索：日記殘頁-4】
+【獲得線索：日記殘頁-2】
 ->END
 
 == kitchen_sink
@@ -472,6 +469,8 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 ~ speaker = "我"
 「這樣就可以了」
 ~ ReplaceItem("water_letter", "dry_letter")
+~ speaker = " "
+打開信封
 ->END
 
 ==letter_end
@@ -482,8 +481,8 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 「可是……如果他們是愛我的，為什麼還要用懲罰代替解釋？...他們口中的保護，為什麼要讓我覺得自己像犯了罪？」
 「也許……真相，並不會讓我感到好受」
 ~ speaker = ""
-【獲得線索：一封老舊的信件】
-【獲得記憶碎片2/6：未曾解釋的擔心】
+【獲得線索：一封老舊的信封-2】
+【獲得記憶碎片2/8：未曾解釋的擔心】
 ->END
 
 == knife_holder
@@ -508,7 +507,12 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 「這是...缺失的日記？」
 ~ speaker = ""
 懸掛在曬衣繩上的學校外套裡有幾張日記殘頁。
+->END
+
+== cloth_end
 ~ HP_Add(1)
+【獲得線索：日記殘頁-4】
+【獲得記憶碎片3/8：校服上的傷痕】
 ->END
 
 == cloth_wash
@@ -538,6 +542,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 「你找到了新的線索了啊...」
 ~ speaker = "我"
 * 「Ｘ！你有什麼毛病啊！」
+    #turn_back
     ~ HP_Add(1)
     ~ speaker = "我"
     「可以不要每次都無聲無息地突然出現接著又莫名其妙地消失嗎，下次出現可以給我一點心理準備嗎？」
@@ -564,6 +569,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
     ~ canHide = true
     ->END
 * 「怎麼又是你」
+    #turn_back
     ~ HP_Add(-1)
     ~ speaker = "我"
     「你一直這樣跟蹤我到底有什麼目的？」
@@ -577,6 +583,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
     「真是個奇怪的傢伙。算了！我還是趕快去其他地方找找看有沒有其他線索」
     ->END
 * 「你怎麼總是神出鬼沒的」
+    #turn_back
     ~ speaker = "引路人"
     「我只是出來提醒你，要謹記你房間裡那張寫著家規的紙條」
     ~ speaker = "我"
@@ -612,7 +619,146 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 「要先找到鑰匙...」
 ->END
 
+== storeroom
+#memory4
+~ speaker = ""
+#turn_left
+......
+~ speaker = "媽媽"
+「墨涅，今天段考的考卷呢？」
+「考幾分？拿出來讓我看看。」
+~ speaker = "媽媽"
+「考這什麼分數」
+「為什麼表哥每一科都能考滿分，你就不能？」
+~ speaker = "回憶中的我"
+「因為我不是他！」
+~ speaker = "媽媽"
+「一天到晚除了畫畫，你還會做什麼？」
+~ speaker = "回憶中的我"
+「我有在讀書，但你們都只覺得我一直在畫畫！」
+~ speaker = "媽媽"
+「有在讀書？ 有在讀還考這樣的成績？ 不要開玩笑了！」
+~ speaker = "回憶中的我"
+「我真的有！」
+~ speaker = "媽媽"
+「每天都只會畫那些有的沒有的東西，如果你把那些時間放在課業上怎麼可能考不了滿分！」
+「不把書讀好你以後怎麼辦？ 準備去工地搬磚嗎！」
+~ speaker = "回憶中的我"
+「不是...這樣的...」
+~ speaker = "媽媽"
+「這些東西我小時候隨便就能學會了，為什麼你就是學不會？！」
+~ speaker = "回憶中的我"
+「我真的不知道該怎麼學！」
+~ speaker = "媽媽"
+「還敢頂嘴？！ 我看你就是日子過得太好了，你就待在倉庫裡，直到你徹底反省吧！」
+#store_memory_end
+->store_memory_end
 
+
+== store_memory_end
+~ speaker = ""
+......
+~ speaker = "我"
+「我…不是沒用的孩子…真的…對不起…求你們…不要…不要再把我…關起來了…」
+#black_screen
+~ speaker = ""
+#lay_down
+「他們理想中的『我』……是認真讀書、成績優秀、不頂嘴的孩子……」
+「可我記憶中的『我』……是喜歡畫畫、會抱小貓、會在半夜偷吃東西的孩子……」
+「這兩個人……哪一個才是真的？」
+#guide_appear
+#enemy_appear
+~ speaker = ""
+......
+#back_screen
+~ speaker = "鬱的化身"
+「規則……是不能違反的……」
+~ speaker = "引路人"
+「別做得太過火，別忘了，只有他找到自我，我們才有機會脫離 “祂” 的掌控。」
+~ speaker = "鬱的化身"
+「那...就更不能讓他去送死了。只要...他別去面對，像以前一樣…做個聽話的小孩…我們就能保全自己...」
+「我會...不擇手段的阻止他...」
+~ speaker = ""
+他的手指微微顫抖——就像真的怕失去什麼。
+~ speaker = "鬱的化身"
+「因為……我知道那些記憶有多痛……我不想讓他再經歷一次。」
+~ speaker = "引路人"
+「難道...你想要一輩子活在 “祂” 的掌控下嗎。」
+#EnemyNPC_disspear
+~ speaker = ""
+......
+~ speaker = ""
+引路人低下身拍了拍墨涅的身體
+~ speaker = "引路人"
+「醒醒」
+~ speaker = ""
+* 不想醒過來
+    ~ speaker = "我"
+    「這裡……很安靜，沒有人責罵，也沒有人逼我面對那些畫面……」
+    「如果……我就一直這樣待下去……會不會比較輕鬆？」
+    低頭，看見自己的手被細細的線牽住——線的另一端，消失在無盡的黑暗中。
+    【Game Over】
+    解鎖結局：【最後的夢】
+    ->END
+* 醒過來
+    #wake
+    ~ speaker = ""
+    感覺有人在拍我便悠悠醒轉
+    迷迷糊糊的睜開眼小聲地道
+    ~ speaker = "我"
+    #turn_left
+    「誰？」
+    ~ speaker = "引路人"
+    「是我」
+    ~ speaker = "我"
+    「我這是...怎麼了？」
+    ~ speaker = "引路人"
+    「你從幻覺中再次體會到了當時的痛苦，承受不住...所以昏倒了」
+    ->wake
+    
+== wake
+~ speaker = "我"
+*「那...剛才那些...是真的嗎？」
+    ~ speaker = "引路人"
+    「是不是你自己心裡明白」
+    ~ speaker = "我"
+    「什麼意思？」
+    ~ speaker = "引路人"
+    「我能說的都已經說完了，剩下的只能靠你自己了」
+    ~ speaker = "我"
+    「可是我該怎麼做？」
+    ~ speaker = "引路人"
+    「繼續找回你的記憶吧，當你回想起一切、找回你的自我的時候，你就能得到答案。」
+    ~ speaker = "我"
+    (他說得輕描淡寫……可那畫面裡的痛，比我現在的心跳還真實。)
+    「看來...只能繼續往前了......」
+    #GuideNPC_disspear
+    ->END
+* 「不管那是幻覺還是現實」
+    ~ HP_Add(1)
+    ~ speaker = "我"
+    「我想那一定跟我為什麼會來到這鬼地方有關，我一定要調查清楚」
+    ~ speaker = "引路人"
+    「繼續找回你的記憶吧，當你回想起一切、找回你的自我的時候，你就能得到答案。」
+    ~ speaker = "我"
+    (如果那是假的，那我又為什麼會流淚？)
+    (如果那是真的，那現在的我……是那時候的延續，還是另一個人？)
+    「看來...只能繼續往前了！」
+    #GuideNPC_disspear
+    ->END
+*「我不想再看到那些了…拜託…」
+    ~ HP_Add(-1)
+    ~ speaker = "引路人"
+    「......」
+    「很抱歉...但...這些事情...都是曾經的你經歷過的事...你現在選擇逃避...之後還是得面對」
+    ~ speaker = "我"
+    「為什麼...我的父母要這樣對我？」
+    ~ speaker = "引路人"
+    「繼續找回你的記憶吧，當你回想起一切、找回你的自我的時候，你就能得到答案。」
+    #GuideNPC_disspear
+    ~ speaker = "我"
+    「......」
+->END
 
 == incense
 ~ speaker = ""
@@ -708,11 +854,14 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 
 
 == god_forcer
+~ speaker = ""
 打開櫃子，裡面放著一把金色的鑰匙，上面寫著 「櫥櫃鑰匙」
 ~ Get_Item("key_gold")
+~ key_gold = true
 裡面還放著一個平安符，上面寫著「保佑闔家平安」
 #memory3
 ->amulet_memory
+
 
 == amulet_memory
 ~ speaker = ""
@@ -739,7 +888,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 拿起平安符
 ~ Get_Clue("amulet")
 【獲得線索：平安符（可抵擋一次攻擊）】
-【獲得記憶碎片6/6：他們的願望】
+【獲得記憶碎片6/8：他們的願望】
 ->END
 
 == cabinet
@@ -751,10 +900,37 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 ->END
 
 
+== Journal5
+~ speaker = ""
+【獲得線索：日記殘頁-5】
+【獲得記憶碎片7/8：鞋舌下的沉默】
+->END
 
+== glass_cabinet
+{key_gold == true:
+    ->inside
+-else:
+->outside
+}
 
+->END
 
+== inside
+~ speaker = ""
+用神明廳得來的金鑰匙打開客廳的玻璃櫥窗。
+#use_key_gold
+裡面有一張童年出遊時的全家福照片、幾張日記殘頁
+~ Get_Clue("FamilyPortrait")
+~ Get_Clue("Journal3")
+......
+【獲得線索：全家福、日記殘頁-3】
+【獲得記憶碎片8/8：記憶中的模樣】
+->END
 
+== outside
+~ speaker = " "
+櫥櫃緊鎖著，裡面放著一幅全家福，是小時候的墨涅跟年輕時的父母，一家人笑得很開心。
+->END
 
 == parent_room ==
 ~ speaker = "我"

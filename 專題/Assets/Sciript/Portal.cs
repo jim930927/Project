@@ -241,9 +241,11 @@ public class Portal : MonoBehaviour
 
                 if (inkUnlocked)
                 {
+                    /*
                     DoorManager.Instance.UnlockDoor(doorGroupID);
                     unlocked = true;
                     Debug.Log($"🗝️ 自動補登解鎖：{doorGroupID}");
+                    */
 
                     // ===== 新增：如果門有設定 requiredKeyID，且玩家持有該鑰匙，就消耗它 =====
                     if (!string.IsNullOrEmpty(requiredKeyID) && dialogueManager != null && dialogueManager.itemDatabase != null)

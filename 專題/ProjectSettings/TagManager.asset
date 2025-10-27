@@ -9,6 +9,8 @@ TagManager:
   - HP
   - Enemy
   - NPC
+  - EnemyNPC
+  - GuideNPC
   layers:
   - Default
   - TransparentFX
