@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ff2783722c426b419a57a0c446d7471, type: 3}
+  m_Name: MemoryFragmentDatabase
+  m_EditorClassIdentifier: 
+  fragments:
+  - id: honor
+    name: "\u3010\u8A18\u61B6\u788E\u72471/8\uFF1A\u4E0D\u53D7\u5F85\u898B\u7684\u69AE\u8B7D\u3011"
+    collected: 0
+    collectedTime: 0
+  - id: care
+    name: "\u3010\u8A18\u61B6\u788E\u72472/8\uFF1A\u4E0D\u9858\u89E3\u91CB\u7684\u64D4\u5FC3\u3011"
+    collected: 0
+    collectedTime: 0
+  - id: scars
+    name: "\u3010\u8A18\u61B6\u788E\u72473/8\uFF1A\u6821\u670D\u4E0A\u7684\u50B7\u75D5\u3011"
+    collected: 0
+    collectedTime: 14.146957
+  - id: expect
+    name: "\u3010\u8A18\u61B6\u788E\u72474/8\uFF1A\u7236\u6BCD\u7684\u671F\u671B\u3011"
+    collected: 0
+    collectedTime: 36.04815
+  - id: lied
+    name: "\u3010\u8A18\u61B6\u788E\u72475/8\uFF1A\u7236\u89AA\u7684\u8B0A\u8A00\u3011"
+    collected: 0
+    collectedTime: 0
+  - id: desire
+    name: "\u3010\u8A18\u61B6\u788E\u72476/8\uFF1A\u6BCD\u89AA\u7684\u9858\u671B\u3011"
+    collected: 0
+    collectedTime: 0
+  - id: silence
+    name: "\u3010\u8A18\u61B6\u788E\u72477/8\uFF1A\u978B\u820C\u4E0B\u7684\u6C89\u9ED8\u3011"
+    collected: 0
+    collectedTime: 0
+  - id: memory
+    name: "\u3010\u8A18\u61B6\u788E\u72478/8\uFF1A\u8A18\u61B6\u4E2D\u7684\u6A21\u6A23\u3011"
+    collected: 0
+    collectedTime: 0

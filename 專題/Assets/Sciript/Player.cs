@@ -17,6 +17,15 @@ public class Player : MonoBehaviour
     //private float idleBuffer = 0.1f; // 緩衝 0.1 秒
     private float lastMoveTime;
 
+    public bool isHiding = false;
+    public SpriteRenderer playerRenderer;
+    public Collider2D playerCollider;
+    public Player movement1;
+    public GameObject blackscreen;
+
+    private Vector3 originalPosition;
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -66,5 +75,37 @@ public class Player : MonoBehaviour
     public void SetCanMove(bool value)
     {
         canMove = value;
+    }
+    // Player.EnterHide()
+    public void EnterHide(Transform hideSpot)
+    {
+        if (isHiding) return;
+        blackscreen.SetActive(true);
+
+        isHiding = true;
+        originalPosition = transform.position;
+
+        transform.position = hideSpot.position;
+        playerRenderer.enabled = false;
+        playerCollider.enabled = false;
+        movement1.enabled = false;
+
+        Debug.Log("🫥 玩家進入躲藏點");
+    }
+
+
+    public void ExitHide()
+    {
+        if (!isHiding) return;
+        blackscreen.SetActive(false);
+
+        isHiding = false;
+        transform.position = originalPosition;
+
+        playerRenderer.enabled = true;
+        playerCollider.enabled = true;
+        movement1.enabled = true;
+
+        Debug.Log("👀 玩家離開躲藏點");
     }
 }

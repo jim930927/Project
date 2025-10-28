@@ -60,6 +60,10 @@ public class InkDialogueManager : MonoBehaviour
     public BookUIManager bookUIManager;
     public bool doorUnlocked = false;
 
+    [Header("記憶碎片資料庫")]
+    public MemoryFragmentData memoryFragmentDatabase;
+
+
     [Header("回憶場景")]
     public CanvasGroup blackScreenCanvasGroup; // 黑幕
     public GameObject littleblackScreen;
@@ -69,6 +73,8 @@ public class InkDialogueManager : MonoBehaviour
 
     public Transform guideSpawnPoint;
     public Transform enemySpawnPoint;
+
+    public Transform StorySpawnPoint;
 
     public GameObject PlayerLaySprite;
 
@@ -92,6 +98,19 @@ public class InkDialogueManager : MonoBehaviour
 
     public GameObject incense;
     public GameObject forcer;
+    public GameObject Exam;
+
+    [System.Serializable]
+    public class EndingLabel
+    {
+        public string tagName;   // 例如 "GameOver1"
+        public string text;      // 顯示在黑幕上的字，例如 "True End"
+    }
+
+    public EndingLabel[] endings;          // 可在 Inspector 填多個
+    public TextMeshProUGUI endingTextUI;   // 指到UI(TextMeshProUGUI)
+
+
 
 
     public bool justLoaded = false;  // ← 新增：判斷是否剛載入存檔
@@ -259,6 +278,15 @@ public class InkDialogueManager : MonoBehaviour
                 if (chest != null)
                 {
                     chest.Interact();
+                }
+            });
+
+            story.BindExternalFunction("OpenSafeUI", () =>
+            {
+                var safe = GameObject.FindObjectOfType<SafeController>();
+                if (safe != null)
+                {
+                    safe.Interact();
                 }
             });
 
@@ -437,6 +465,38 @@ public class InkDialogueManager : MonoBehaviour
 
             Debug.Log($"📘 Ink 觸發撿取線索：{clueID}");
         });
+
+
+        story.BindExternalFunction("Get_fragments", (string fragID) =>
+        {
+            var fragDB = memoryFragmentDatabase; // 你等下要在 Inspector 綁上 ScriptableObject
+            fragDB.AddFragment(fragID);
+
+            int count = fragDB.GetCollectedCount();
+            Debug.Log($"🧩 當前記憶碎片數量：{count}/8");
+
+            if (count == 4)
+            {
+                HP hpSystem = FindObjectOfType<HP>();
+                if (hpSystem != null)
+                {
+                    hpSystem.hp += 1;
+                    Debug.Log("💖 記憶碎片達到4個，血量 +1！");
+                }
+            }
+
+            if (count == 8)
+            {
+                HP hpSystem = FindObjectOfType<HP>();
+                if (hpSystem != null)
+                {
+                    hpSystem.hp += 1;
+                    Debug.Log("💖 記憶碎片達到8個，血量 +1！");
+                }
+            }
+        });
+
+
 
         story.BindExternalFunction("ReplaceItem", (string oldItemID, string newClueID) =>
         {
@@ -997,6 +1057,9 @@ public class InkDialogueManager : MonoBehaviour
                     Debug.Log($"生成NPC");
                     SpawnMemory("EnemyNPC");
                     break;
+                case "StoryNPC":
+                    SpawnStory("StoryNPC");
+                    break;
                 case "lay_down":
                     FadePlayer();
                     PlayerLaySprite.SetActive(true);
@@ -1010,6 +1073,9 @@ public class InkDialogueManager : MonoBehaviour
                     break;
                 case "GuideNPC_disspear":
                     DestroyAllGuideNPCs();
+                    break;
+                case "StoryNPC_disspear":
+                    DestroyAllStoryNPCs();
                     break;
                 case "sink_memory_end":
                     StartCoroutine(ExitMemoryScene());
@@ -1070,9 +1136,44 @@ public class InkDialogueManager : MonoBehaviour
                 case "back_screen":
                     fullblackScreen.SetActive(false);
                     break;
+                case "Exam_appear":
+                    ExamAppear();
+                    break;
             }
+            // ====== GameOver 支援 ======
+            if (tag.StartsWith("GameOver"))
+            {
+                string endingName = "END"; // fallback
+                foreach (var e in endings)
+                {
+                    if (e.tagName == tag)
+                    {
+                        endingName = e.text;
+                        break;
+                    }
+                }
+                StartCoroutine(ShowEndingThenReturnMenu(endingName));
+                return; // 停止繼續處理其他 tag
+            }
+
         }
     }
+    private IEnumerator ShowEndingThenReturnMenu(string endingName)
+    {
+        // 黑幕顯示
+        fullblackScreen.SetActive(true);
+
+        // 顯示結局文字
+        endingTextUI.text = endingName;
+        endingTextUI.gameObject.SetActive(true);
+
+        // 停 3 秒
+        yield return new WaitForSeconds(3f);
+
+        // 回主選單
+        SceneManager.LoadScene("MainMenu");
+    }
+
 
     // -----------------------------
     // 記憶場景切換、NPC出現
@@ -1134,6 +1235,14 @@ public class InkDialogueManager : MonoBehaviour
         Instantiate(prefab, spawnPos, Quaternion.identity);
     }
 
+    void SpawnStory(string npcName)
+    {
+        GameObject prefab = Resources.Load<GameObject>($"NPCs/{npcName}");
+        if (prefab == null) return;
+
+        Vector3 spawnPos = npcName == "StoryNPC" ? StorySpawnPoint.position : StorySpawnPoint.position;
+        Instantiate(prefab, spawnPos, Quaternion.identity);
+    }
 
     private void TurnPlayerBack()
     {
@@ -1183,6 +1292,14 @@ public class InkDialogueManager : MonoBehaviour
         foreach (var npcG in GameObject.FindGameObjectsWithTag("GuideNPC"))
         {
             Destroy(npcG);
+        }
+    }
+
+    void DestroyAllStoryNPCs()
+    {
+        foreach (var npcS in GameObject.FindGameObjectsWithTag("StoryNPC"))
+        {
+            Destroy(npcS);
         }
     }
 
@@ -1335,7 +1452,10 @@ public class InkDialogueManager : MonoBehaviour
         }
     }
 
-
+    public void ExamAppear()
+    {
+        Exam.SetActive(true);
+    }
 }
 
 [System.Serializable]

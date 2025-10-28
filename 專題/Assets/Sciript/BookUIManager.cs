@@ -324,9 +324,6 @@ public class BookUIManager : MonoBehaviour
         GenerateItemButtons();
     }
 
-
-
-
     void ShowItemDetail(ItemData.Item item)
     {
         if (item == null) return;

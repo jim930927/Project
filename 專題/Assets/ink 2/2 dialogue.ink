@@ -8,7 +8,6 @@ VAR bed_interact = 0
 VAR ref_interact = 0
 VAR foul = true
 VAR Get_letter = ""
-VAR canHide = false
 VAR CANincense = 0
 VAR Get_incense = ""
 VAR inc_interact = 0
@@ -21,12 +20,13 @@ EXTERNAL ChangeToiletImage(toilet_type)
 EXTERNAL MovePlayer(bed_side)
 EXTERNAL SpawnObject(chest)
 EXTERNAL OpenChestUI()
+EXTERNAL OpenSafeUI()
 EXTERNAL SpawnNPC(Guide) 
 EXTERNAL HP_Add(hp)
 EXTERNAL Get_Item(itemID)
 EXTERNAL Get_Clue(clueID)
 EXTERNAL ReplaceItem(oldItemID,newItemID)
-
+EXTERNAL Get_fragments(fragmentID)
 
 == CG ==
 ~ speaker = " "
@@ -81,30 +81,17 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 
 
 == wardrobe ==
-{canHide == true:
-    -> hide1
-- else:
-    -> no_hide1
-    }
--> END
-
-
-== hide1
-#Hide1
-->END
-
-== no_hide1
 ~ speaker = " "
 裡面放著些許衣服，大多是長袖長褲
 ~ speaker = "我"
 「衣服好少，而且怎麼沒有幾件短袖...」
 「似乎可以躲進去...但現在沒這個必要」
+~ speaker = " "
+【按下E鍵即可躲藏】
 ->END
 
 
-
 == mirror ==
-~ canHide = true
 ~ speaker = " "
 一面鏡子
 ~ SaveGame() 
@@ -123,7 +110,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 「這是之前那本日記缺少的前幾頁？」
 「那些日記裡的聲音……像是在告訴我『你必須成為某種樣子』，可我真的想那樣嗎？如果那不是我想要的樣子，那日記裡的『我』又是誰？」
 ~ speaker = " "
-【獲得線索：日記殘頁-2】
+【獲得線索：日記殘頁-1】
 -> END
 
 == note ==
@@ -211,6 +198,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 ~ speaker = "引路人"
 「用它，解開這扇門的鎖。繼續尋找你失去的記憶吧。」
 ~ speaker = ""
+~ Get_fragments("honor")
 【獲得道具：房間鑰匙】
 【獲得線索：墨涅的繪本、一份病歷、幾張藝術比賽的獎狀】
 【獲得記憶碎片1/8：不受待見的榮譽】
@@ -229,7 +217,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 -> END
 
 == offense ==
-~ speaker = "???"
+~ speaker = "?"
 「你……不是個乖孩子。這樣……會讓你受傷的。」
 #Enemy_disappear
 ~ speaker = "我"
@@ -240,7 +228,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 ->END
 
 == no_offense ==
-~ speaker = "???"
+~ speaker = "?"
 「你……有聽話。聽話……才不會被傷害。」
 #Enemy_disappear
 ~ speaker = "我"
@@ -250,6 +238,15 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 「但他的語氣……不像是在威脅，反而像是在保證我安全。可這種安全……是不是意味著要放棄什麼？」
 「......」
 「我為什麼會這麼害怕……是因為我不想被懲罰，還是因為我怕失去他們的認同？」
+->END
+
+== get_catch
+~ speaker = "??"
+「觸犯規則...要受到懲罰」
+~ HP_Add(-1)
+~ speaker = "我"
+「糟了......」
+#GameOver1:TriggerRule
 ->END
 
 == warehouse
@@ -435,21 +432,11 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 ->END
 
 == kitchen_sink
-{canHide == true:
-    -> hide2
-- else:
-    -> no_hide2
-    }
--> END
-
-== hide2
-#Hide2
-->END
-
-== no_hide2
 ~ speaker = " "
 水池裡有一點水珠，似乎最近有使用過，底下的櫥櫃很空似乎可以躲藏。
-->END
+【按下E鍵即可躲藏】
+-> END
+
 
 
 == gas_stove
@@ -481,6 +468,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 「可是……如果他們是愛我的，為什麼還要用懲罰代替解釋？...他們口中的保護，為什麼要讓我覺得自己像犯了罪？」
 「也許……真相，並不會讓我感到好受」
 ~ speaker = ""
+~ Get_fragments("care")
 【獲得線索：一封老舊的信封-2】
 【獲得記憶碎片2/8：未曾解釋的擔心】
 ->END
@@ -511,6 +499,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 
 == cloth_end
 ~ HP_Add(1)
+~ Get_fragments("scars")
 【獲得線索：日記殘頁-4】
 【獲得記憶碎片3/8：校服上的傷痕】
 ->END
@@ -521,11 +510,11 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 ->END
 
 == clothes_basket
-~ speaker = ""
+~ speaker = " "
 衣物堆積在了籃子裡。
 ~ speaker = "我"
 「堆了好多衣服...這到底多久沒清理了啊？」
-~ speaker = ""
+~ speaker = " "
 在衣物堆裡面翻找起來
 找到被揉皺的紙團
 把紙團打開，裡面掉出一把舊鑰匙
@@ -536,10 +525,12 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 == clothes_basket_end
 ~ speaker = "我"
 「這紙團是指這把鑰匙對應的鎖嗎...」
-~ speaker = ""
+~ speaker = " "
 後面出現了黑影
 ~ speaker = "引路人"
 「你找到了新的線索了啊...」
+~ speaker = "我"
+「！！！」
 ~ speaker = "我"
 * 「Ｘ！你有什麼毛病啊！」
     #turn_back
@@ -554,10 +545,10 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
     「小心！」
     #Enemy_appear
     #turn_left
-    ~ speaker = "???"
+    ~ speaker = "??"
     「你...觸犯了規則......」
     他的聲音低沉，像是從我胸腔深處傳出。
-    ~ speaker = "???"
+    ~ speaker = "??"
     「別去看……別去想……那些記憶只會讓你痛苦。」
     ~ speaker = ""
     這語氣不像威脅，更像勸阻。
@@ -565,9 +556,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
     「他在擋我……可為什麼，我從他的語氣中我感覺到了害怕？」
     ~ speaker = "引路人"
     「現在不是說這個的時候，快跑！找個地方躲起來」
-    #start_chase
-    ~ canHide = true
-    ->END
+    ->chase
 * 「怎麼又是你」
     #turn_back
     ~ HP_Add(-1)
@@ -593,6 +582,9 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
     「真是個奇怪的傢伙。算了！我還是趕快去其他地方找找看有沒有其他線索」
     ->END
 
+== chase
+#start_chase
+->END
 
 == storehouse
 ~ speaker = ""
@@ -652,6 +644,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 ~ speaker = "媽媽"
 「還敢頂嘴？！ 我看你就是日子過得太好了，你就待在倉庫裡，直到你徹底反省吧！」
 #store_memory_end
+#Exam_appear
 ->store_memory_end
 
 
@@ -685,20 +678,21 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 ~ speaker = "引路人"
 「難道...你想要一輩子活在 “祂” 的掌控下嗎。」
 #EnemyNPC_disspear
-~ speaker = ""
+~ speaker = " "
 ......
-~ speaker = ""
+~ speaker = " "
 引路人低下身拍了拍墨涅的身體
 ~ speaker = "引路人"
 「醒醒」
+~ speaker = "我"
+「......」
 ~ speaker = ""
 * 不想醒過來
     ~ speaker = "我"
     「這裡……很安靜，沒有人責罵，也沒有人逼我面對那些畫面……」
     「如果……我就一直這樣待下去……會不會比較輕鬆？」
     低頭，看見自己的手被細細的線牽住——線的另一端，消失在無盡的黑暗中。
-    【Game Over】
-    解鎖結局：【最後的夢】
+    #GameOver2:LastDream
     ->END
 * 醒過來
     #wake
@@ -714,6 +708,8 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
     「我這是...怎麼了？」
     ~ speaker = "引路人"
     「你從幻覺中再次體會到了當時的痛苦，承受不住...所以昏倒了」
+    ~ speaker = "我"
+    「......」
     ->wake
     
 == wake
@@ -758,7 +754,62 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
     #GuideNPC_disspear
     ~ speaker = "我"
     「......」
+    ->END
+
+
+== exam_papers
+~ speaker = "我"
+~ Get_fragments("expect")
+「這是剛剛幻覺中出現的考卷...」
+【獲得線索：一張寫著81分的數學考卷】
+【獲得記憶碎片4/8：父母的期望】
 ->END
+
+
+
+== carton
+~ speaker = ""
+這大小...似乎可以躲進去
+【按下E鍵即可躲藏】
+->END
+
+== safe
+~ speaker = "我"
+「保險箱?...密碼是多少呢?」
+~ OpenSafeUI()
+->END
+
+== safe_open
+~ Get_Clue("Letter2")
+~ speaker = ""
+......
+~ speaker = "我"
+「這是……我爸寫的嗎？」
+「“那老不死的”？是指爺爺嗎？」
+「這到底是怎麼回事？難不成我爸很討厭爺爺？」
+「怎麼會這樣呢…從在客廳裡撿到的日記來看，爺爺應該是個很和藹、慈祥又很疼我的人，爸爸為什麼這麼討厭他？」
+「該不會…爺爺當初會離開，其實是因為老爸的關係？」
+「……」
+「不行，這件事我必須調查清楚才行，這是…爸媽房間的備用鑰匙？或許只要進去那裡…我就能找到一切我想了解的真相……」
+#StoryNPC
+~ speaker = "引路人"
+「找到重要的線索了吧」
+~ speaker = "我"
+「嗯......感覺當年爺爺會離開，並不像爸爸口頭上說的那麼簡單...我想...去找到這一切的真相...」
+~ speaker = "引路人"
+「不過...在還沒準備好之前，不要隨便違反規則進爸媽房間，否則…你可能會遇到不好的事」
+~ speaker = "我"
+「對不起，但我非去不可，這件事我一定要查清楚」
+~ speaker = "引路人"
+「好吧…那祝你好運，但我要先提醒你，去了之後就無法回頭，同時一切的命運皆掌握在你手中，望你好自為之」
+#StoryNPC_disspear
+~ speaker = ""
+~ Get_fragments("lied")
+【獲得道具：父母房間的備用鑰匙】
+【獲得線索：一封字跡潦草的書信】
+【獲得記憶碎片5/8：父親的謊言】
+->END
+
 
 == incense
 ~ speaker = ""
@@ -887,8 +938,9 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 ~ speaker = ""
 拿起平安符
 ~ Get_Clue("amulet")
+~ Get_fragments("desire")
 【獲得線索：平安符（可抵擋一次攻擊）】
-【獲得記憶碎片6/8：他們的願望】
+【獲得記憶碎片6/8：母親的願望】
 ->END
 
 == cabinet
@@ -902,6 +954,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 
 == Journal5
 ~ speaker = ""
+~ Get_fragments("silence")
 【獲得線索：日記殘頁-5】
 【獲得記憶碎片7/8：鞋舌下的沉默】
 ->END
@@ -922,6 +975,7 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 裡面有一張童年出遊時的全家福照片、幾張日記殘頁
 ~ Get_Clue("FamilyPortrait")
 ~ Get_Clue("Journal3")
+~ Get_fragments("memory")
 ......
 【獲得線索：全家福、日記殘頁-3】
 【獲得記憶碎片8/8：記憶中的模樣】
