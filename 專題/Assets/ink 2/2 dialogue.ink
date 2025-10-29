@@ -169,7 +169,6 @@ EXTERNAL Get_fragments(fragmentID)
     ->END
 * 放著不動
     #foul
-    ~ HP_Add(1)
     ~ foul = true
     「還是放著不動吧...應該...會沒事吧」
     ->END
@@ -221,6 +220,7 @@ EXTERNAL Get_fragments(fragmentID)
 「你……不是個乖孩子。這樣……會讓你受傷的。」
 #Enemy_disappear
 ~ speaker = "我"
+~ HP_Add(1)
 「剛剛那是......?」
 「......」
 「觸犯規則果然會有危險的事嗎...」

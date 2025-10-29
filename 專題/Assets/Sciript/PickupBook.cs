@@ -7,7 +7,7 @@ using UnityEngine;
 public class PickupBook : MonoBehaviour
 {
     public GameObject bookIconUI; // 書本圖示 UI
-    public InkDialogueManager dialogueManager; // 對話管理器
+    public firstDialogueManager dialogueManager; // 對話管理器
     public TextAsset inkJSONAsset; // 要播放的 Ink 劇本
 
     private bool isPlayerNear = false;

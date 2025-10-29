@@ -191,7 +191,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   appearPoint: {fileID: 0}
-  moveSpeed: 12
+  moveSpeed: 8
   isChasing: 0
   losePlayerTime: 3
   loseDistance: 8

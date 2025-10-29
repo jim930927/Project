@@ -3,7 +3,7 @@
 public class TalkToBoss : MonoBehaviour
 {
     public TextAsset inkJSONAsset; // 指定 Ink 劇本
-    public InkDialogueManager dialogueManager; // 指向對話控制器
+    public firstDialogueManager dialogueManager; // 指向對話控制器
 
     private bool isPlayerNear = false;
 

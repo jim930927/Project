@@ -6,7 +6,7 @@ public class Journal : MonoBehaviour
 {
     [Header("UI & Dialogue")]
     public GameObject journalImagePanel;
-    public InkDialogueManager dialogueManager;
+    public firstDialogueManager dialogueManager;
     public TextAsset inkJSON;
 
     [Header("Overlay UI")]

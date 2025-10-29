@@ -6,7 +6,7 @@ public class LetterInteraction : MonoBehaviour
 {
     [Header("UI & Dialogue")]
     public GameObject letterImagePanel;
-    public InkDialogueManager dialogueManager;
+    public firstDialogueManager dialogueManager;
     public TextAsset inkJSON;
 
     [Header("Overlay UI")]

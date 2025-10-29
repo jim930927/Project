@@ -4,7 +4,7 @@ using static ClueData;
 public class TalkToNPC : MonoBehaviour
 {
     public TextAsset inkJSONAsset; // 對話劇本
-    public InkDialogueManager dialogueManager; // Ink 對話控制器
+    public firstDialogueManager dialogueManager; // Ink 對話控制器
     public string knotName = "main_npc_talk"; // 這個 NPC 要跳轉的節點
 
     private bool isPlayerNear = false;
