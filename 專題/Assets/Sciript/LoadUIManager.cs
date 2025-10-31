@@ -60,12 +60,22 @@ public class LoadUIManager : MonoBehaviour
         string json = File.ReadAllText(path);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-        // 🔹 將資料暫存起來，讓下一個場景的 InkDialogueManager 讀取
+        // 🔹 將資料暫存起來
         pendingLoadData = data;
 
         InkDialogueManager.shouldAutoStartInk = false;
+
+        // 🩹 修正：避免 EventSystem 重複
+        var evt = UnityEngine.EventSystems.EventSystem.current;
+        if (evt != null)
+        {
+            GameObject.Destroy(evt.gameObject);
+            Debug.Log("🧹 已刪除舊 EventSystem，避免 UI 鎖死");
+        }
+
         SceneManager.LoadScene(data.sceneName);
     }
+
 
     // ✅ 在新場景中由 InkDialogueManager 呼叫
     public static IEnumerator ApplyPendingLoadData()
@@ -121,5 +131,40 @@ public class LoadUIManager : MonoBehaviour
         Cursor.visible = true;
 
         Debug.Log("✅ 存檔資料已完整還原（Ink + 玩家位置 + 場景物件）");
+
+        // 🟩 確保 EventSystem 存在且可互動
+        var evt = UnityEngine.EventSystems.EventSystem.current;
+        if (evt == null)
+        {
+            GameObject newEvt = new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.EventSystems.StandaloneInputModule));
+            Debug.Log("⚙️ 自動建立新的 EventSystem");
+        }
+        else
+        {
+            evt.enabled = true;
+            Debug.Log("⚙️ EventSystem 已啟用");
+        }
+        // 🩹 修正：重設所有 Canvas 的互動層級
+        int baseOrder = 0;
+        foreach (var canvas in GameObject.FindObjectsOfType<Canvas>())
+        {
+            if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                canvas.overrideSorting = true;
+                canvas.sortingOrder = baseOrder++;
+            }
+            else if (canvas.renderMode == RenderMode.ScreenSpaceCamera)
+            {
+                canvas.overrideSorting = true;
+                canvas.sortingOrder = baseOrder++;
+            }
+
+            // 確保 Canvas 可以互動
+            var ray = canvas.GetComponent<UnityEngine.UI.GraphicRaycaster>();
+            if (ray == null)
+                canvas.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+        }
+        Debug.Log("🧩 已重建 Canvas SortingOrder 與 Raycaster");
+
     }
 }

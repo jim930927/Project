@@ -140,13 +140,17 @@ public class InkDialogueManager : MonoBehaviour
 
     private void Start()
     {
-        // 🔹 如果是從存檔載入，就不要初始化新的 Ink Story
         if (LoadUIManager.pendingLoadData != null)
         {
             Debug.Log("🟡 檢測到待載入存檔，暫停自動初始化 Ink 劇情");
             justLoaded = true;
             shouldAutoStartInk = false;
+
+            // 關閉所有對話 UI，避免擋住互動
+            dialoguePanel?.SetActive(false);
+            choiceContainer?.SetActive(false);
         }
+
 
         // 🔸 原本的初始化流程
         if (inkJSON != null && shouldAutoStartInk && !justLoaded)
@@ -1399,14 +1403,14 @@ public class InkDialogueManager : MonoBehaviour
         SyncHpFromInk();
         SyncHaveItemsToInk();
 
-        // 恢復 UI
-        dialoguePanel.SetActive(true);
+        // 僅恢復 UI 狀態，不主動顯示文字
+        dialoguePanel.SetActive(false);
         choiceContainer.SetActive(false);
-        dialogueIsPlaying = true;
-        canContinue = true;
+        dialogueIsPlaying = false;
+        canContinue = false;
         justLoaded = false;
 
-        Debug.Log("✅ Ink 劇情已完全恢復");
+        Debug.Log("✅ Ink 劇情已完全恢復（等待玩家互動觸發對話）");
     }
 
 
