@@ -682,7 +682,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 3, y: -322.57486}
+  m_AnchoredPosition: {x: 560, y: -200}
   m_SizeDelta: {x: 300, y: 145.1497}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &504705848
@@ -1331,7 +1331,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 3, y: -175}
+  m_AnchoredPosition: {x: 190, y: -200}
   m_SizeDelta: {x: 300, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &782017513
@@ -1525,6 +1525,11 @@ MonoBehaviour:
   animator: {fileID: 834885466}
   lastDirection: {x: 0, y: -1}
   canMove: 1
+  isHiding: 0
+  playerRenderer: {fileID: 0}
+  playerCollider: {fileID: 0}
+  movement1: {fileID: 0}
+  blackscreen: {fileID: 0}
 --- !u!50 &834885469
 Rigidbody2D:
   serializedVersion: 5
@@ -2269,12 +2274,35 @@ MonoBehaviour:
   - Journal
   clueDatabase: {fileID: 11400000, guid: 7b90fe4aaccb5634d892a3aa92abaf94, type: 2}
   itemDatabase: {fileID: 11400000, guid: 2c30294bcd788e64cba5edbdfb80302e, type: 2}
+  bookUIManager: {fileID: 0}
   doorUnlocked: 0
+  memoryFragmentDatabase: {fileID: 0}
   blackScreenCanvasGroup: {fileID: 0}
-  backgroundImage: {fileID: 0}
-  originalBackground: {fileID: 0}
+  littleblackScreen: {fileID: 0}
+  fullblackScreen: {fileID: 0}
   fatherSpawnPoint: {fileID: 0}
   motherSpawnPoint: {fileID: 0}
+  guideSpawnPoint: {fileID: 0}
+  enemySpawnPoint: {fileID: 0}
+  StorySpawnPoint: {fileID: 0}
+  PlayerLaySprite: {fileID: 0}
+  player: {fileID: 0}
+  memoryPoint1: {fileID: 0}
+  memoryPoint2: {fileID: 0}
+  memoryPoint3: {fileID: 0}
+  memoryPoint4: {fileID: 0}
+  hidePoint1: {fileID: 0}
+  hidePoint2: {fileID: 0}
+  hidePoint3: {fileID: 0}
+  enemy2D: {fileID: 0}
+  enemyPrefab: {fileID: 0}
+  enemyAppearPoint: {fileID: 0}
+  playerTransform: {fileID: 0}
+  incense: {fileID: 0}
+  forcer: {fileID: 0}
+  Exam: {fileID: 0}
+  endings: []
+  endingTextUI: {fileID: 0}
   justLoaded: 0
 --- !u!4 &1077293360
 Transform:
@@ -3269,7 +3297,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 3, y: -25}
+  m_AnchoredPosition: {x: -190, y: -200}
   m_SizeDelta: {x: 300, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1431826117
@@ -4790,7 +4818,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 4, y: 125}
+  m_AnchoredPosition: {x: -560, y: -200}
   m_SizeDelta: {x: 300, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2095945606

@@ -41,18 +41,50 @@ public class SaveUIManager : MonoBehaviour
     void SaveToSlot(int slotIndex)
     {
         SaveData data = new SaveData();
+
+        // 儲存 Ink 劇情狀態
         data.storyState = currentStoryJson;
         data.sceneName = SceneManager.GetActiveScene().name;
         data.saveTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
+
+        // 🔹 儲存玩家位置
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            Vector3 pos = player.transform.position;
+            data.playerX = pos.x;
+            data.playerY = pos.y;
+            data.playerZ = pos.z;
+        }
+
+        // 🔹 儲存 HP
+        HP hpRef = FindObjectOfType<HP>();
+        if (hpRef != null)
+            data.playerHp = hpRef.hp;
+
+        // 🔹 儲存場景物件狀態（舉例）
+        var bed = FindObjectOfType<BedController>();
+        if (bed != null) data.bedState = bed.GetCurrentState();
+
+        var toilet = FindObjectOfType<toiletController>();
+        if (toilet != null) data.toiletState = toilet.GetCurrentState();
+
+        var chest = FindObjectOfType<ChestController>();
+        if (chest != null) data.chestOpened = chest.isUnlocked;
+
+        var safe = FindObjectOfType<SafeController>();
+        if (safe != null) data.safeOpened = safe.isUnlocked;
 
         string path = Application.persistentDataPath + $"/save_{slotIndex}.json";
         File.WriteAllText(path, JsonUtility.ToJson(data, true));
 
         Debug.Log($"💾 已存入存檔槽 {slotIndex + 1}");
         Debug.Log("存檔位置：" + Application.persistentDataPath);
+
         UpdateSlotInfo(slotIndex);
         saveMenu.SetActive(false);
     }
+
 
     public void UpdateSlotInfo(int slotIndex)
     {
@@ -77,4 +109,18 @@ public class SaveData
     public string storyState;
     public string sceneName;
     public string saveTime;
+
+    // 🔹 新增
+    public float playerX;
+    public float playerY;
+    public float playerZ;
+
+    public int playerHp;
+
+    // 🔹 可擴充場景內互動物件（例如床、箱子、門的狀態）
+    public string bedState;
+    public string toiletState;
+    public bool chestOpened;
+    public bool safeOpened;
 }
+

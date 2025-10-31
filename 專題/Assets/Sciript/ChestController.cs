@@ -32,8 +32,8 @@ public class ChestController : MonoBehaviour
     public ClueData clueDatabase;
 
 
-    private bool isUnlocked = false;
-    private bool hasInteracted = false;
+    public bool isUnlocked = false;
+    public bool hasInteracted = false;
 
     private InkDialogueManager dialogueManager;
 

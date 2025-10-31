@@ -8,9 +8,13 @@ public class toiletController : MonoBehaviour
     public Sprite closeToilet;
     public Sprite openToilet;
 
+    private string currentState = "toilet_close";
+
     public void ChangeImage(string state)
     {
         if (toiletRenderer == null) return;
+
+        currentState = state; // ✅ 記錄目前狀態（供存檔用）
 
         switch (state)
         {
@@ -26,4 +30,11 @@ public class toiletController : MonoBehaviour
         }
         Debug.Log($"🛏️ 馬桶圖片切換為：{state}");
     }
+
+    public string GetCurrentState()
+    {
+        return currentState;
+    }
+
+
 }

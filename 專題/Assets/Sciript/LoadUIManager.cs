@@ -15,6 +15,8 @@ public class LoadUIManager : MonoBehaviour
     public Button openButton;
     public Button closeButton;
 
+    public static SaveData pendingLoadData; // 🔹 跨場景保存資料
+
     private void Start()
     {
         for (int i = 0; i < loadButtons.Length; i++)
@@ -58,30 +60,66 @@ public class LoadUIManager : MonoBehaviour
         string json = File.ReadAllText(path);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-        InkDialogueManager.shouldAutoStartInk = false; // 🚫 不要讓新場景自動播放 Ink
-        SceneManager.LoadScene(data.sceneName);
-        StartCoroutine(LoadInkAfterScene(data));
+        // 🔹 將資料暫存起來，讓下一個場景的 InkDialogueManager 讀取
+        pendingLoadData = data;
 
+        InkDialogueManager.shouldAutoStartInk = false;
+        SceneManager.LoadScene(data.sceneName);
     }
 
-    private IEnumerator LoadInkAfterScene(SaveData data)
+    // ✅ 在新場景中由 InkDialogueManager 呼叫
+    public static IEnumerator ApplyPendingLoadData()
     {
-        yield return null; // 等場景載入
+        if (pendingLoadData == null)
+            yield break;
 
-        InkDialogueManager inkManager = FindObjectOfType<InkDialogueManager>();
-        if (inkManager != null)
+        yield return new WaitForSeconds(0.1f); // 確保新場景物件初始化完畢
+
+        SaveData data = pendingLoadData;
+        pendingLoadData = null; // 清除暫存
+
+        InkDialogueManager inkManager = GameObject.FindObjectOfType<InkDialogueManager>();
+        if (inkManager == null)
         {
-            if (inkManager.story == null)
-                inkManager.story = new Ink.Runtime.Story(inkManager.inkJSON.text);
-
-            inkManager.story.state.LoadJson(data.storyState);
-            inkManager.justLoaded = true;
-
-            Debug.Log("✅ 成功載入 Ink 劇情狀態");
+            Debug.LogError("❌ 找不到 InkDialogueManager");
+            yield break;
         }
 
-        // 恢復允許自動啟動（給下一次新場景用）
-        InkDialogueManager.shouldAutoStartInk = true;
-    }
+        inkManager.ReloadInkState(data.storyState);
 
+        // 恢復玩家位置
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            player.transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
+            var pm = player.GetComponent<Player>();
+            if (pm != null) pm.canMove = true;
+        }
+
+        // 恢復 HP
+        HP hpRef = GameObject.FindObjectOfType<HP>();
+        if (hpRef != null)
+            hpRef.hp = data.playerHp;
+
+        // 恢復場景物件狀態
+        var bed = GameObject.FindObjectOfType<BedController>();
+        if (bed != null && !string.IsNullOrEmpty(data.bedState))
+            bed.ChangeImage(data.bedState);
+
+        var toilet = GameObject.FindObjectOfType<toiletController>();
+        if (toilet != null && !string.IsNullOrEmpty(data.toiletState))
+            toilet.ChangeImage(data.toiletState);
+
+        var chest = GameObject.FindObjectOfType<ChestController>();
+        if (chest != null) chest.isUnlocked = data.chestOpened;
+
+        var safe = GameObject.FindObjectOfType<SafeController>();
+        if (safe != null) safe.isUnlocked = data.safeOpened;
+
+        UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        Debug.Log("✅ 存檔資料已完整還原（Ink + 玩家位置 + 場景物件）");
+    }
 }

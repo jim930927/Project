@@ -138,28 +138,26 @@ public class InkDialogueManager : MonoBehaviour
     public static bool shouldAutoStartInk = true;  // 控制 Start() 是否自動啟動
 
 
-    void Start()
+    private void Start()
     {
-        dialoguePanel.SetActive(false);
-        choiceContainer.SetActive(false);
-        dialogueIsPlaying = false;
+        // 🔹 如果是從存檔載入，就不要初始化新的 Ink Story
+        if (LoadUIManager.pendingLoadData != null)
+        {
+            Debug.Log("🟡 檢測到待載入存檔，暫停自動初始化 Ink 劇情");
+            justLoaded = true;
+            shouldAutoStartInk = false;
+        }
 
-        incense.SetActive(false);
-
-        HidePortraits();
-        InitCurtain();
-
-        // 自動啟動 Ink 劇本
+        // 🔸 原本的初始化流程
         if (inkJSON != null && shouldAutoStartInk && !justLoaded)
         {
-            Debug.Log("🎬 自動啟動 Ink 劇本，從 === CG === 開始");
             EnterDialogueMode(inkJSON, "CG");
         }
         else
         {
-            Debug.Log("🟡 跳過自動啟動 Ink 劇本（因為是從存檔載入）");
+            Debug.Log("🟢 InkDialogueManager 等待存檔資料載入");
+            StartCoroutine(LoadUIManager.ApplyPendingLoadData()); // 由這裡繼續載入
         }
-
     }
 
     void Update()
@@ -208,7 +206,43 @@ public class InkDialogueManager : MonoBehaviour
         {
             object v = null;
             try { v = story.variablesState["hp"]; } catch { }
-            if (v != null) hpRef.hp = Mathf.Max(0, System.Convert.ToInt32(v));
+
+            if (v == null)
+            {
+                Debug.LogWarning("⚠️ Ink 變數 'hp' 不存在，使用現有 HP");
+                story.variablesState["hp"] = hpRef.hp;
+                return;
+            }
+
+            try
+            {
+                int parsed = 0;
+
+                // 🧩 根據型態轉換
+                if (v is int)
+                {
+                    parsed = (int)v;
+                }
+                else if (v is float)
+                {
+                    parsed = Mathf.RoundToInt((float)v);
+                }
+                else if (v is double)
+                {
+                    parsed = Mathf.RoundToInt((float)(double)v);
+                }
+                else if (v is string)
+                {
+                    int.TryParse((string)v, out parsed);
+                }
+
+                hpRef.hp = Mathf.Max(0, parsed);
+                Debug.Log($"❤️ 從 Ink 同步 HP：{hpRef.hp}");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"⚠️ 無法解析 Ink 變數 'hp'：{v} ({e.Message})，保持原本 HP");
+            }
         }
     }
 
@@ -217,11 +251,15 @@ public class InkDialogueManager : MonoBehaviour
         SetPlayerCanMove(false);
         if (justLoaded)
         {
-            // 代表是從存檔載入的，不要重播開場 CG 或重新初始化 Ink
-            Debug.Log("🟡 已從存檔載入，跳過自動對話初始化");
+            Debug.Log("🟡 已從存檔載入，跳過開場 CG，但仍恢復對話介面");
+            dialoguePanel.SetActive(true);
+            choiceContainer.SetActive(false);
+            dialogueIsPlaying = true;
+            canContinue = true;
             justLoaded = false;
             return;
         }
+
 
         if (newInkJSON == null) return;
 
@@ -559,6 +597,126 @@ public class InkDialogueManager : MonoBehaviour
             Debug.LogWarning("⚠️ 找不到 HP 物件，血量控制未綁定");
         }
     }
+
+    public void BindAllExternalFunctions()
+    {
+        if (story == null) return;
+
+        // ✅ 安全綁定：避免重複綁定時發生例外
+        void SafeBind(string name, System.Action action)
+        {
+            try
+            {
+                story.BindExternalFunction(name, action);
+            }
+            catch (System.Exception e)
+            {
+                if (!e.Message.Contains("already been bound"))
+                    Debug.LogWarning($"⚠️ 綁定 {name} 失敗：{e.Message}");
+                else
+                    Debug.Log($"🔁 函式 {name} 已存在，略過綁定。");
+            }
+        }
+
+        void SafeBindString(string name, System.Action<string> action)
+        {
+            try
+            {
+                story.BindExternalFunction(name, action);
+            }
+            catch (System.Exception e)
+            {
+                if (!e.Message.Contains("already been bound"))
+                    Debug.LogWarning($"⚠️ 綁定 {name} 失敗：{e.Message}");
+                else
+                    Debug.Log($"🔁 函式 {name} 已存在，略過綁定。");
+            }
+        }
+
+        // === Ink 外部函式綁定 ===
+
+        SafeBind("SaveGame", () => {
+            saveUI.OpenSaveMenu(story.state.ToJson());
+        });
+
+        SafeBindString("ChangeBedImage", (string state) =>
+        {
+            var bed = GameObject.FindObjectOfType<BedController>();
+            if (bed != null)
+                bed.ChangeImage(state);
+        });
+
+        SafeBindString("ChangeToiletImage", (string state) =>
+        {
+            var toilet = GameObject.FindObjectOfType<toiletController>();
+            if (toilet != null)
+                toilet.ChangeImage(state);
+        });
+
+        SafeBind("OpenChestUI", () =>
+        {
+            var chest = GameObject.FindObjectOfType<ChestController>();
+            if (chest != null)
+                chest.Interact();
+        });
+
+        SafeBind("OpenSafeUI", () =>
+        {
+            var safe = GameObject.FindObjectOfType<SafeController>();
+            if (safe != null)
+                safe.Interact();
+        });
+
+        SafeBindString("MovePlayer", (string target) =>
+        {
+            var player = GameObject.FindWithTag("Player");
+            if (player != null)
+            {
+                var moveTarget = GameObject.Find(target);
+                if (moveTarget != null)
+                    player.transform.position = moveTarget.transform.position;
+            }
+        });
+
+        SafeBindString("SpawnObject", (string objName) =>
+        {
+            var bed = GameObject.FindObjectOfType<BedController>();
+            if (bed != null)
+                bed.SpawnObject(objName);
+        });
+
+        SafeBindString("UnlockDoor", (string doorID) =>
+        {
+            if (!string.IsNullOrEmpty(doorID))
+            {
+                DoorManager.Instance?.UnlockDoor(doorID);
+                Debug.Log($"🗝️ Ink 呼叫 UnlockDoor：{doorID}");
+            }
+        });
+
+        SafeBindString("SpawnNPC", (string npcName) =>
+        {
+            var npcManager = GameObject.FindObjectOfType<NPCManager>();
+            if (npcManager != null)
+            {
+                npcManager.SpawnNPC(npcName);
+                Debug.Log($"🧍 Ink 呼叫 SpawnNPC：{npcName}");
+            }
+            else
+            {
+                Debug.LogWarning($"⚠️ 沒有找到 NPCManager，無法生成 NPC：{npcName}");
+            }
+        });
+
+
+        // === 重新綁定書籍、物品、血量函式 ===
+        BindExternalBookFunctions();
+        SyncHpFromInk();
+        SyncHaveItemsToInk();
+
+        Debug.Log("🔗 所有 Ink 外部函式已安全綁定完成");
+    }
+
 
     public void ContinueStory()
     {
@@ -1216,6 +1374,43 @@ public class InkDialogueManager : MonoBehaviour
         yield return StartCoroutine(FadeScreen(false)); // 淡出黑幕
     }
 
+    public void ReloadInkState(string jsonState)
+    {
+        Debug.Log("🔄 重新載入 Ink 劇情狀態...");
+
+        if (inkJSON == null)
+        {
+            Debug.LogWarning("⚠️ inkJSON 未指定，無法重建 Ink Story");
+            return;
+        }
+
+        if (story == null)
+            story = new Ink.Runtime.Story(inkJSON.text);
+
+        // 載入 Ink 狀態
+        story.state.LoadJson(jsonState);
+
+        // 綁定所有外部函式
+        story.BindExternalFunction("SaveGame", () => {
+            saveUI.OpenSaveMenu(story.state.ToJson());
+        });
+
+        BindAllExternalFunctions();
+        SyncHpFromInk();
+        SyncHaveItemsToInk();
+
+        // 恢復 UI
+        dialoguePanel.SetActive(true);
+        choiceContainer.SetActive(false);
+        dialogueIsPlaying = true;
+        canContinue = true;
+        justLoaded = false;
+
+        Debug.Log("✅ Ink 劇情已完全恢復");
+    }
+
+
+
 
     void SpawnNPC(string npcName)
     {
@@ -1320,8 +1515,6 @@ public class InkDialogueManager : MonoBehaviour
             yield return null;
         }
     }
-
-
     private void PlayMusic(string musicName)
     {
         var bgmManager = FindObjectOfType<BGMManager>();
@@ -1355,7 +1548,6 @@ public class InkDialogueManager : MonoBehaviour
             Debug.LogWarning("⚠️ 場景中找不到 tag 為 'Player' 的物件");
         }
     }
-
     private void ShowPlayer()
     {
         var player = GameObject.FindWithTag("Player");
@@ -1375,8 +1567,6 @@ public class InkDialogueManager : MonoBehaviour
             Debug.LogWarning("⚠️ 場景中找不到 tag 為 'Player' 的物件");
         }
     }
-
-
     private void HideEnemy()
     {
         var enemy = GameObject.FindWithTag("Enemy");
@@ -1401,8 +1591,6 @@ public class InkDialogueManager : MonoBehaviour
         }
 
     }
-
-
     public void JumpToKnot(string knotName)
     {
         if (story == null) return;
@@ -1451,6 +1639,7 @@ public class InkDialogueManager : MonoBehaviour
             Debug.LogWarning("⚠️ 更新 Ink 變數 have_items 發生錯誤: " + e.Message);
         }
     }
+
 
     public void ExamAppear()
     {

@@ -14,9 +14,14 @@ public class BedController : MonoBehaviour
 
     private bool chestSpawned = false;
 
+    // 🔹 用於保存當前狀態
+    private string currentState = "bed_default";
+
     public void ChangeImage(string state)
     {
         if (bedRenderer == null) return;
+
+        currentState = state; // ✅ 記錄目前狀態（供存檔用）
 
         switch (state)
         {
@@ -31,6 +36,11 @@ public class BedController : MonoBehaviour
                 break;
         }
         Debug.Log($"🛏️ 床圖片切換為：{state}");
+    }
+
+    public string GetCurrentState()
+    {
+        return currentState;
     }
 
     public void SpawnObject(string objName)
