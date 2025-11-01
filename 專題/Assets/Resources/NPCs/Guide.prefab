@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5056231002647917604}
   - component: {fileID: 8704221359637007155}
+  - component: {fileID: 1423465952667875061}
   m_Layer: 0
   m_Name: Guide
-  m_TagString: Untagged
+  m_TagString: NPC
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -74,7 +75,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 888784731
-  m_SortingLayer: 8
+  m_SortingLayer: 10
   m_SortingOrder: 0
   m_Sprite: {fileID: -4019077093908124212, guid: a47a97bfd5293414eacdf1d5aab36688, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -87,3 +88,16 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1423465952667875061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3216554585945050896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 520f1514f29976641b811096d23a3e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueID: 73fcb64e-10b7-4d06-99b0-f19d65f79653

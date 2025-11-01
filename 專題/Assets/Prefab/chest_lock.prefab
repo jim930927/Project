@@ -14,9 +14,10 @@ GameObject:
   - component: {fileID: 1992607194183869133}
   - component: {fileID: 3783915755206720420}
   - component: {fileID: 7795141343826540958}
+  - component: {fileID: -1132200167155550735}
   m_Layer: 0
   m_Name: chest_lock
-  m_TagString: Untagged
+  m_TagString: SpawnedObject
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -121,6 +122,8 @@ MonoBehaviour:
   - award
   itemDatabase: {fileID: 0}
   clueDatabase: {fileID: 0}
+  isUnlocked: 0
+  hasInteracted: 0
 --- !u!50 &1992607194183869133
 Rigidbody2D:
   serializedVersion: 5
@@ -210,3 +213,16 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.7158756, y: 0.5268526}
   m_EdgeRadius: 0
+--- !u!114 &-1132200167155550735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263091087028570860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 520f1514f29976641b811096d23a3e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueID: 38e04d40-7213-4193-961d-d8ea35a62933

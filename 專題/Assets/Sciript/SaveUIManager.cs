@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Linq;
 
 public class SaveUIManager : MonoBehaviour
 {
@@ -42,6 +44,7 @@ public class SaveUIManager : MonoBehaviour
     {
         SaveData data = new SaveData();
 
+
         // 儲存 Ink 劇情狀態
         data.storyState = currentStoryJson;
         data.sceneName = SceneManager.GetActiveScene().name;
@@ -75,6 +78,71 @@ public class SaveUIManager : MonoBehaviour
         var safe = FindObjectOfType<SafeController>();
         if (safe != null) data.safeOpened = safe.isUnlocked;
 
+        // === 儲存可撿道具 ===
+        data.collectedItems.Clear();
+        foreach (var pickup in Resources.FindObjectsOfTypeAll<ItemPickup>())
+        {
+            if (pickup == null) continue;
+            if (!pickup.gameObject.scene.IsValid()) continue; // 排除預製件
+            if (pickup.collected)
+            {
+                var id = pickup.GetComponent<SaveableEntity>();
+                if (id != null)
+                    data.collectedItems.Add(id.uniqueID);
+            }
+        }
+        // === 儲存線索 ===
+        data.collectedClues.Clear();
+        foreach (var pickup in Resources.FindObjectsOfTypeAll<CluePickup>())
+        {
+            if (pickup == null) continue;
+            if (!pickup.gameObject.scene.IsValid()) continue; // 排除預製件
+            if (pickup.collected)
+            {
+                var id = pickup.GetComponent<SaveableEntity>();
+                if (id != null)
+                    data.collectedClues.Add(id.uniqueID);
+            }
+        }
+
+        // === 儲存可撿道具 ===
+        data.finishedInteractions.Clear();
+        foreach (var inter in FindObjectsOfType<SceneInteractable>())
+        {
+            if (inter == null) continue;
+            if (!inter.gameObject.scene.IsValid()) continue; // 排除預製件
+            if (inter.canInteract)
+            {
+                var id = inter.GetComponent<SaveableEntity>();
+                if (id != null)
+                    data.finishedInteractions.Add(id.uniqueID);
+            }
+        }
+
+        data.spawnedObjects.Clear();
+        foreach (var interactables in FindObjectsOfType<SceneInteractable>())
+        {
+            if (interactables == null) continue;
+            foreach (var so in FindObjectsOfType<SaveableEntity>())
+            {
+                if (so.CompareTag("SpawnedObject"))
+                    data.spawnedObjects.Add(so.uniqueID);
+            }
+        }
+
+        // === 儲存 NPC ===
+        data.spawnedNPCs.Clear();
+        foreach (var npc in FindObjectsOfType<SaveableEntity>())
+        {
+            if (npc.CompareTag("NPC"))
+                data.spawnedNPCs.Add(npc.uniqueID);
+        }
+
+        Debug.Log($"💾 Save Completed: 道具 {data.collectedItems.Count}、線索 {data.collectedClues.Count}、互動 {data.finishedInteractions.Count}、箱子 {data.spawnedObjects.Count}、NPC {data.spawnedNPCs.Count}");
+
+
+
+
         string path = Application.persistentDataPath + $"/save_{slotIndex}.json";
         File.WriteAllText(path, JsonUtility.ToJson(data, true));
 
@@ -83,6 +151,9 @@ public class SaveUIManager : MonoBehaviour
 
         UpdateSlotInfo(slotIndex);
         saveMenu.SetActive(false);
+
+        Debug.Log("✅ Save Completed. Items:" + data.collectedItems.Count + " Interacts:" + data.finishedInteractions.Count + "Clues:" + data.collectedClues.Count);
+
     }
 
 
@@ -101,6 +172,8 @@ public class SaveUIManager : MonoBehaviour
             slotInfoTexts[slotIndex].text = "尚未存檔";
         }
     }
+
+
 }
 
 [System.Serializable]
@@ -122,5 +195,12 @@ public class SaveData
     public string toiletState;
     public bool chestOpened;
     public bool safeOpened;
+
+    public List<string> collectedItems = new List<string>();
+    public List<string> collectedClues = new List<string>();
+    public List<string> finishedInteractions = new List<string>();
+    public List<string> spawnedObjects = new List<string>();
+    public List<string> spawnedNPCs = new List<string>();
+
 }
 

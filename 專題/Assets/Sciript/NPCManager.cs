@@ -2,6 +2,9 @@
 
 public class NPCManager : MonoBehaviour
 {
+    [Header("唯一識別ID（存檔用）")]
+    public string uniqueID;
+
     [System.Serializable]
     public class NPCPrefab
     {
@@ -24,4 +27,13 @@ public class NPCManager : MonoBehaviour
         }
         Debug.LogWarning($"⚠️ 找不到 NPC Prefab：{npcName}");
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (string.IsNullOrEmpty(uniqueID))
+            uniqueID = System.Guid.NewGuid().ToString();
+    }
+#endif
+
 }

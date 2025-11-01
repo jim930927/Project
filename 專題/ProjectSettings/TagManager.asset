@@ -12,6 +12,7 @@ TagManager:
   - EnemyNPC
   - GuideNPC
   - StoryNPC
+  - SpawnedObject
   layers:
   - Default
   - TransparentFX

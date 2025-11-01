@@ -155,4 +155,6 @@ public class ChestController : MonoBehaviour
             passwordPanel.SetActive(false);
         hasInteracted = false;
     }
+
+
 }

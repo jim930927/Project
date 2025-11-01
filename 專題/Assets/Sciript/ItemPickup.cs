@@ -36,7 +36,8 @@ public class ItemPickup : MonoBehaviour
 
 
     private bool playerInRange = false;
-    private bool collected = false;
+    public bool collected = false;
+
 
     void Update()
     {
@@ -102,7 +103,7 @@ public class ItemPickup : MonoBehaviour
         }
 
         if (destroyOnPickup)
-            Destroy(gameObject);
+            gameObject.SetActive(false);
     }
 
 }

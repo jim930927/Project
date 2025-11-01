@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 public class SafeController : MonoBehaviour
 {
+    [Header("唯一識別ID（存檔用）")]
+    public string uniqueID;
+
     [Header("密碼設定")]
     public string correctPassword = "0818";
 
@@ -142,4 +145,12 @@ public class SafeController : MonoBehaviour
             passwordPanel.SetActive(false);
         hasInteracted = false;
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (string.IsNullOrEmpty(uniqueID))
+            uniqueID = System.Guid.NewGuid().ToString();
+    }
+#endif
 }

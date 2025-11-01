@@ -126,6 +126,7 @@ public class LoadUIManager : MonoBehaviour
         var safe = GameObject.FindObjectOfType<SafeController>();
         if (safe != null) safe.isUnlocked = data.safeOpened;
 
+
         UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -165,6 +166,64 @@ public class LoadUIManager : MonoBehaviour
                 canvas.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
         }
         Debug.Log("🧩 已重建 Canvas SortingOrder 與 Raycaster");
+
+        // === 道具 ===
+        foreach (var item in FindObjectsOfType<ItemPickup>())
+        {
+            var id = item.GetComponent<SaveableEntity>();
+            if (id != null && data.collectedItems.Contains(id.uniqueID))
+                item.gameObject.SetActive(false);
+        }
+
+        // === 線索 ===
+        foreach (var clue in FindObjectsOfType<CluePickup>())
+        {
+            var id = clue.GetComponent<SaveableEntity>();
+            if (id != null && data.collectedClues.Contains(id.uniqueID))
+                clue.gameObject.SetActive(false);
+        }
+
+        // === 互動物件 ===
+        foreach (var inter in FindObjectsOfType<SceneInteractable>())
+        {
+            var id = inter.GetComponent<SaveableEntity>();
+            if (id != null && data.finishedInteractions.Contains(id.uniqueID))
+                inter.canInteract = false;
+        }
+
+        // === 生成箱子 ===
+        foreach (string id in data.spawnedObjects)
+        {
+            // 如果沒有該箱子實體，重新生成
+            bool found = false;
+            foreach (var so in FindObjectsOfType<SaveableEntity>())
+                if (so.uniqueID == id) found = true;
+
+            if (!found)
+            {
+                var beds = FindObjectOfType<BedController>();
+                if (beds != null) bed.SpawnObject("chest");
+            }
+        }
+
+        // === 生成 NPC ===
+        foreach (string id in data.spawnedNPCs)
+        {
+            bool found = false;
+            foreach (var npc in FindObjectsOfType<SaveableEntity>())
+                if (npc.uniqueID == id) found = true;
+
+            if (!found)
+            {
+                var npcManager = FindObjectOfType<NPCManager>();
+                if (npcManager != null) npcManager.SpawnNPC("Guard"); // 依照你的 Ink 內容命名
+            }
+        }
+
+
+
+        Debug.Log($"📜 載入結果：道具 {data.collectedItems.Count}、線索 {data.collectedClues.Count}、互動 {data.finishedInteractions.Count}、生成物 {data.spawnedObjects.Count}、NPC {data.spawnedNPCs.Count}");
+
 
     }
 }

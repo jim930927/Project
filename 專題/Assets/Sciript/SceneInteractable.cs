@@ -7,6 +7,9 @@ using System;
 [RequireComponent(typeof(Collider2D))]
 public class SceneInteractable : MonoBehaviour
 {
+    [System.NonSerialized] public bool loadedFromSave = false;
+
+
     [Header("互動設定")]
     public string interactionNode; // 對應 Ink 節點名稱（例如 "TV"、"sofa"）
     public KeyCode interactKey = KeyCode.Space; // 互動按鍵（預設空白鍵）
@@ -23,6 +26,13 @@ public class SceneInteractable : MonoBehaviour
     void Start()
     {
         dialogueManager = FindFirstObjectByType<InkDialogueManager>();
+
+        if (loadedFromSave)
+        {
+            Debug.Log($"🔒 {interactionNode} 已從存檔恢復，禁止互動");
+            return;
+        }
+
     }
 
     void Update()
@@ -75,14 +85,4 @@ public class SceneInteractable : MonoBehaviour
         canInteract = true;
     }
 
-    /*
-    // 🔹 可視化提示（在 Scene 模式下顯示互動點）
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position, 0.4f);
-        if (!string.IsNullOrEmpty(interactionNode))
-            UnityEditor.Handles.Label(transform.position + Vector3.up * 0.5f, interactionNode);
-    }
-    */
 }

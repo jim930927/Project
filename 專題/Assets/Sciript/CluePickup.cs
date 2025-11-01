@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class CluePickup : MonoBehaviour
 {
+
     [Header("線索設定")]
     public string clueID;          // 對應 ClueData 裡的 id
     public string clueName;        // 顯示名稱（可選）
@@ -22,7 +23,7 @@ public class CluePickup : MonoBehaviour
 
 
     private bool playerInRange = false;
-    private bool collected = false;
+    public bool collected = false;
 
 
     void Update()
@@ -91,7 +92,7 @@ public class CluePickup : MonoBehaviour
         }
 
         if (destroyOnPickup)
-            Destroy(gameObject);
+            gameObject.SetActive(false);
     }
 
 }

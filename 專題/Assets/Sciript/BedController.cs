@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Xml;
+using UnityEngine;
 
 public class BedController : MonoBehaviour
 {
@@ -47,9 +48,18 @@ public class BedController : MonoBehaviour
     {
         if (objName == "chest" && !chestSpawned && chestPrefab != null)
         {
-            Instantiate(chestPrefab, chestSpawnPoint.position, Quaternion.identity);
+            var chest = Instantiate(chestPrefab, chestSpawnPoint.position, Quaternion.identity);
             chestSpawned = true;
+
+            // ✅ 新增：紀錄已生成
+            var saveMgr = FindObjectOfType<SaveUIManager>();
+            if (saveMgr != null)
+            {
+                string savePath = Application.persistentDataPath + "/autosave_spawn.txt";
+            }
+
             Debug.Log("📦 床底箱子已生成");
         }
     }
+    
 }
