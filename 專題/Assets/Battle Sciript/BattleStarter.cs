@@ -2,7 +2,7 @@
 
 public class BattleStarter : MonoBehaviour
 {
-    public BattleDialogueManager dialogueManager;
+    public SFBattleDialogueManager dialogueManager;
     public TextAsset battleInkJson; // 拖入你的戰鬥 ink JSON
 
     void Start()
