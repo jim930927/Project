@@ -14,8 +14,20 @@ public class Portal : MonoBehaviour
     public string requiredKeyID = "";    // ✅ 對應的鑰匙 ID（例：key_room）
     public float cooldown = 0.8f;
 
+    [Header("迷宮計數器")]
+    public bool rightway;   
+    public float wrongtime = 0;
+
     [Header("敵人設定")]
     public Transform enemySpawnPoint; // ✅ 敵人在這個傳送後會出現的位置
+
+    [Header("單向傳送設定")]
+    [Tooltip("打勾 = 這個 Portal 是單向的（從此 Portal 傳到 target，之後無法從 target 回到此 Portal）")]
+    public bool oneWay = false;
+    public bool canTP = true;
+
+    // 若為 true，就能從此 Portal 進行「往外」的傳送（OnTriggerEnter 會接受 Space）
+    [HideInInspector] public bool canTeleportOut = true;
 
     private static float lastTeleportTime = -999f;
     private static bool isTeleporting = false;
@@ -43,8 +55,16 @@ public class Portal : MonoBehaviour
         if (isTeleporting) return;
         if (!isPlayerInside || player == null) return;
 
+        // 如果這個 Portal 被設為不能往外傳送（例如被另一個單向 Portal 禁用），直接 return
+        if (!canTeleportOut) return;
+
         if (Input.GetKeyDown(KeyCode.Space) && Time.time - lastTeleportTime > cooldown)
         {
+            if (!canTP)
+            {
+                return;
+            }
+
             // ✅ 不鎖的門：直接傳送
             if (!isLockedDoor)
             {
@@ -86,7 +106,7 @@ public class Portal : MonoBehaviour
             return "";
 
         // ✅ 可擴充支援多把鑰匙
-        string[] allKeys = { "key_room", "key_parent" , "key_unknow" , "key_gold"};
+        string[] allKeys = { "key_room", "key_parent", "key_unknow", "key_gold" };
         foreach (var key in allKeys)
         {
             if (dialogueManager.itemDatabase.HasItem(key))
@@ -118,6 +138,12 @@ public class Portal : MonoBehaviour
             }
         }
 
+        if (rightway == false)
+        {
+            wrongtime += 1;
+        }
+
+
 
         if (fader != null)
         {
@@ -133,6 +159,14 @@ public class Portal : MonoBehaviour
         {
             Debug.LogWarning("⚠️ 傳送時 Player 或 Portal 已被銷毀");
         }
+
+        // 如果這個 portal 被設定為單向，則在傳送後禁用目標 portal 的「往外傳送」能力，
+        // 使得玩家無法從目標 portal 再傳回來（實現永久的單向傳送）。
+        if (oneWay && targetPortal != null)
+        {
+            targetPortal.canTeleportOut = false;
+            Debug.Log($"➡️ 單向傳送：{portalID} -> {targetPortal.portalID}（已禁用 {targetPortal.portalID} 的往外傳送）");
+        } 
 
         // 🟥 敵人延遲傳送機制 ===========================
         EnemyController2D enemy = FindAnyObjectByType<EnemyController2D>();

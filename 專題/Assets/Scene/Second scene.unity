@@ -385,7 +385,12 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 386832590}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &42596129
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -614,7 +619,12 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 1525427717}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &57892885
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1139,7 +1149,12 @@ MonoBehaviour:
   isLockedDoor: 1
   requiredKeyID: key_room
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 1966138269}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &122878228
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1260,7 +1275,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 888784731
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: 5
   m_Sprite: {fileID: 9191064859814233005, guid: 997ad7ce086555946a1701039d0a0560, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -1569,7 +1584,12 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 633437333}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &155732391
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2224,7 +2244,12 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 1357502648}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &197288870
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5721,7 +5746,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 888784731
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -6224,7 +6249,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 888784731
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: 5
   m_Sprite: {fileID: 9191064859814233005, guid: 997ad7ce086555946a1701039d0a0560, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -9235,7 +9260,12 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 500901918}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &516499932
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -24252,7 +24282,12 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 1622314742}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &688040196
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -24374,7 +24409,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -741201455
-  m_SortingLayer: 9
+  m_SortingLayer: 10
   m_SortingOrder: 2
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -27241,7 +27276,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -741201455
-  m_SortingLayer: 9
+  m_SortingLayer: 10
   m_SortingOrder: 6
   m_Sprite: {fileID: 2690825715054061352, guid: 679e8b093b92ece4e9811393522ab18e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -33318,7 +33353,12 @@ MonoBehaviour:
   isLockedDoor: 1
   requiredKeyID: key_unknow
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 1435674243}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &934162757
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -33440,7 +33480,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -741201455
-  m_SortingLayer: 9
+  m_SortingLayer: 10
   m_SortingOrder: 1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -37479,11 +37519,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   portalID: 8 A
   targetPortalID: 8 B
-  doorGroupID: parent_room
+  doorGroupID: parent_door
   isLockedDoor: 1
   requiredKeyID: key_parent
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 786290701}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &1057332309
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -38208,7 +38253,12 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 1799302970}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &1082920473
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -40564,11 +40614,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   portalID: 8 B
   targetPortalID: 8 A
-  doorGroupID: parent_room
+  doorGroupID: parent_door
   isLockedDoor: 1
   requiredKeyID: key_parent
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 745745391}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &1246610635
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -49415,7 +49470,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 888784731
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: 5
   m_Sprite: {fileID: 9191064859814233005, guid: 997ad7ce086555946a1701039d0a0560, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -49896,7 +49951,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -741201455
-  m_SortingLayer: 9
+  m_SortingLayer: 10
   m_SortingOrder: 5
   m_Sprite: {fileID: 1999192145168320573, guid: 81999af8fdd17d74db9769ef66a12d68, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -50510,7 +50565,12 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 506691205}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &1411585607
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -50951,6 +51011,107 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!1 &1459622847
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1459622848}
+  - component: {fileID: 1459622850}
+  - component: {fileID: 1459622849}
+  m_Layer: 0
+  m_Name: aunt_letter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1459622848
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459622847}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.89, y: -54.99, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1920659394}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &1459622849
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459622847}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.5225558, y: -0.9107399}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 2.0451117, y: 2.8214798}
+  m_EdgeRadius: 0
+--- !u!114 &1459622850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1459622847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dbdc1908a92a114bbf0225cd8b4d6a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clueID: AuntLetter
+  clueName: "\u3010\u963F\u59E8\u7D66\u5ABD\u5ABD\u7684\u4FE1\u4EF6\u3011"
+  clueData: {fileID: 11400000, guid: 7b90fe4aaccb5634d892a3aa92abaf94, type: 2}
+  destroyOnPickup: 1
+  inkManager: {fileID: 1222130035}
+  inkStoryAsset: {fileID: 4900000, guid: 5253456c747fdc44aa5a801f83a06531, type: 3}
+  startKnotName: aunt_letter
+  returnKnotName: aunt_letter_end
+  clueImage: {fileID: -972325738571268727, guid: e8cf035362dbca141836f1b3e29e41a5, type: 3}
+  collected: 0
 --- !u!1 &1461706703
 GameObject:
   m_ObjectHideFlags: 0
@@ -51288,7 +51449,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 888784731
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: 0
   m_Sprite: {fileID: -1893937832, guid: 169d19b4661569b4395a173a6677d10e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -51992,7 +52153,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -741201455
-  m_SortingLayer: 9
+  m_SortingLayer: 10
   m_SortingOrder: 3
   m_Sprite: {fileID: -7315935625644854642, guid: 679e8b093b92ece4e9811393522ab18e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -52178,7 +52339,12 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 781480822}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &1544998310
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -53015,7 +53181,12 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 480805912}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &1632883202
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -53302,7 +53473,12 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 1803004455}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &1662523106
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -55244,7 +55420,7 @@ Transform:
   m_GameObject: {fileID: 1804843673}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 33.6, y: 37.3, z: 0}
+  m_LocalPosition: {x: 16.3, y: -14.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -55694,7 +55870,12 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 724175608}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &1886188431
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -56152,7 +56333,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 888784731
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: 5
   m_Sprite: {fileID: 9191064859814233005, guid: 997ad7ce086555946a1701039d0a0560, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
@@ -56199,6 +56380,7 @@ Transform:
   - {fileID: 1748734429}
   - {fileID: 1386748751}
   - {fileID: 1509343821}
+  - {fileID: 1459622848}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1923091508
@@ -59826,7 +60008,12 @@ MonoBehaviour:
   isLockedDoor: 1
   requiredKeyID: key_room
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 1604133166}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &2015914777
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -60104,7 +60291,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -741201455
-  m_SortingLayer: 9
+  m_SortingLayer: 10
   m_SortingOrder: 5
   m_Sprite: {fileID: 2852718621762334183, guid: 679e8b093b92ece4e9811393522ab18e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -60474,7 +60661,12 @@ MonoBehaviour:
   isLockedDoor: 1
   requiredKeyID: key_unknow
   cooldown: 0.5
+  rightway: 0
+  wrongtime: 0
   enemySpawnPoint: {fileID: 1355822403}
+  oneWay: 0
+  canTP: 1
+  canTeleportOut: 1
 --- !u!61 &2071169377
 BoxCollider2D:
   m_ObjectHideFlags: 0
