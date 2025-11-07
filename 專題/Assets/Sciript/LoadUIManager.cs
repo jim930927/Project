@@ -76,6 +76,7 @@ public class LoadUIManager : MonoBehaviour
         SceneManager.LoadScene(data.sceneName);
     }
 
+
     // ✅ 在新場景中由 InkDialogueManager 呼叫
     public static IEnumerator ApplyPendingLoadData()
     {
@@ -119,39 +120,24 @@ public class LoadUIManager : MonoBehaviour
         if (toilet != null && !string.IsNullOrEmpty(data.toiletState))
             toilet.ChangeImage(data.toiletState);
 
-        // ✅ 恢復箱子狀態（改用 chestState）
         var chest = GameObject.FindObjectOfType<ChestController>();
-        if (chest != null)
-        {
-            if (data.chestState == "Opened")
-                chest.chestState = ChestController.ChestState.Opened;
-            else if (data.chestState == "Found")
-                chest.chestState = ChestController.ChestState.Found;
-            else
-                chest.chestState = ChestController.ChestState.Hidden;
-
-            chest.UpdateMapIcon();
-            Debug.Log($"🧳 已還原箱子狀態：{chest.chestState}");
-        }
+        if (chest != null) chest.isUnlocked = data.chestOpened;
 
         var safe = GameObject.FindObjectOfType<SafeController>();
-        if (safe != null)
-            safe.isUnlocked = data.safeOpened;
+        if (safe != null) safe.isUnlocked = data.safeOpened;
 
-        // === UI ===
+
         UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         Debug.Log("✅ 存檔資料已完整還原（Ink + 玩家位置 + 場景物件）");
 
-        // 🩹 確保 EventSystem 存在
+        // 🟩 確保 EventSystem 存在且可互動
         var evt = UnityEngine.EventSystems.EventSystem.current;
         if (evt == null)
         {
-            GameObject newEvt = new GameObject("EventSystem",
-                typeof(UnityEngine.EventSystems.EventSystem),
-                typeof(UnityEngine.EventSystems.StandaloneInputModule));
+            GameObject newEvt = new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.EventSystems.StandaloneInputModule));
             Debug.Log("⚙️ 自動建立新的 EventSystem");
         }
         else
@@ -159,25 +145,30 @@ public class LoadUIManager : MonoBehaviour
             evt.enabled = true;
             Debug.Log("⚙️ EventSystem 已啟用");
         }
-
-        // 🩹 Canvas 修正
+        // 🩹 修正：重設所有 Canvas 的互動層級
         int baseOrder = 0;
         foreach (var canvas in GameObject.FindObjectsOfType<Canvas>())
         {
-            if (canvas.renderMode == RenderMode.ScreenSpaceOverlay ||
-                canvas.renderMode == RenderMode.ScreenSpaceCamera)
+            if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                canvas.overrideSorting = true;
+                canvas.sortingOrder = baseOrder++;
+            }
+            else if (canvas.renderMode == RenderMode.ScreenSpaceCamera)
             {
                 canvas.overrideSorting = true;
                 canvas.sortingOrder = baseOrder++;
             }
 
-            if (!canvas.GetComponent<UnityEngine.UI.GraphicRaycaster>())
+            // 確保 Canvas 可以互動
+            var ray = canvas.GetComponent<UnityEngine.UI.GraphicRaycaster>();
+            if (ray == null)
                 canvas.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
         }
         Debug.Log("🧩 已重建 Canvas SortingOrder 與 Raycaster");
 
         // === 道具 ===
-        foreach (var item in GameObject.FindObjectsOfType<ItemPickup>())
+        foreach (var item in FindObjectsOfType<ItemPickup>())
         {
             var id = item.GetComponent<SaveableEntity>();
             if (id != null && data.collectedItems.Contains(id.uniqueID))
@@ -185,7 +176,7 @@ public class LoadUIManager : MonoBehaviour
         }
 
         // === 線索 ===
-        foreach (var clue in GameObject.FindObjectsOfType<CluePickup>())
+        foreach (var clue in FindObjectsOfType<CluePickup>())
         {
             var id = clue.GetComponent<SaveableEntity>();
             if (id != null && data.collectedClues.Contains(id.uniqueID))
@@ -193,7 +184,7 @@ public class LoadUIManager : MonoBehaviour
         }
 
         // === 互動物件 ===
-        foreach (var inter in GameObject.FindObjectsOfType<SceneInteractable>())
+        foreach (var inter in FindObjectsOfType<SceneInteractable>())
         {
             var id = inter.GetComponent<SaveableEntity>();
             if (id != null && data.finishedInteractions.Contains(id.uniqueID))
@@ -203,15 +194,15 @@ public class LoadUIManager : MonoBehaviour
         // === 生成箱子 ===
         foreach (string id in data.spawnedObjects)
         {
+            // 如果沒有該箱子實體，重新生成
             bool found = false;
-            foreach (var so in GameObject.FindObjectsOfType<SaveableEntity>())
+            foreach (var so in FindObjectsOfType<SaveableEntity>())
                 if (so.uniqueID == id) found = true;
 
             if (!found)
             {
-                var beds = GameObject.FindObjectOfType<BedController>();
-                if (beds != null)
-                    beds.SpawnObject("chest");
+                var beds = FindObjectOfType<BedController>();
+                if (beds != null) bed.SpawnObject("chest");
             }
         }
 
@@ -219,17 +210,20 @@ public class LoadUIManager : MonoBehaviour
         foreach (string id in data.spawnedNPCs)
         {
             bool found = false;
-            foreach (var npc in GameObject.FindObjectsOfType<SaveableEntity>())
+            foreach (var npc in FindObjectsOfType<SaveableEntity>())
                 if (npc.uniqueID == id) found = true;
 
             if (!found)
             {
-                var npcManager = GameObject.FindObjectOfType<NPCManager>();
-                if (npcManager != null)
-                    npcManager.SpawnNPC("Guard");
+                var npcManager = FindObjectOfType<NPCManager>();
+                if (npcManager != null) npcManager.SpawnNPC("Guard"); // 依照你的 Ink 內容命名
             }
         }
 
+
+
         Debug.Log($"📜 載入結果：道具 {data.collectedItems.Count}、線索 {data.collectedClues.Count}、互動 {data.finishedInteractions.Count}、生成物 {data.spawnedObjects.Count}、NPC {data.spawnedNPCs.Count}");
+
+
     }
 }
