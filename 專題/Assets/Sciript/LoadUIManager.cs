@@ -78,7 +78,6 @@ public class LoadUIManager : MonoBehaviour
 
 
     // ✅ 在新場景中由 InkDialogueManager 呼叫
-    // ✅ 在新場景中由 InkDialogueManager 呼叫
     public static IEnumerator ApplyPendingLoadData()
     {
         if (pendingLoadData == null)
@@ -98,7 +97,7 @@ public class LoadUIManager : MonoBehaviour
 
         inkManager.ReloadInkState(data.storyState);
 
-        // === 恢復玩家位置 ===
+        // 恢復玩家位置
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
         {
@@ -107,59 +106,34 @@ public class LoadUIManager : MonoBehaviour
             if (pm != null) pm.canMove = true;
         }
 
-        // === 恢復 HP ===
+        // 恢復 HP
         HP hpRef = GameObject.FindObjectOfType<HP>();
         if (hpRef != null)
             hpRef.hp = data.playerHp;
 
-        // === 還原床底箱子狀態 ===
+        // 恢復場景物件狀態
         var bed = GameObject.FindObjectOfType<BedController>();
-        switch (data.chestState)
-        {
-            case 0:
-                Debug.Log("📦 狀態 0：未生成箱子");
-                break;
+        if (bed != null && !string.IsNullOrEmpty(data.bedState))
+            bed.ChangeImage(data.bedState);
 
-            case 1:
-                Debug.Log("📦 狀態 1：生成但未解鎖");
-                if (!FindObjectOfType<ChestController>() && bed != null)
-                {
-                    bed.SpawnObject("chest");
-                }
-                break;
-
-            case 2:
-                Debug.Log("📦 狀態 2：已解鎖");
-                if (!FindObjectOfType<ChestController>() && bed != null)
-                {
-                    bed.SpawnObject("chest");
-                }
-
-                var chestObj = FindObjectOfType<ChestController>();
-                if (chestObj != null)
-                {
-                    chestObj.isUnlocked = true;
-                    chestObj.ApplyVisualByState();
-                }
-                break;
-        }
-
-        // === 恢復馬桶 ===
         var toilet = GameObject.FindObjectOfType<toiletController>();
         if (toilet != null && !string.IsNullOrEmpty(data.toiletState))
             toilet.ChangeImage(data.toiletState);
 
-        // === 恢復保險箱 ===
+        var chest = GameObject.FindObjectOfType<ChestController>();
+        if (chest != null) chest.isUnlocked = data.chestOpened;
+
         var safe = GameObject.FindObjectOfType<SafeController>();
         if (safe != null) safe.isUnlocked = data.safeOpened;
 
-        // === EventSystem ===
+
         UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        Debug.Log("✅ 存檔資料已完整還原");
+        Debug.Log("✅ 存檔資料已完整還原（Ink + 玩家位置 + 場景物件）");
 
+        // 🟩 確保 EventSystem 存在且可互動
         var evt = UnityEngine.EventSystems.EventSystem.current;
         if (evt == null)
         {
@@ -169,24 +143,31 @@ public class LoadUIManager : MonoBehaviour
         else
         {
             evt.enabled = true;
+            Debug.Log("⚙️ EventSystem 已啟用");
         }
-
-        // === 重設 Canvas ===
+        // 🩹 修正：重設所有 Canvas 的互動層級
         int baseOrder = 0;
         foreach (var canvas in GameObject.FindObjectsOfType<Canvas>())
         {
-            if (canvas.renderMode == RenderMode.ScreenSpaceOverlay || canvas.renderMode == RenderMode.ScreenSpaceCamera)
+            if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                canvas.overrideSorting = true;
+                canvas.sortingOrder = baseOrder++;
+            }
+            else if (canvas.renderMode == RenderMode.ScreenSpaceCamera)
             {
                 canvas.overrideSorting = true;
                 canvas.sortingOrder = baseOrder++;
             }
 
+            // 確保 Canvas 可以互動
             var ray = canvas.GetComponent<UnityEngine.UI.GraphicRaycaster>();
             if (ray == null)
                 canvas.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
         }
+        Debug.Log("🧩 已重建 Canvas SortingOrder 與 Raycaster");
 
-        // === 隱藏已收集道具與線索 ===
+        // === 道具 ===
         foreach (var item in FindObjectsOfType<ItemPickup>())
         {
             var id = item.GetComponent<SaveableEntity>();
@@ -194,6 +175,7 @@ public class LoadUIManager : MonoBehaviour
                 item.gameObject.SetActive(false);
         }
 
+        // === 線索 ===
         foreach (var clue in FindObjectsOfType<CluePickup>())
         {
             var id = clue.GetComponent<SaveableEntity>();
@@ -209,7 +191,22 @@ public class LoadUIManager : MonoBehaviour
                 inter.canInteract = false;
         }
 
-        // === NPC ===
+        // === 生成箱子 ===
+        foreach (string id in data.spawnedObjects)
+        {
+            // 如果沒有該箱子實體，重新生成
+            bool found = false;
+            foreach (var so in FindObjectsOfType<SaveableEntity>())
+                if (so.uniqueID == id) found = true;
+
+            if (!found)
+            {
+                var beds = FindObjectOfType<BedController>();
+                if (beds != null) bed.SpawnObject("chest");
+            }
+        }
+
+        // === 生成 NPC ===
         foreach (string id in data.spawnedNPCs)
         {
             bool found = false;
@@ -219,11 +216,14 @@ public class LoadUIManager : MonoBehaviour
             if (!found)
             {
                 var npcManager = FindObjectOfType<NPCManager>();
-                if (npcManager != null) npcManager.SpawnNPC("Guard");
+                if (npcManager != null) npcManager.SpawnNPC("Guard"); // 依照你的 Ink 內容命名
             }
         }
 
-        Debug.Log($"📜 載入結果：道具 {data.collectedItems.Count}、線索 {data.collectedClues.Count}、互動 {data.finishedInteractions.Count}、NPC {data.spawnedNPCs.Count}");
-    }
 
+
+        Debug.Log($"📜 載入結果：道具 {data.collectedItems.Count}、線索 {data.collectedClues.Count}、互動 {data.finishedInteractions.Count}、生成物 {data.spawnedObjects.Count}、NPC {data.spawnedNPCs.Count}");
+
+
+    }
 }

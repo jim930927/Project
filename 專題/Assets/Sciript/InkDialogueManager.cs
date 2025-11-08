@@ -272,20 +272,6 @@ public class InkDialogueManager : MonoBehaviour
             inkJSON = newInkJSON;
             story = new Story(inkJSON.text);
 
-            // === 插入 DebugLog 綁定 ===
-            try
-            {
-                story.BindExternalFunction("DebugLog", (string msg) => {
-                    Debug.Log($"🪶 Ink Debug: {msg}");
-                });
-            }
-            catch (System.Exception e)
-            {
-                if (!e.Message.Contains("already been bound"))
-                    Debug.LogWarning($"⚠️ 綁定 DebugLog 失敗: {e.Message}");
-            }
-
-
             story.BindExternalFunction("SaveGame", () => {
                 saveUI.OpenSaveMenu(story.state.ToJson());
             });

@@ -46,36 +46,20 @@ public class BedController : MonoBehaviour
 
     public void SpawnObject(string objName)
     {
-        if (objName != "chest" || chestPrefab == null) return;
-
-        // 1) 計算場景中現有的箱子數（包含被關閉的物件，但排除專案資產/Prefab）
-        int CountSceneChests()
+        if (objName == "chest" && !chestSpawned && chestPrefab != null)
         {
-            int count = 0;
-            var all = Resources.FindObjectsOfTypeAll<ChestController>();
-            foreach (var c in all)
+            var chest = Instantiate(chestPrefab, chestSpawnPoint.position, Quaternion.identity);
+            chestSpawned = true;
+
+            // ✅ 新增：紀錄已生成
+            var saveMgr = FindObjectOfType<SaveUIManager>();
+            if (saveMgr != null)
             {
-                if (c == null) continue;
-                if (!c.gameObject.scene.IsValid()) continue;   // 排除專案資產
-                count++;
+                string savePath = Application.persistentDataPath + "/autosave_spawn.txt";
             }
-            return count;
+
+            Debug.Log("📦 床底箱子已生成");
         }
-
-        int existing = CountSceneChests();
-
-        // 2) 若已達上限 2 就不再生成
-        if (existing >= 2)
-        {
-            Debug.Log($"📦 已存在 {existing} 個箱子（達上限 2），不重複生成");
-            return;
-        }
-
-        // 3) 尚未達上限 → 生成一個
-        Instantiate(chestPrefab, chestSpawnPoint.position, Quaternion.identity);
-        Debug.Log($"📦 生成第 {existing + 1} 個箱子");
     }
-
-
-
+    
 }

@@ -17,26 +17,23 @@ EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
 EXTERNAL ChangeBedImage(bed_type)
 EXTERNAL ChangeToiletImage(toilet_type)
-EXTERNAL MovePlayer(position)
-EXTERNAL SpawnObject(objName)
+EXTERNAL MovePlayer(bed_side)
+EXTERNAL SpawnObject(chest)
 EXTERNAL OpenChestUI()
 EXTERNAL OpenSafeUI()
-EXTERNAL SpawnNPC(NPCName)
-EXTERNAL HP_Add(value)
+EXTERNAL SpawnNPC(Guide) 
+EXTERNAL HP_Add(hp)
 EXTERNAL Get_Item(itemID)
 EXTERNAL Get_Clue(clueID)
 EXTERNAL ReplaceItem(oldItemID,newItemID)
 EXTERNAL Get_fragments(fragmentID)
-EXTERNAL DebugLog(message)
 
-// ========================== CG 開場 ==========================
 == CG ==
 ~ speaker = " "
 #play_cg openingCG
 「......」
 ->start
 
-// ========================== 開始 ==========================
 == start ==
 ~ speaker = " "
 微弱晨光透過縫隙灑進，周圍安靜的可怕，唯獨鬧鐘發出了「滴答」的聲響。
@@ -57,7 +54,6 @@ EXTERNAL DebugLog(message)
 一個垃圾桶，裡面是空的
 -> END
 
-// ========================== 主房門 ==========================
 == main_room ==
 ~ speaker = "我"
 「門是鎖的...？鑰匙在哪」
@@ -71,7 +67,6 @@ EXTERNAL DebugLog(message)
     -> END
 
 == have_key ==
-~ DebugLog("📣 Ink 呼叫 UnlockDoor('main_room')")
 ~ UnlockDoor("main_room")
 ~ Unlock_door = true
 ~ speaker = ""
@@ -84,7 +79,7 @@ EXTERNAL DebugLog(message)
 「要先找到鑰匙才行...」
 ->END
 
-// ========================== 衣櫃 ==========================
+
 == wardrobe ==
 ~ speaker = " "
 裡面放著些許衣服，大多是長袖長褲
@@ -95,15 +90,15 @@ EXTERNAL DebugLog(message)
 【按下E鍵即可躲藏】
 ->END
 
-// ========================== 鏡子（存檔點） ==========================
+
 == mirror ==
 ~ speaker = " "
-~ DebugLog("📣 Ink 呼叫 SaveGame() @mirror")
-~ SaveGame()
+一面鏡子
+~ SaveGame() 
 站在鏡子前面，記住了自己現在的模樣
 -> END
 
-// ========================== 日記（房內） ==========================
+
 == Journal1 ==
 ~ speaker = "我"
 「床頭櫃裡好像有什麼東西？」
@@ -111,12 +106,10 @@ EXTERNAL DebugLog(message)
 -> END
 
 == journal_end ==
-~ speaker = "我"
+ ~ speaker = "我"
 「這是之前那本日記缺少的前幾頁？」
 「那些日記裡的聲音……像是在告訴我『你必須成為某種樣子』，可我真的想那樣嗎？如果那不是我想要的樣子，那日記裡的『我』又是誰？」
 ~ speaker = " "
-~ DebugLog("📣 Ink 呼叫 Get_Clue('Journal1')")
-~ Get_Clue("Journal1")
 【獲得線索：日記殘頁-1】
 -> END
 
@@ -127,13 +120,11 @@ EXTERNAL DebugLog(message)
 
 == note_end ==
 ~ speaker = " "
-~ DebugLog("📣 Ink 呼叫 Get_Item('offense_rules') & SpawnNPC('Guide')")
 【獲得道具“家規”】
 ~ speaker = "我"
 「為什麼這裡會有這種東西？不知道觸發規則會怎樣……好像也跟出去無關。」
-~ DebugLog("📣 Ink 呼叫 SpawnNPC('Guide')")
-~ SpawnNPC("Guide")
-~ speaker = " "
+ ~ SpawnNPC("Guide")
+ ~ speaker = " "
 一個幽暗身影出現在旁邊
 #turn_back
 ~ speaker = "我"
@@ -145,36 +136,33 @@ EXTERNAL DebugLog(message)
 【現在開始可以向AI引路人問問題（他只會回答遊戲相關的問題）或許他知道一些重要的線索】
 ->END
 
-// ========================== 床 ==========================
+
 == bed ==
 ~ speaker = "我"
 ~ bed_interact += 1
+// 檢查是否超過互動次數
 { bed_interact > 2:
     「好像沒有需要調查的地方了」
     -> END
 - else:
     * 查看被子
         ~ speaker = " "
-        ~ DebugLog("📣 Ink 呼叫 ChangeBedImage('bed_quilt')")
         ~ ChangeBedImage("bed_quilt")
         床上凌亂的被子，留有些許溫度
         -> quilt
     * 查看床底下
-        ~ DebugLog("📣 Ink 呼叫 MovePlayer('bed_side')")
         ~ MovePlayer("bed_side")
-        ~ DebugLog("📣 Ink 呼叫 SpawnObject('chest')")
         ~ SpawnObject("chest")
         床底下藏著箱子，將箱子拿了出來，上面有一個4位數密碼鎖
         ~ speaker = "我"
         「鎖住了...密碼是多少呢...是某個日期嗎」
         -> END
-}
+}  
 
 == quilt ==
 ~ speaker = "我"
 * 整理被子
     #no_foul
-    ~ DebugLog("📣 Ink 呼叫 ChangeBedImage('bed_neat')")
     ~ ChangeBedImage("bed_neat")
     ~ foul = false
     「不整理的話...總感覺會有不好的事發生」
@@ -185,11 +173,9 @@ EXTERNAL DebugLog(message)
     「還是放著不動吧...應該...會沒事吧」
     ->END
 
-// ========================== 箱子 ==========================
 == chest ==
 ~ speaker = "我"
 「箱子的密碼是多少呢...」
-~ DebugLog("📣 Ink 呼叫 OpenChestUI()")
 ~ OpenChestUI()
 -> END
 
@@ -211,18 +197,14 @@ EXTERNAL DebugLog(message)
 ~ speaker = "引路人"
 「用它，解開這扇門的鎖。繼續尋找你失去的記憶吧。」
 ~ speaker = ""
-~ DebugLog("📣 Ink 呼叫 Get_Item('key_room') & Get_Clue(繪本/病歷/獎狀) & Get_fragments('honor')")
-~ Get_Item("key_room")
-~ Get_Clue("PictureBook")
-~ Get_Clue("MedicalRecord")
-~ Get_Clue("AwardSheets")
 ~ Get_fragments("honor")
 【獲得道具：房間鑰匙】
 【獲得線索：墨涅的繪本、一份病歷、幾張藝術比賽的獎狀】
 【獲得記憶碎片1/8：不受待見的榮譽】
 ->END
 
-// ========================== 違規事件 ==========================
+
+
 == enemy ==
 ~ speaker = "我"
 「！！！」
@@ -230,7 +212,7 @@ EXTERNAL DebugLog(message)
     -> offense
 - else:
     -> no_offense
-}
+    }
 -> END
 
 == offense ==
@@ -238,7 +220,6 @@ EXTERNAL DebugLog(message)
 「你……不是個乖孩子。這樣……會讓你受傷的。」
 #Enemy_disappear
 ~ speaker = "我"
-~ DebugLog("📣 Ink 呼叫 HP_Add(1) @offense")
 ~ HP_Add(1)
 「剛剛那是......?」
 「......」
@@ -262,14 +243,12 @@ EXTERNAL DebugLog(message)
 == get_catch
 ~ speaker = "??"
 「觸犯規則...要受到懲罰」
-~ DebugLog("📣 Ink 呼叫 HP_Add(-1) @get_catch")
 ~ HP_Add(-1)
 ~ speaker = "我"
 「糟了......」
 #GameOver1:TriggerRule
 ->END
 
-// ========================== 其他互動點 ==========================
 == warehouse
 ~ speaker = " "
 倉庫門緊鎖，似乎需要一把鑰匙。
@@ -305,28 +284,26 @@ EXTERNAL DebugLog(message)
 時間指向7:25，看起來像是一個悲傷的表情。
 ->END
 
-// ========================== 馬桶 ==========================
+
 == toilet ==
 ~ speaker = ""
 白色陶瓷馬桶，因較老舊，已逐漸泛黃
 + 打開
-    ~ DebugLog("📣 Ink 呼叫 ChangeToiletImage('toilet_open')")
     ~ ChangeToiletImage("toilet_open")
     裡面比想像中乾淨，沒有什麼髒污跟異味。
     ->END
 + 關著
-    ~ DebugLog("📣 Ink 呼叫 ChangeToiletImage('toilet_close')")
     ~ ChangeToiletImage("toilet_close")
     ~ speaker = "我"
     「馬桶裡應該不會有什麼重要線索，還是讓它蓋吧。」
     ->END
-
+    
+    
 == tub
 ~ speaker = " "
 浴缸上佈滿水痕，看起來用了好幾年了。
 ->END
 
-// ========================== 洗手台、信封 ==========================
 == sink
 洗手台裡放滿了水，水上面放了一張被水浸濕的信封，還有幾根不知道是甚麼動物的毛
 ~ speaker = "我"
@@ -353,7 +330,6 @@ EXTERNAL DebugLog(message)
 #father_appear
 ~ speaker = "回憶裡的我"
 「！！！」
-// 轉場
 #turn_back
 ~ speaker = "爸爸"
 「你在幹什麼！」
@@ -386,12 +362,10 @@ EXTERNAL DebugLog(message)
 == water_latter
 「這信封完全濕掉了...如果強行打開，絕對會破掉，要想個辦法把它變乾...」
 ~ speaker = ""
-~ DebugLog("📣 Ink 呼叫 Get_Item('water_letter')")
 ~ Get_letter = "water_letter"
 【獲得道具：被水浸濕的信封】
 ->END
 
-// ========================== 冰箱 ==========================
 == refrigerator
 ~ ref_interact += 1
 ~ speaker = " "
@@ -410,31 +384,30 @@ EXTERNAL DebugLog(message)
         「現在肚子不餓，不用找吃的」
         「嗯？冰箱上好像貼著什麼東西」
         「這是...又一個日記殘頁？」
-        ~ DebugLog("📣 Ink 呼叫 Get_Clue('Journal2')")
         ~ Get_Clue("Journal2")
         ->Journal2
-}
+}  
 
 == refrigerator_memory
 ~ speaker = "回憶裡的我"
-「看看裡面有什麼好吃的」
-#mother_appear
-~ speaker = "媽媽"
-「墨涅你在幹嘛？」
-~ speaker = "回憶裡的我"
-#turn_back
-「啊...我......」
-~ speaker = "媽媽"
-「我不是警告過你半夜不准吃東西了嗎？」
-~ speaker = "回憶裡的我"
-「可是...我讀書讀到現在...肚子餓了嘛......」
-~ speaker = "媽媽"
-「......」
-「那就趕快去睡覺！剩下的明天再讀！」
-~ speaker = "回憶裡的我"
-「好......」
-#refrigerator_memory_end
-->refrigerator_memory_end
+    「看看裡面有什麼好吃的」
+    #mother_appear
+    ~ speaker = "媽媽"
+    「墨涅你在幹嘛？」
+    ~ speaker = "回憶裡的我"
+    #turn_back
+    「啊...我......」
+    ~ speaker = "媽媽"
+    「我不是警告過你半夜不准吃東西了嗎？」
+    ~ speaker = "回憶裡的我"
+    「可是...我讀書讀到現在...肚子餓了嘛......」
+    ~ speaker = "媽媽"
+    「......」
+    「那就趕快去睡覺！剩下的明天再讀！」
+    ~ speaker = "回憶裡的我"
+    「好......」
+    #refrigerator_memory_end
+    ->refrigerator_memory_end
 
 == refrigerator_memory_end
 ~ speaker = ""
@@ -443,7 +416,6 @@ EXTERNAL DebugLog(message)
 「從那之後...我好像再也沒在半夜跑到廚房了...」
 「我一直認為，他們的規則只是為了讓我服從……」
 「可那天的媽媽，似乎真的只是怕我累壞……」
-~ DebugLog("📣 Ink 呼叫 HP_Add(1) @refrigerator_memory_end")
 ~ HP_Add(1)
 「或者，我只是想把每一次的限制都解讀成惡意，這樣我才有理由反抗。」
 ->END
@@ -465,13 +437,15 @@ EXTERNAL DebugLog(message)
 【按下E鍵即可躲藏】
 -> END
 
+
+
 == gas_stove
 瓦斯爐上面放著一個平底鍋，上面還殘留了些許溫度，似乎前一段時間使用過。
 {Get_letter == "water_letter":
     -> water_letter
 - else:
     -> END
-}
+    }
 
 == water_letter
 ~ Get_letter = "dry_letter"
@@ -481,7 +455,6 @@ EXTERNAL DebugLog(message)
 打開瓦斯爐把信封放置於火上面數公分高的地方進行火烤，直到信封完全乾燥
 ~ speaker = "我"
 「這樣就可以了」
-~ DebugLog("📣 Ink 呼叫 ReplaceItem('water_letter','dry_letter')")
 ~ ReplaceItem("water_letter", "dry_letter")
 ~ speaker = " "
 打開信封
@@ -495,7 +468,6 @@ EXTERNAL DebugLog(message)
 「可是……如果他們是愛我的，為什麼還要用懲罰代替解釋？...他們口中的保護，為什麼要讓我覺得自己像犯了罪？」
 「也許……真相，並不會讓我感到好受」
 ~ speaker = ""
-~ DebugLog("📣 Ink 呼叫 Get_fragments('care') & Get_Clue('Letter2')")
 ~ Get_fragments("care")
 【獲得線索：一封老舊的信封-2】
 【獲得記憶碎片2/8：未曾解釋的擔心】
@@ -514,7 +486,6 @@ EXTERNAL DebugLog(message)
     「沒這個必要，還是算了吧」
     ->END
 
-// ========================== 洗衣間 & 線索 ==========================
 ~ room = "洗衣間"
 == cloth
 ~ speaker = ""
@@ -527,7 +498,6 @@ EXTERNAL DebugLog(message)
 ->END
 
 == cloth_end
-~ DebugLog("📣 Ink 呼叫 HP_Add(1) & Get_fragments('scars') & Get_Clue('Journal4')")
 ~ HP_Add(1)
 ~ Get_fragments("scars")
 【獲得線索：日記殘頁-4】
@@ -549,8 +519,6 @@ EXTERNAL DebugLog(message)
 找到被揉皺的紙團
 把紙團打開，裡面掉出一把舊鑰匙
 紙團上面寫著「百物歸處，木門為鎖，灰塵作守。」
-~ DebugLog("📣 Ink 呼叫 Get_Item('key_unknow')")
-~ Get_Item("key_unknow")
 【獲得道具：不明的鑰匙、揉皺的紙團】
 ->END
 
@@ -566,7 +534,6 @@ EXTERNAL DebugLog(message)
 ~ speaker = "我"
 * 「Ｘ！你有什麼毛病啊！」
     #turn_back
-    ~ DebugLog("📣 Ink 呼叫 HP_Add(1)")
     ~ HP_Add(1)
     ~ speaker = "我"
     「可以不要每次都無聲無息地突然出現接著又莫名其妙地消失嗎，下次出現可以給我一點心理準備嗎？」
@@ -592,17 +559,16 @@ EXTERNAL DebugLog(message)
     ->chase
 * 「怎麼又是你」
     #turn_back
-    ~ DebugLog("📣 Ink 呼叫 HP_Add(-1)")
     ~ HP_Add(-1)
     ~ speaker = "我"
     「你一直這樣跟蹤我到底有什麼目的？」
     ~ speaker = "引路人"
     「我只是出來提醒你，要謹記你房間裡那張寫著家規的紙條」
-    ~ speaker = "我"
+     ~ speaker = "我"
     「我的事不用你來關心，我自己可以解決」
-    ~ speaker = ""
+     ~ speaker = ""
     語畢，引路人又消失的無影無蹤了
-    ~ speaker = "我"
+     ~ speaker = "我"
     「真是個奇怪的傢伙。算了！我還是趕快去其他地方找找看有沒有其他線索」
     ->END
 * 「你怎麼總是神出鬼沒的」
@@ -620,7 +586,6 @@ EXTERNAL DebugLog(message)
 #start_chase
 ->END
 
-// ========================== 倉庫門 ==========================
 == storehouse
 ~ speaker = ""
 倉庫門緊鎖，似乎需要一把鑰匙。
@@ -634,7 +599,6 @@ EXTERNAL DebugLog(message)
 ->END
 
 == have_store_key ==
-~ DebugLog("📣 Ink 呼叫 UnlockDoor('storehouse')")
 ~ UnlockDoor("storehouse")
 ~ Unlock_door = true
 ~ speaker = ""
@@ -647,7 +611,6 @@ EXTERNAL DebugLog(message)
 「要先找到鑰匙...」
 ->END
 
-// ========================== 倉庫劇情 ==========================
 == storeroom
 #memory4
 ~ speaker = ""
@@ -683,6 +646,7 @@ EXTERNAL DebugLog(message)
 #store_memory_end
 #Exam_appear
 ->store_memory_end
+
 
 == store_memory_end
 ~ speaker = ""
@@ -734,7 +698,7 @@ EXTERNAL DebugLog(message)
     #wake
     ~ speaker = ""
     感覺有人在拍我便悠悠醒轉
-    迷迷糊糊地的睜開眼小聲地道
+    迷迷糊糊的睜開眼小聲地道
     ~ speaker = "我"
     #turn_left
     「誰？」
@@ -747,7 +711,7 @@ EXTERNAL DebugLog(message)
     ~ speaker = "我"
     「......」
     ->wake
-
+    
 == wake
 ~ speaker = "我"
 *「那...剛才那些...是真的嗎？」
@@ -767,7 +731,6 @@ EXTERNAL DebugLog(message)
     #GuideNPC_disspear
     ->END
 * 「不管那是幻覺還是現實」
-    ~ DebugLog("📣 Ink 呼叫 HP_Add(1) @wake")
     ~ HP_Add(1)
     ~ speaker = "我"
     「我想那一定跟我為什麼會來到這鬼地方有關，我一定要調查清楚」
@@ -780,7 +743,6 @@ EXTERNAL DebugLog(message)
     #GuideNPC_disspear
     ->END
 *「我不想再看到那些了…拜託…」
-    ~ DebugLog("📣 Ink 呼叫 HP_Add(-1) @wake")
     ~ HP_Add(-1)
     ~ speaker = "引路人"
     「......」
@@ -794,13 +756,16 @@ EXTERNAL DebugLog(message)
     「......」
     ->END
 
+
 == exam_papers
 ~ speaker = "我"
-~ DebugLog("📣 Ink 呼叫 Get_Clue('Math81') & Get_fragments('expect')")
 ~ Get_fragments("expect")
+「這是剛剛幻覺中出現的考卷...」
 【獲得線索：一張寫著81分的數學考卷】
 【獲得記憶碎片4/8：父母的期望】
 ->END
+
+
 
 == carton
 ~ speaker = ""
@@ -808,16 +773,13 @@ EXTERNAL DebugLog(message)
 【按下E鍵即可躲藏】
 ->END
 
-// ========================== 保險箱 ==========================
 == safe
 ~ speaker = "我"
 「保險箱?...密碼是多少呢?」
-~ DebugLog("📣 Ink 呼叫 OpenSafeUI()")
 ~ OpenSafeUI()
 ->END
 
 == safe_open
-~ DebugLog("📣 Ink 呼叫 Get_Clue('Letter2') & Get_fragments('lied') & Get_Item('parent_key')")
 ~ Get_Clue("Letter2")
 ~ speaker = ""
 ......
@@ -842,17 +804,15 @@ EXTERNAL DebugLog(message)
 「好吧…那祝你好運，但我要先提醒你，去了之後就無法回頭，同時一切的命運皆掌握在你手中，望你好自為之」
 #StoryNPC_disspear
 ~ speaker = ""
-~ DebugLog("📣 Ink 呼叫 Get_fragments('lied') & Get_Item('key_parent')")
 ~ Get_fragments("lied")
 【獲得道具：父母房間的備用鑰匙】
 【獲得線索：一封字跡潦草的書信】
 【獲得記憶碎片5/8：父親的謊言】
 ->END
 
-// ========================== 香與神桌 ==========================
+
 == incense
 ~ speaker = ""
-~ DebugLog("📣 Ink 呼叫 Get_Item('incense')")
 ~ Get_incense = "incense"
 抽屜裡放著一包香，香的下面放著一張寫著使用指南的紙
 ->END
@@ -864,18 +824,19 @@ EXTERNAL DebugLog(message)
 「還有...使用指南?」
 ->END
 
+
 == incense_burner
 ~ speaker = "我"
 { Get_incense == "incense": 
     { CANincense == 0:
-        -> incense_burned
-    - else:
-        -> USEincense 
-    }
+    -> incense_burned
+       - else:
+            -> USEincense 
+        }
    - else:
         -> no_incense 
-}
-
+    }
+    
 == no_incense
 香爐裡只有幾根燒盡的香。
 ->END
@@ -896,6 +857,7 @@ EXTERNAL DebugLog(message)
 ~ CANincense = 1
 ->END
 
+
 == USEincense
 ~ speaker = "我"
 ~ inc_interact += 1
@@ -906,11 +868,10 @@ EXTERNAL DebugLog(message)
 - else:
     ~ speaker = ""
     *【一炷香】
-        「如果我想請神明幫忙，只點燃一支香可能不夠......」
-        ->END
+    「如果我想請神明幫忙，只點燃一支香可能不夠......」
+    ->END
     *【三炷香】
         #burn
-        ~ DebugLog("📣 Ink 呼叫 HP_Add(1) @incense")
         ~ HP_Add(1)
         ~ speaker = "我"
         「我...好像只求過一次…那是我唯一主動去祈求神明的時候。」
@@ -926,7 +887,6 @@ EXTERNAL DebugLog(message)
         「也許...我早就忘了自己想求什麼，只記得該怎麼做才能讓他們滿意。」
         ->END
     *【五炷香】
-        ~ DebugLog("📣 Ink 呼叫 HP_Add(-1) @incense")
         ~ HP_Add(-1)
         ~ speaker = "我"
         「節日或是法會才會用到，這好像跟我想祈求的事情無關......」
@@ -936,22 +896,23 @@ EXTERNAL DebugLog(message)
         「調轉生死或命運走向，我應該還不至於用到這種地步吧......」
         ->END
     *【九炷香】
-        ~ DebugLog("📣 Ink 呼叫 HP_Add(-1) @incense")
         ~ HP_Add(-1)
         ~ speaker = "我"
         「我只不過是想跟神明祈求一些事而已，不用這麼大手筆......」
         ->END
-}
+}  
+
+
 
 == god_forcer
 ~ speaker = ""
 打開櫃子，裡面放著一把金色的鑰匙，上面寫著 「櫥櫃鑰匙」
-~ DebugLog("📣 Ink 呼叫 Get_Item('key_gold') & Get_fragments('desire') & Get_Clue('amulet')")
 ~ Get_Item("key_gold")
 ~ key_gold = true
 裡面還放著一個平安符，上面寫著「保佑闔家平安」
 #memory3
 ->amulet_memory
+
 
 == amulet_memory
 ~ speaker = ""
@@ -975,7 +936,7 @@ EXTERNAL DebugLog(message)
 「這算什麼…愛嗎？ 還是單純把我當作一種工具?」
 「如果平安只是指活著、不生病、不出事……那我一直以來的那些痛苦，又算什麼？你們的『平安』，是不是只是希望我乖乖待在你們規劃好的籠子裡？」
 ~ speaker = ""
-~ DebugLog("📣 Ink 呼叫 Get_Clue('amulet') & Get_fragments('desire')")
+拿起平安符
 ~ Get_Clue("amulet")
 ~ Get_fragments("desire")
 【獲得線索：平安符（可抵擋一次攻擊）】
@@ -990,9 +951,9 @@ EXTERNAL DebugLog(message)
 「嗯？鞋櫃裡好像有幾張紙...」
 ->END
 
+
 == Journal5
 ~ speaker = ""
-~ DebugLog("📣 Ink 呼叫 Get_Clue('Journal5') & Get_fragments('silence')")
 ~ Get_fragments("silence")
 【獲得線索：日記殘頁-5】
 【獲得記憶碎片7/8：鞋舌下的沉默】
@@ -1002,8 +963,9 @@ EXTERNAL DebugLog(message)
 {key_gold == true:
     ->inside
 -else:
-    ->outside
+->outside
 }
+
 ->END
 
 == inside
@@ -1011,7 +973,6 @@ EXTERNAL DebugLog(message)
 用神明廳得來的金鑰匙打開客廳的玻璃櫥窗。
 #use_key_gold
 裡面有一張童年出遊時的全家福照片、幾張日記殘頁
-~ DebugLog("📣 Ink 呼叫 Get_Clue('FamilyPortrait') & Get_Clue('Journal3') & Get_fragments('memory')")
 ~ Get_Clue("FamilyPortrait")
 ~ Get_Clue("Journal3")
 ~ Get_fragments("memory")
@@ -1025,7 +986,6 @@ EXTERNAL DebugLog(message)
 櫥櫃緊鎖著，裡面放著一幅全家福，是小時候的墨涅跟年輕時的父母，一家人笑得很開心。
 ->END
 
-// ========================== 父母房門 ==========================
 == parent_door ==
 ~ speaker = "我"
 「房間門緊鎖，似乎需要一把鑰匙，在手碰到門把的時候，有一股不明的壓迫感從門後傳來，似乎在警告什麼。」
@@ -1039,7 +999,6 @@ EXTERNAL DebugLog(message)
 ->END
 
 == have_parent_key ==
-~ DebugLog("📣 Ink 呼叫 UnlockDoor('parent_room')")
 ~ UnlockDoor("parent_room")
 ~ Unlock_door = true
 ~ speaker = ""
@@ -1052,7 +1011,7 @@ EXTERNAL DebugLog(message)
 「要先找到鑰匙...」
 ->END
 
-// ========================== 父母房劇情 ==========================
+
 == parent_room
 ~ speaker = "我"
 「這些是......」
@@ -1147,7 +1106,6 @@ EXTERNAL DebugLog(message)
 墨涅：「這些是...阿姨寄給媽媽的信？」
 墨涅：「難不成媽媽這些年來一直遭受爸爸的家暴？」
 墨涅：「媽媽...對我的成績會那麼看重，應該也是因為不想讓我變得跟爸爸一樣吧？」
-~ DebugLog("📣 Ink 呼叫 Get_Clue('Agreement')")
 ~ Get_Clue("Agreement")
 墨涅：「離婚？難道爸爸跟媽媽離婚了？這件事我怎麼不知道？」
 引路人：「這張離婚協議書還沒有簽字，應該是媽媽事先準備好，但還沒有勇氣拿出來吧？」
