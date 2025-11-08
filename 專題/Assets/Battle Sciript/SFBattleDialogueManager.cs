@@ -17,11 +17,12 @@ public class SFBattleDialogueManager : MonoBehaviour
     public GameObject choiceContainer;
     public Button[] choiceButtons;
 
+    public Hp_battle hp_Battle;
+
     public static SFBattleDialogueManager Instance;
 
     [Header("Ink 劇本 JSON")]
     public TextAsset inkJSON;
-
     public Story story;
 
     [Header("動畫控制")]
@@ -37,6 +38,8 @@ public class SFBattleDialogueManager : MonoBehaviour
     private bool skipLocked = false;
     private bool isContinuing = false;
     private bool isShowingChoices = false;
+    private bool inputLockedByChoices = false; // 🔒 用來控制選項期間的輸入鎖定
+
 
     private Action onDialogueComplete;
 
@@ -66,12 +69,13 @@ public class SFBattleDialogueManager : MonoBehaviour
             return;
         }
 
-        if (isShowingChoices)
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-                Debug.Log("🚫 顯示選項時空白鍵無效");
+        if(isShowingChoices && Input.GetKeyDown(KeyCode.Space))
+{
+            // 直接吃掉輸入
+            Debug.Log("stop");
             return;
         }
+
 
         if (Input.GetKeyDown(KeyCode.Space) && canContinue && !skipLocked && !isContinuing)
         {
@@ -125,6 +129,17 @@ public class SFBattleDialogueManager : MonoBehaviour
         if (story != null && story.canContinue)
         {
             string line = story.Continue().Trim();
+            // 🔹 若這段有 # wrong 標籤，扣血並跳回 q1
+            if (story.currentTags.Contains("wrong"))
+            {
+                if (hp_Battle != null)
+                {
+                    hp_Battle.hp -= 1;
+                    hp_Battle.PlayDamageEffect();
+                    Debug.Log($"❌ 答錯！扣血 -> 當前血量：{hp_Battle.hp}");
+                }
+            }
+
             if (dialogueText != null)
                 dialogueText.text = line;
 
@@ -185,8 +200,11 @@ public class SFBattleDialogueManager : MonoBehaviour
 
     private void DisplayChoices()
     {
+        StartCoroutine(LockInputTemporarily(10f)); // 0.3秒禁止空白鍵
+
         List<Choice> choices = story.currentChoices;
-        isShowingChoices = choices.Count >= 1;
+        //isShowingChoices = choices.Count >= 1;
+        
 
         if (choiceContainer != null)
             choiceContainer.SetActive(choices.Count > 0);
@@ -213,6 +231,7 @@ public class SFBattleDialogueManager : MonoBehaviour
                 int choiceIndex = i;
                 btn.onClick.RemoveAllListeners();
                 btn.onClick.AddListener(() => OnChoiceSelected(choiceIndex));
+                isShowingChoices = true;
             }
             else
             {
@@ -234,7 +253,25 @@ public class SFBattleDialogueManager : MonoBehaviour
         }
 
         story.ChooseChoiceIndex(choiceIndex);
+
+        /*
+        // 🔹 檢查目前的 Tag 來判斷是否選錯
+        List<string> tags = story.currentTags;
+
+        if (tags.Contains("wrong"))
+        {
+            Debug.Log($"wrong");
+            // 扣血
+            if (hp_Battle != null)
+            {
+                hp_Battle.hp -= 1;
+                Debug.Log($"❌ 答錯！當前血量：{hp_Battle.hp}");
+            }
+        }
+        */
+        // ✅ 繼續對話流程
         ContinueStory();
+
     }
 
     private void PlayMusic(string musicName)
@@ -273,4 +310,14 @@ public class SFBattleDialogueManager : MonoBehaviour
             onDialogueComplete = null;
         }
     }
+    IEnumerator LockInputTemporarily(float duration)
+    {
+        skipLocked = true;
+        canContinue = false;
+        yield return new WaitForSeconds(duration);
+        canContinue = true;
+        skipLocked = false;
+    }
+
+
 }

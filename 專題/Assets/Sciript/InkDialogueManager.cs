@@ -294,7 +294,7 @@ public class InkDialogueManager : MonoBehaviour
                 else
                 {
                     // 若 Unity 也沒有 hp，給一個合理的預設（例如 3）
-                    story.variablesState["hp"] = 4;
+                    story.variablesState["hp"] = 3;
                     Debug.Log("🩸 為新 Story 建立 hp（預設為 3）");
                 }
             }
