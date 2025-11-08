@@ -14,6 +14,8 @@ using static UnityEngine.EventSystems.EventTrigger;
 
 public class InkDialogueManager : MonoBehaviour
 {
+    public static InkDialogueManager Instance;
+
     [Header("UI 元件")]
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI dialogueText;
@@ -70,11 +72,10 @@ public class InkDialogueManager : MonoBehaviour
     public GameObject fullblackScreen;
     public Transform fatherSpawnPoint;          // 爸爸出現位置
     public Transform motherSpawnPoint;          // 媽媽出現位置
-
     public Transform guideSpawnPoint;
     public Transform enemySpawnPoint;
-
     public Transform StorySpawnPoint;
+    public Transform GateSpawnPoint;
 
     public GameObject PlayerLaySprite;
 
@@ -84,11 +85,8 @@ public class InkDialogueManager : MonoBehaviour
     public Transform memoryPoint2;
     public Transform memoryPoint3;
     public Transform memoryPoint4;
+    public Transform goOutPoint;
     private Vector3 originalPlayerPos;
-
-    public Transform hidePoint1;
-    public Transform hidePoint2;
-    public Transform hidePoint3;
 
     public EnemyController2D enemy2D;
     public GameObject enemyPrefab;
@@ -99,6 +97,8 @@ public class InkDialogueManager : MonoBehaviour
     public GameObject incense;
     public GameObject forcer;
     public GameObject Exam;
+
+    public GameObject AiNpc;
 
     [System.Serializable]
     public class EndingLabel
@@ -150,7 +150,7 @@ public class InkDialogueManager : MonoBehaviour
             dialoguePanel?.SetActive(false);
             choiceContainer?.SetActive(false);
         }
-
+ 
 
         // 🔸 原本的初始化流程
         if (inkJSON != null && shouldAutoStartInk && !justLoaded)
@@ -354,6 +354,7 @@ public class InkDialogueManager : MonoBehaviour
                     bed.SpawnObject(objName);
             });
 
+            
 
             story.BindExternalFunction("canStartBattle", () =>
             {
@@ -380,6 +381,8 @@ public class InkDialogueManager : MonoBehaviour
             // === 生成 NPC 外部函式 ===
             story.BindExternalFunction("SpawnNPC", (string npcName) =>
             {
+                AiNpc.SetActive(true);
+                /*
                 // 尋找場景中的出生點
                 var spawnPoint = GameObject.Find($"{npcName}SpawnPoint");
                 if (spawnPoint == null)
@@ -399,6 +402,7 @@ public class InkDialogueManager : MonoBehaviour
                 {
                     Debug.LogWarning($"⚠️ 無法找到 NPC Prefab：{npcName}（請放在 Resources/NPCs 下）");
                 }
+                */
             });
 
 
@@ -495,7 +499,7 @@ public class InkDialogueManager : MonoBehaviour
         // 🟩 Ink 呼叫：~ Get_Clue("Journal3")（撿取線索並顯示）
         story.BindExternalFunction("Get_Clue", (string clueID) =>
         {
-            Debug.Log("🧩 BindExternalFunctions() 已執行！");
+            Debug.Log($"🧩 Ink 呼叫 Get_Clue：{clueID}");
             var clueIDB = clueDatabase;
             var bookUI = bookUIManager;
 
@@ -505,8 +509,22 @@ public class InkDialogueManager : MonoBehaviour
             // ✅ 顯示線索內容（不開整本書）
             bookUI.OpenClueOverlay(clueID);
 
+            // ✅ 嘗試從 Resources/Clues/ 載入對應圖片
+            var image = Resources.Load<Sprite>($"Clues/{clueID}");
+            if (image != null && PreviewImageManager.Instance != null)
+            {
+                Debug.Log($"🖼️ 顯示線索圖片：{clueID}");
+                PreviewImageManager.Instance.ShowImage(image);
+                dialoguePanel.SetActive(false);
+            }
+            else
+            {
+                Debug.LogWarning($"⚠️ 找不到圖片：Resources/Clues/{clueID}.png 或 PreviewImageManager 未初始化");
+            }
+
             Debug.Log($"📘 Ink 觸發撿取線索：{clueID}");
         });
+
 
 
         story.BindExternalFunction("Get_fragments", (string fragID) =>
@@ -555,7 +573,10 @@ public class InkDialogueManager : MonoBehaviour
             clueDatabase.AddClue(newClueID);
 
             // 立即顯示新道具的內容（不開整本書）
+            var image = Resources.Load<Sprite>($"Clues/{newClueID}");
             bookUIManager.OpenClueOverlay(newClueID);
+            PreviewImageManager.Instance.ShowImage(image);
+            dialoguePanel.SetActive(false);
 
             Debug.Log($"🔄 道具已替換：{oldItemID} → {newClueID}");
         });
@@ -1205,6 +1226,10 @@ public class InkDialogueManager : MonoBehaviour
                     originalPlayerPos = player.position;
                     StartCoroutine(EnterMemoryScene("memory4"));
                     break;
+                case "go_out":
+                    originalPlayerPos = player.position;
+                    StartCoroutine(EnterMemoryScene("go_out"));
+                    break;
                 case "father_appear":
                     SpawnNPC("Father");
                     break;
@@ -1222,6 +1247,9 @@ public class InkDialogueManager : MonoBehaviour
                 case "StoryNPC":
                     SpawnStory("StoryNPC");
                     break;
+                case "gate_NPC":
+                    SpawnStory("GateNPC");
+                    break;
                 case "lay_down":
                     FadePlayer();
                     PlayerLaySprite.SetActive(true);
@@ -1229,6 +1257,9 @@ public class InkDialogueManager : MonoBehaviour
                 case "wake":
                     ShowPlayer();
                     PlayerLaySprite.SetActive(false);
+                    break;
+                case "Enemy_disappear":
+                    HideEnemy();
                     break;
                 case "EnemyNPC_disspear":
                     DestroyAllEnemyNPCs();
@@ -1261,14 +1292,8 @@ public class InkDialogueManager : MonoBehaviour
                 case "turn_left":
                     TurnPlayerLeft();
                     break;
-                case "Hide1":
-                    originalPlayerPos = player.position;
-                    HidePlayer("Hide1");
-                    Debug.Log($"躲藏1");
-                    break;
-                case "Hide2":
-                    originalPlayerPos = player.position;
-                    HidePlayer("Hide2");
+                case "turn_up":
+                    TurnPlayerUP();
                     break;
                 case "Enemy_appear":
                     if (activeEnemy == null)
@@ -1301,6 +1326,36 @@ public class InkDialogueManager : MonoBehaviour
                 case "Exam_appear":
                     ExamAppear();
                     break;
+                case "pause_music":
+                    {
+                        var bgm = FindObjectOfType<BGMManager>();
+                        if (bgm != null)
+                        {
+                            bgm.PauseMusic(); // ← 新增這個方法（見下方）
+                            Debug.Log("🎵 Ink 標籤：#pause_music → 暫停音樂");
+                        }
+                        else
+                        {
+                            Debug.LogWarning("⚠️ 找不到 BGMManager，無法暫停音樂");
+                        }
+                        break;
+                    }
+
+                // 🟩 繼續播放音樂
+                case "keep_music":
+                    {
+                        var bgm = FindObjectOfType<BGMManager>();
+                        if (bgm != null)
+                        {
+                            bgm.ResumeMusic(); // ← 新增這個方法（見下方）
+                            Debug.Log("🎵 Ink 標籤：#keep_music → 繼續播放音樂");
+                        }
+                        else
+                        {
+                            Debug.LogWarning("⚠️ 找不到 BGMManager，無法繼續音樂");
+                        }
+                        break;
+                    }
             }
             // ====== GameOver 支援 ======
             if (tag.StartsWith("GameOver"))
@@ -1358,6 +1413,8 @@ public class InkDialogueManager : MonoBehaviour
             player.position = memoryPoint3.position;
         else if (memoryName == "memory4" && memoryPoint4 != null)
             player.position = memoryPoint4.position;
+        else if (memoryName == "go_out" && goOutPoint != null)
+            player.position = goOutPoint.position;
 
         yield return StartCoroutine(FadeScreen(false)); // 淡出黑幕
     }
@@ -1439,7 +1496,7 @@ public class InkDialogueManager : MonoBehaviour
         GameObject prefab = Resources.Load<GameObject>($"NPCs/{npcName}");
         if (prefab == null) return;
 
-        Vector3 spawnPos = npcName == "StoryNPC" ? StorySpawnPoint.position : StorySpawnPoint.position;
+        Vector3 spawnPos = npcName == "StoryNPC" ? StorySpawnPoint.position : GateSpawnPoint.position;
         Instantiate(prefab, spawnPos, Quaternion.identity);
     }
 
@@ -1461,13 +1518,13 @@ public class InkDialogueManager : MonoBehaviour
         Debug.Log("Player turned back (rotated 180 degrees)");
     }
 
-    private void HidePlayer(string hideName)
+    private void TurnPlayerUP()
     {
-        Debug.Log($"躲藏2");
-        if (hideName == "Hide1" && hidePoint1 != null)
-            player.position = hidePoint1.position;
-        else if (hideName == "Hide2" && hidePoint2 != null)
-            player.position = hidePoint2.position;
+        if (player == null) return;
+
+        player.GetComponent<Animator>().SetFloat("LastY", 1);
+
+        Debug.Log("Player turned back (rotated 180 degrees)");
     }
 
     void DestroyAllNPCs()
@@ -1643,8 +1700,7 @@ public class InkDialogueManager : MonoBehaviour
             Debug.LogWarning("⚠️ 更新 Ink 變數 have_items 發生錯誤: " + e.Message);
         }
     }
-
-
+        
     public void ExamAppear()
     {
         Exam.SetActive(true);

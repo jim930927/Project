@@ -1,4 +1,4 @@
-﻿VAR current_clue = ""
+VAR current_clue = ""
 VAR speaker = ""
 
 === start ===

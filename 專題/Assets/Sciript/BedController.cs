@@ -46,20 +46,23 @@ public class BedController : MonoBehaviour
 
     public void SpawnObject(string objName)
     {
+        chestPrefab.SetActive(true);
+
+        // ✅ 新增：紀錄已生成
+        var saveMgr = FindObjectOfType<SaveUIManager>();
+        if (saveMgr != null)
+        {
+            string savePath = Application.persistentDataPath + "/autosave_spawn.txt";
+        }
+        /*
         if (objName == "chest" && !chestSpawned && chestPrefab != null)
         {
             var chest = Instantiate(chestPrefab, chestSpawnPoint.position, Quaternion.identity);
-            chestSpawned = true;
-
-            // ✅ 新增：紀錄已生成
-            var saveMgr = FindObjectOfType<SaveUIManager>();
-            if (saveMgr != null)
-            {
-                string savePath = Application.persistentDataPath + "/autosave_spawn.txt";
-            }
+            chestSpawned = true;    
 
             Debug.Log("📦 床底箱子已生成");
         }
+        */
     }
-    
+
 }

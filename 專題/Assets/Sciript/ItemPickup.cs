@@ -78,17 +78,18 @@ public class ItemPickup : MonoBehaviour
 
         if (inkManager != null && inkStoryAsset != null)
         {
-            if (itemImage != null && PreviewImageManager.Instance != null)
-            {
-                Debug.Log("👉 [ItemPickup] 呼叫 ShowImage：" + itemImage.name);
-                PreviewImageManager.Instance.ShowImage(itemImage);
-            }
-
 
             inkManager.SetPlayerCanMove(false);
 
             inkManager.EnterDialogueMode(inkStoryAsset, startKnotName, () =>
             {
+                if (itemImage != null && PreviewImageManager.Instance != null)
+                {
+                    Debug.Log("👉 [ItemPickup] 呼叫 ShowImage：" + itemImage.name);
+                    PreviewImageManager.Instance.ShowImage(itemImage);
+                }
+
+
                 var bookUI = FindObjectOfType<BookUIManager>();
                 if (bookUI != null)
                     bookUI.OpenItemOverlay(itemID, returnKnotName);
