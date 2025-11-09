@@ -1088,6 +1088,10 @@ MonoBehaviour:
   inkJSON: {fileID: 4900000, guid: a75945b55d60c404483a9ca453619096, type: 3}
   fightAnimator: {fileID: 50937302}
   inputDelay: 0.5
+  enemyImage: {fileID: 1820488029}
+  enemySprites:
+  - {fileID: 5553733832454143361, guid: 444aea1f9f7984f44abc90ae617720c7, type: 3}
+  - {fileID: 6141116550204499731, guid: 9e947128beb792846b2b1695b8c9edce, type: 3}
   startKnot: intro
   nextSceneOnDone: Third scene
 --- !u!1 &297625941
@@ -6008,7 +6012,7 @@ GameObject:
   - component: {fileID: 1820488029}
   - component: {fileID: 1820488028}
   m_Layer: 5
-  m_Name: "\u5F15\u8DEF\u4EBA(\u5C0D\u6230)"
+  m_Name: "\u5F15\u8DEF\u4EBA(\u9B31)"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6080,7 +6084,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -50.734985, y: -565}
+  m_AnchoredPosition: {x: -50.734985, y: -681}
   m_SizeDelta: {x: 53, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1821779012
@@ -7435,6 +7439,7 @@ MonoBehaviour:
   hp_2: {fileID: 1490719217455366361, guid: a244279628f12104d88230de1ccbcff2, type: 3}
   hp_1: {fileID: -5817544225397591828, guid: c486689d84e264b44965c578bb9216a6, type: 3}
   hp_0: {fileID: 7060280873281199228, guid: 74d4e04062fd2ba4f81c94e45e58c592, type: 3}
+  SceneName: MainMenu
   blackScreen: {fileID: 1799049315}
   blackScreenAct: {fileID: 1799049313}
   blackScreenDuration: 1

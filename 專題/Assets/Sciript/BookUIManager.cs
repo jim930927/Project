@@ -31,9 +31,13 @@ public class BookUIManager : MonoBehaviour
     public Text clueDetailText;
     public Button CDnextPageButton;
     public Button CDprevPageButton;
+
+    public GameObject itemDetailPanel;
+    public Text itemDetailText;
     public Button IDnextPageButton;
     public Button IDprevPageButton;
-    public Button closeDetailButton;
+    public Button closeCDetailButton;
+    public Button closeIDetailButton;
 
     [Header("Ink 整合")]
     public InkDialogueManager inkManager;
@@ -87,7 +91,8 @@ public class BookUIManager : MonoBehaviour
         IDprevPageButton?.onClick.AddListener(IDPrevPage);
 
 
-        closeDetailButton?.onClick.AddListener(CloseClueDetailPanel);
+        closeCDetailButton?.onClick.AddListener(CloseClueDetailPanel);
+        closeIDetailButton?.onClick.AddListener(CloseItemDetailPanel);
 
         clueTabButton?.onClick.AddListener(() => SwitchTab("clue")); // 🟦 新增
         itemTabButton?.onClick.AddListener(() => SwitchTab("item")); // 🟦 新增
@@ -330,14 +335,13 @@ public class BookUIManager : MonoBehaviour
         if (item == null) return;
         currentItem = item;
         currentItemPage = 0;
-
-        clueDetailPanel?.SetActive(true);
+        itemDetailPanel?.SetActive(true);
         UpdateItemPage();
     }
 
     void UpdateItemPage()
     {
-        if (currentItem == null || clueDetailText == null) return;
+        if (currentItem == null || itemDetailText == null) return;
 
         int pageCount = (currentItem.pages != null && currentItem.pages.Count > 0) ? currentItem.pages.Count : 1;
         currentItemPage = Mathf.Clamp(currentItemPage, 0, pageCount - 1);
@@ -346,7 +350,7 @@ public class BookUIManager : MonoBehaviour
             ? currentItem.pages[currentItemPage]
             : currentItem.fullContent ?? currentItem.detail;
 
-        clueDetailText.text = $"{pageText}";
+        itemDetailText.text = $"{pageText}";
 
         IDnextPageButton.gameObject.SetActive(currentItemPage < pageCount - 1);
         IDprevPageButton.gameObject.SetActive(currentItemPage > 0);
@@ -376,7 +380,6 @@ public class BookUIManager : MonoBehaviour
         if (clueDetailPanel != null)
             clueDetailPanel.SetActive(false);
         PreviewImageManager.Instance.HideImage();
-        inkManager.dialoguePanel.SetActive(true);
         if (inkManager != null)
         {
             if (!string.IsNullOrEmpty(pendingReturnKnot))
@@ -392,6 +395,30 @@ public class BookUIManager : MonoBehaviour
                 inkManager.ResetPortraits();  // 🟩 新增
                 if (closeBook == false)
                 inkManager.ContinueStory();
+            }
+        }
+    }
+    public void CloseItemDetailPanel()
+    {
+        Debug.LogWarning("關閉面板");
+        if (itemDetailPanel != null)
+            itemDetailPanel.SetActive(false);
+        PreviewImageManager.Instance.HideImage();
+        if (inkManager != null)
+        {
+            if (!string.IsNullOrEmpty(pendingReturnKnot))
+            {
+                inkManager.ShowPortraits();   // 🟩 新增
+                inkManager.ResetPortraits();  // 🟩 新增
+                inkManager.JumpToKnot(pendingReturnKnot);
+                pendingReturnKnot = "";
+            }
+            else
+            {
+                inkManager.ShowPortraits();   // 🟩 新增
+                inkManager.ResetPortraits();  // 🟩 新增
+                if (closeBook == false)
+                    inkManager.ContinueStory();
             }
         }
     }
@@ -435,7 +462,7 @@ public class BookUIManager : MonoBehaviour
         pendingReturnKnot = returnKnotName;
 
         // ✅ 不打開整本書，只打開細節視窗
-        clueDetailPanel?.SetActive(true);
+        itemDetailPanel?.SetActive(true);
 
         // 顯示該道具的內容（支援分頁）
         currentItem = item;

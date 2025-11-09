@@ -60,6 +60,10 @@ public class firstDialogueManager : MonoBehaviour
     public FirstBookUI bookUIManager;
     public bool doorUnlocked = false;
 
+    private bool isShowingChoices = false;
+    private bool skipLocked = false;
+    private bool choiceCooldown = false; // 🔥 新增：防止剛出現選項時空白鍵誤觸
+
 
     public bool justLoaded = false;  // ← 新增：判斷是否剛載入存檔
     private bool canAutoContinue = true; // ← 控制是否自動Continue
@@ -109,13 +113,23 @@ public class firstDialogueManager : MonoBehaviour
 
     void Update()
     {
-        if (dialogueEndTimer > 0f)
+        if (!dialogueIsPlaying) return;
+
+        // 🧊 如果剛顯示選項，鎖住空白鍵輸入
+        if (choiceCooldown)
         {
-            dialogueEndTimer -= Time.deltaTime;
+            if (Input.GetKeyDown(KeyCode.Space))
+                Debug.Log("🧊 空白鍵在冷卻中（剛顯示選項）");
             return;
         }
 
-        if (!dialoguePanel.activeSelf || !dialogueIsPlaying) return;
+        // 🛡️ 若正在顯示選項，吃掉空白鍵輸入
+        if (isShowingChoices)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+                Debug.Log("🛑 空白鍵被吃掉（選項中）");
+            return;
+        }
 
         if (!canContinue)
         {
@@ -125,12 +139,44 @@ public class firstDialogueManager : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && story.currentChoices.Count == 0)
+        if (Input.GetKeyDown(KeyCode.Space) && story.currentChoices.Count == 0 && canContinue && !skipLocked)
         {
-            ContinueStory();
-            canContinue = false;
-            inputTimer = 0f;
+            skipLocked = true;
+            StartCoroutine(SafeContinue());
+            Debug.Log($"[Update] 空白鍵被按下，isShowingChoices={isShowingChoices}, canContinue={canContinue}, skipLocked={skipLocked}");
+            Debug.Log($"[ContinueStory] called, story.canContinue={story.canContinue}, currentChoices={story.currentChoices.Count}");
+
         }
+    }
+
+
+    private IEnumerator SafeContinue()
+    {
+        canContinue = false;
+        yield return new WaitForSeconds(0.05f);
+        ContinueStory();
+        yield return new WaitForSeconds(0.15f);
+        skipLocked = false;
+    }
+
+
+
+    IEnumerator LockInputTemporarily(float duration)
+    {
+        canContinue = false;
+        skipLocked = true;
+        yield return new WaitForSeconds(duration);
+        canContinue = true;
+        skipLocked = false;
+    }
+
+    private IEnumerator ChoiceCooldown(float duration)
+    {
+        choiceCooldown = true;
+        canContinue = false;
+        yield return new WaitForSeconds(duration);
+        choiceCooldown = false;
+        canContinue = true;
     }
 
 
@@ -299,6 +345,12 @@ public class firstDialogueManager : MonoBehaviour
 
     public void ContinueStory()
     {
+        if (isShowingChoices)
+        {
+            Debug.Log("⛔ 阻止 ContinueStory()：仍在顯示選項中");
+            return;
+        }
+
         if (story != null && story.canContinue)
         {
             SetPlayerCanMove(false);
@@ -449,17 +501,16 @@ public class firstDialogueManager : MonoBehaviour
 
     void DisplayChoices()
     {
-        // 🔹 Ink Tag 檢查：播放 CG
-        if (story.currentTags.Contains("play_cg"))
-        {
-            Debug.Log("🎬 偵測到 #play_cg，播放開場影片");
-            StartCoroutine(PlayCGThenContinue());
-            return; // 暫停 Ink，等待影片播完再繼續
-        }
-
-
         List<Choice> choices = story.currentChoices;
-        choiceContainer.SetActive(choices.Count > 0);
+        isShowingChoices = choices.Count > 0;
+
+        choiceContainer.SetActive(isShowingChoices);
+
+        if (isShowingChoices)
+        {
+            // 🧊 啟動選項冷卻（0.2秒）
+            StartCoroutine(ChoiceCooldown(0.2f));
+        }
 
         for (int i = 0; i < choiceButtons.Length; i++)
         {
@@ -467,6 +518,7 @@ public class firstDialogueManager : MonoBehaviour
             {
                 choiceButtons[i].gameObject.SetActive(true);
                 choiceButtons[i].GetComponentInChildren<Text>().text = choices[i].text;
+
                 int choiceIndex = i;
                 choiceButtons[i].onClick.RemoveAllListeners();
                 choiceButtons[i].onClick.AddListener(() => OnChoiceSelected(choiceIndex));
@@ -476,14 +528,36 @@ public class firstDialogueManager : MonoBehaviour
                 choiceButtons[i].gameObject.SetActive(false);
             }
         }
+
+        Debug.Log($"🟢 DisplayChoices(): choices={choices.Count}, isShowingChoices={isShowingChoices}");
     }
+
 
     void OnChoiceSelected(int choiceIndex)
     {
-        story.ChooseChoiceIndex(choiceIndex);
+        if (isShowingChoices == false)
+        {
+            Debug.Log("⚠️ 選項已關閉，但收到重複選擇事件，忽略。");
+            return;
+        }
+
+        isShowingChoices = false;
         choiceContainer.SetActive(false);
+        story.ChooseChoiceIndex(choiceIndex);
+
+        // ⚡ 延遲至少一幀再繼續（確保 Ink 更新完）
+        StartCoroutine(ContinueAfterChoice());
+    }
+
+    private IEnumerator ContinueAfterChoice()
+    {
+        yield return new WaitForEndOfFrame();  // 避免同幀觸發
+        yield return new WaitForSeconds(0.05f); // 再給 Ink 一點時間
         ContinueStory();
     }
+
+
+
 
     public void UpdatePortrait(string speakerName)
     {
@@ -768,6 +842,10 @@ public class firstDialogueManager : MonoBehaviour
             Debug.LogWarning("⚠️ 更新 Ink 變數 have_items 發生錯誤: " + e.Message);
         }
     }
+
+    
+
+
 }
 
 [System.Serializable]

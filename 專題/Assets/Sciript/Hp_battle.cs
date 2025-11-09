@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
+using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Hp_battle : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class Hp_battle : MonoBehaviour
     public Sprite hp_2;
     public Sprite hp_1;
     public Sprite hp_0;
+
+    public string SceneName = "MainMenu";
 
     [Header("特效設定")]
     public Image blackScreen; // 指向黑屏 UI 物件
@@ -50,7 +53,11 @@ public class Hp_battle : MonoBehaviour
 
     void Update()
     {
-        if (hp < 0) hp = 0;
+        if (hp <= 0)
+        {
+            EnterMainMenu();
+        }
+        
         UpdateHpUI();
     }
 
@@ -112,6 +119,12 @@ public class Hp_battle : MonoBehaviour
             }
         }
         Debug.LogWarning("⚠️ 沒找到血量圖像：" + hpImageName);
+    }
+
+    IEnumerator EnterMainMenu()
+    {
+        yield return new WaitForSeconds(1.5f);
+        SceneManager.LoadScene(SceneName);
     }
 
     public void PlayDamageEffect()

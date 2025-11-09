@@ -12,7 +12,7 @@ public class Portal : MonoBehaviour
     [Header("門屬性設定")]
     public bool isLockedDoor = true;     // 是否需要鎖
     public string requiredKeyID = "";    // ✅ 對應的鑰匙 ID（例：key_room）
-    public float cooldown = 0.8f;
+    public float cooldown = 0.3f;
 
     [Header("迷宮計數器")]
     public bool rightway;   
@@ -190,7 +190,7 @@ public class Portal : MonoBehaviour
             yield return StartCoroutine(fader.FadeIn());
         }
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.2f);
         isTeleporting = false;
     }
 

@@ -42,7 +42,7 @@ public class InkDialogueManager : MonoBehaviour
     public CharacterPortrait[] portraits;
 
     [Header("對話緩衝")]
-    public float dialogueEndCooldown = 1f;
+    public float dialogueEndCooldown = 0.3f;
     private float dialogueEndTimer = 0f;
 
     [Header("布幕設定（只關閉時使用）")]
@@ -76,6 +76,7 @@ public class InkDialogueManager : MonoBehaviour
     public Transform enemySpawnPoint;
     public Transform StorySpawnPoint;
     public Transform GateSpawnPoint;
+    public GameObject FightEnemy;
 
     public GameObject PlayerLaySprite;
 
@@ -87,6 +88,7 @@ public class InkDialogueManager : MonoBehaviour
     public Transform memoryPoint4;
     public Transform goOutPoint;
     private Vector3 originalPlayerPos;
+
 
     public EnemyController2D enemy2D;
     public GameObject enemyPrefab;
@@ -110,9 +112,6 @@ public class InkDialogueManager : MonoBehaviour
     public EndingLabel[] endings;          // 可在 Inspector 填多個
     public TextMeshProUGUI endingTextUI;   // 指到UI(TextMeshProUGUI)
 
-
-
-
     public bool justLoaded = false;  // ← 新增：判斷是否剛載入存檔
     private bool canAutoContinue = true; // ← 控制是否自動Continue
 
@@ -127,6 +126,11 @@ public class InkDialogueManager : MonoBehaviour
     private bool canContinue = false;
     private float inputDelay = 0.5f;
     private float inputTimer = 0f;
+
+    private bool isShowingChoices = false;
+    private bool skipLocked = false;
+    private bool choiceCooldown = false; // 🔥 新增：防止剛出現選項時空白鍵誤觸
+
 
     public bool dialogueIsPlaying { get; private set; }
     public bool IsInCooldown => dialogueEndTimer > 0f;
@@ -174,6 +178,14 @@ public class InkDialogueManager : MonoBehaviour
 
         if (!dialoguePanel.activeSelf || !dialogueIsPlaying) return;
 
+        // 🛡️ 若正在顯示選項，吃掉空白鍵輸入
+        if (isShowingChoices)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+                Debug.Log("🛑 空白鍵被吃掉（選項中）");
+            return;
+        }
+
         if (!canContinue)
         {
             inputTimer += Time.deltaTime;
@@ -182,14 +194,33 @@ public class InkDialogueManager : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && story.currentChoices.Count == 0)
+        // ✅ 僅當沒有選項時允許繼續
+        if (Input.GetKeyDown(KeyCode.Space) && story.currentChoices.Count == 0 && canContinue && !skipLocked)
         {
-            ContinueStory();
-            canContinue = false;
-            inputTimer = 0f;
+            skipLocked = true;
+            StartCoroutine(SafeContinue());
         }
     }
 
+
+    private IEnumerator SafeContinue()
+    {
+        canContinue = false;
+        yield return new WaitForSeconds(0.05f);
+        ContinueStory();
+        yield return new WaitForSeconds(0.15f);
+        skipLocked = false;
+    }
+
+
+    IEnumerator LockInputTemporarily(float duration)
+    {
+        canContinue = false;
+        skipLocked = true;
+        yield return new WaitForSeconds(duration);
+        canContinue = true;
+        skipLocked = false;
+    }
 
     void InitCurtain()
     {
@@ -382,6 +413,13 @@ public class InkDialogueManager : MonoBehaviour
             story.BindExternalFunction("SpawnNPC", (string npcName) =>
             {
                 AiNpc.SetActive(true);
+
+                var saveMgr = FindObjectOfType<SaveUIManager>();
+                if (saveMgr != null)
+                {
+                    string savePath = Application.persistentDataPath + "/autosave_spawn.txt";
+                }
+
                 /*
                 // 尋找場景中的出生點
                 var spawnPoint = GameObject.Find($"{npcName}SpawnPoint");
@@ -490,7 +528,19 @@ public class InkDialogueManager : MonoBehaviour
 
             clueIDB.AddItem(itemID);
 
-            bookUI.OpenClueOverlay(itemID);
+            bookUI.OpenItemOverlay(itemID);
+
+            // ✅ 嘗試從 Resources/Clues/ 載入對應圖片
+            var image = Resources.Load<Sprite>($"Clues/{itemID}");
+            if (image != null && PreviewImageManager.Instance != null)
+            {
+                Debug.Log($"🖼️ 顯示線索圖片：{itemID}");
+                PreviewImageManager.Instance.ShowImage(image);
+            }
+            else
+            {
+                Debug.LogWarning($"⚠️ 找不到圖片：Resources/Clues/{itemID}.png 或 PreviewImageManager 未初始化");
+            }
 
             Debug.Log($"📘 Ink 觸發撿取道具：{itemID}");
         });
@@ -515,7 +565,6 @@ public class InkDialogueManager : MonoBehaviour
             {
                 Debug.Log($"🖼️ 顯示線索圖片：{clueID}");
                 PreviewImageManager.Instance.ShowImage(image);
-                dialoguePanel.SetActive(false);
             }
             else
             {
@@ -576,7 +625,6 @@ public class InkDialogueManager : MonoBehaviour
             var image = Resources.Load<Sprite>($"Clues/{newClueID}");
             bookUIManager.OpenClueOverlay(newClueID);
             PreviewImageManager.Instance.ShowImage(image);
-            dialoguePanel.SetActive(false);
 
             Debug.Log($"🔄 道具已替換：{oldItemID} → {newClueID}");
         });
@@ -745,6 +793,8 @@ public class InkDialogueManager : MonoBehaviour
 
     public void ContinueStory()
     {
+        if (isShowingChoices) return;
+
         if (story != null && story.canContinue)
         {
             SetPlayerCanMove(false);
@@ -949,17 +999,13 @@ public class InkDialogueManager : MonoBehaviour
 
     void DisplayChoices()
     {
-        // 🔹 Ink Tag 檢查：播放 CG
-        if (story.currentTags.Contains("play_cg"))
-        {
-            Debug.Log("🎬 偵測到 #play_cg，播放開場影片");
-            StartCoroutine(PlayCGThenContinue());
-            return; // 暫停 Ink，等待影片播完再繼續
-        }
-
-
         List<Choice> choices = story.currentChoices;
-        choiceContainer.SetActive(choices.Count > 0);
+        isShowingChoices = choices.Count > 0;
+
+        choiceContainer.SetActive(isShowingChoices);
+
+        // 🔒 鎖定輸入，防止剛出選項時空白被誤觸
+        StartCoroutine(LockInputTemporarily(0.2f));
 
         for (int i = 0; i < choiceButtons.Length; i++)
         {
@@ -976,12 +1022,32 @@ public class InkDialogueManager : MonoBehaviour
                 choiceButtons[i].gameObject.SetActive(false);
             }
         }
+
+        Debug.Log($"🟢 DisplayChoices(): choices={choices.Count}, isShowingChoices={isShowingChoices}");
     }
 
     void OnChoiceSelected(int choiceIndex)
     {
-        story.ChooseChoiceIndex(choiceIndex);
+        // 防止重複點選
+        if (!isShowingChoices) return;
+
+        isShowingChoices = false;
         choiceContainer.SetActive(false);
+
+        // 🧩 Ink 本身會自動前進到下一段，因此不需要馬上 ContinueStory()
+        story.ChooseChoiceIndex(choiceIndex);
+
+        // 🔒 重置輸入狀態，避免馬上又觸發空白鍵
+        StartCoroutine(LockInputTemporarily(0.2f));
+
+        // ✅ 直接重新顯示新的對話（Ink 已經自動前進）
+        ContinueStory();
+    }
+
+
+    private IEnumerator ContinueAfterChoice()
+    {
+        yield return new WaitForEndOfFrame(); // 稍微等一幀，讓 Ink 更新完成
         ContinueStory();
     }
 
@@ -1250,6 +1316,14 @@ public class InkDialogueManager : MonoBehaviour
                 case "gate_NPC":
                     SpawnStory("GateNPC");
                     break;
+                case "FightEnemy":
+                    Debug.Log("⚔️ Ink 觸發 #FightEnemy，讓敵人出現！");
+                    if (FightEnemy != null)
+                    {
+                        FightEnemy.gameObject.SetActive(true);
+                    }
+                    break;
+
                 case "lay_down":
                     FadePlayer();
                     PlayerLaySprite.SetActive(true);
@@ -1469,9 +1543,6 @@ public class InkDialogueManager : MonoBehaviour
 
         Debug.Log("✅ Ink 劇情已完全恢復（等待玩家互動觸發對話）");
     }
-
-
-
 
     void SpawnNPC(string npcName)
     {
@@ -1705,6 +1776,9 @@ public class InkDialogueManager : MonoBehaviour
     {
         Exam.SetActive(true);
     }
+
+
+
 }
 
 [System.Serializable]

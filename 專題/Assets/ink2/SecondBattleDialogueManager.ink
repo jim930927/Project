@@ -1,5 +1,6 @@
 VAR current_clue = ""
 VAR speaker = ""
+VAR hp = ""
 
 === start ===
 ~ speaker = "鬱的化身"
@@ -227,7 +228,7 @@ VAR speaker = ""
 
 
 === q6 ===
-#change_enemy
+#change_enemy anger
 ~ speaker = "躁的化身"
 「愚蠢！就算找到真相又怎麼樣！爺爺也不會再回來了，以後的生活也不可能再回到以前的模樣了！」
 「這就是你想拚盡全力尋找的真相？那我告訴你好了，真相就是你只不過是爸媽生下來任意操控的傀儡罷了」
@@ -322,6 +323,8 @@ VAR speaker = ""
 ~ speaker = ""
 【新增戰鬥規則說明】
 這裡需要把敵人說的話一一反駁回去，因此所有的對話框都必須按照正確的順序跟線索擊破才能通關。
+~ speaker = "我"
+（我絕對不是他說的那樣，有樣東西可以證明我有能力是被認可的。）
 + [你是個什麼都不會的廢物！] #current_clue:Certificate
     {current_clue == "Certificate":
         -> Second_round
@@ -336,16 +339,30 @@ VAR speaker = ""
 
 
 == Second_round
+~ speaker = "我"
+「我不是什麼都不會的廢物，這幾張獎狀就是最好的證明，它代表著榮譽，也代表著我的能力是被大家所認可的。」
+~ speaker = "躁的化身"
+「那又怎麼樣？那幾張的藝術獎狀能夠讓他們閉嘴嗎？多了些榮譽就能讓他們不再對我造成精神壓力了嗎？」
+~ speaker = "我"
+（雖然我沒經歷過他所經歷的痛苦，但是我想我們是一樣的...）
 + [你什麼都不懂！] #current_clue:Medical_record
     {current_clue == "Medical_record":
         -> Third_round
     - else:
         -> wrong_clue_q7
     }
-+[你是個什麼都不會的廢物！]
++[你跟那群傢伙都一樣！]
     -> wrong_clue_q7
 
 == Third_round
+~ speaker = "躁的化身"
+「就算你懂我又怎麼樣？你就跟那群傢伙一樣，沒經歷過我所經歷的一切，根本沒資格站在我面前假裝很同情我一樣，虛偽！」
+~ speaker = "我"
+「他們在我記憶裡也不是一直都是那樣讓我懼怕的存在，應該有東西可以證明，她...愛著我...」
+~ speaker = "躁的化身"
+「少囉嗦！早知道這樣，我一開始就應該把你殺了，不然你以為你還能站在這裡跟我說這些廢話嗎？」
+~ speaker = "我"
+「（糟了...他衝過來了，有沒有什麼東西可以保護自己的？）」
 +[你跟那群傢伙都一樣！]#current_clue:amulet
 {current_clue == "amulet":
         -> correct_q7
@@ -368,6 +385,7 @@ VAR speaker = ""
 「為什麼！為什麼！！為什麼！！！」
 ~ speaker = "我"
 　「你...還記得這個東西嗎？」
+#change_enemy sad
 ~ speaker = "鬱的化身"
 「這是......？」
 ~ speaker = "我"
