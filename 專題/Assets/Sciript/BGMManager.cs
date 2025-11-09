@@ -20,4 +20,17 @@ public class BGMManager : MonoBehaviour
             Debug.LogWarning($"⚠️ 找不到音樂：{name}");
         }
     }
+
+    public void PauseMusic()
+    {
+        if (audioSource != null && audioSource.isPlaying)
+            audioSource.Pause();
+    }
+
+    // 🟢 新增：繼續音樂
+    public void ResumeMusic()
+    {
+        if (audioSource != null && !audioSource.isPlaying)
+            audioSource.UnPause();
+    }
 }

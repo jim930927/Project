@@ -65,18 +65,17 @@ public class CluePickup : MonoBehaviour
 
         if (inkManager != null && inkStoryAsset != null)
         {
-            // ✅ 顯示圖片
-            if (clueImage != null && PreviewImageManager.Instance != null)
-            {
-                Debug.Log("👉 [CluePickup] 呼叫 ShowImage：" + clueImage.name);
-                PreviewImageManager.Instance.ShowImage(clueImage);
-            }
-
-
+            // ✅ 顯示圖片    
             inkManager.SetPlayerCanMove(false);
 
             inkManager.EnterDialogueMode(inkStoryAsset, startKnotName, () =>
             {
+                if (clueImage != null && PreviewImageManager.Instance != null)
+                {
+                    Debug.Log("👉 [CluePickup] 呼叫 ShowImage：" + clueImage.name);
+                    PreviewImageManager.Instance.ShowImage(clueImage);
+                }
+
                 // 顯示線索 UI
                 var bookUI = FindObjectOfType<BookUIManager>();
                 if (bookUI != null)

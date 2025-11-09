@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
+using static ClueData;
 
 public class BookUIManager : MonoBehaviour
 {
@@ -239,7 +240,7 @@ public class BookUIManager : MonoBehaviour
             ? currentClue.pages[currentPage]
             : currentClue.fullContent ?? currentClue.detail;
 
-        clueDetailText.text = $"{pageText}\n\n<color=#999>(第 {currentPage + 1}/{pageCount} 頁)</color>";
+        clueDetailText.text = $"{pageText}";
 
         CDnextPageButton.gameObject.SetActive(currentPage < pageCount - 1);
         CDprevPageButton.gameObject.SetActive(currentPage > 0);
@@ -345,7 +346,7 @@ public class BookUIManager : MonoBehaviour
             ? currentItem.pages[currentItemPage]
             : currentItem.fullContent ?? currentItem.detail;
 
-        clueDetailText.text = $"{pageText}\n\n<color=#999>(第 {currentItemPage + 1}/{pageCount} 頁)</color>";
+        clueDetailText.text = $"{pageText}";
 
         IDnextPageButton.gameObject.SetActive(currentItemPage < pageCount - 1);
         IDprevPageButton.gameObject.SetActive(currentItemPage > 0);
@@ -371,10 +372,11 @@ public class BookUIManager : MonoBehaviour
 
     public void CloseClueDetailPanel()
     {
+        Debug.LogWarning("關閉面板");
         if (clueDetailPanel != null)
             clueDetailPanel.SetActive(false);
         PreviewImageManager.Instance.HideImage();
-
+        inkManager.dialoguePanel.SetActive(true);
         if (inkManager != null)
         {
             if (!string.IsNullOrEmpty(pendingReturnKnot))

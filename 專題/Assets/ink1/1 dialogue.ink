@@ -1,7 +1,7 @@
 VAR talked_to_boss = false
 VAR journal_choices_done = false
 VAR speaker = "???"
-VAR hp = 4
+VAR hp = 3
 VAR have_items =""
 
 EXTERNAL UnlockLetter()

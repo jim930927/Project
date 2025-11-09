@@ -1,9 +1,10 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-using DG.Tweening;
-using UnityEngine.UI;
-using TMPro;
+﻿using DG.Tweening;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class SFBookSlider : MonoBehaviour
 {
@@ -38,6 +39,13 @@ public class SFBookSlider : MonoBehaviour
     private ClueData clueData;
     [HideInInspector] public string currentClueId;
 
+
+    [Header("標籤翻頁控制")]
+    public int cluesPerPage = 4;  // 每頁顯示的標籤數量
+    public Button nextPageButton;
+    public Button prevPageButton;
+    private int currentPage = 0;
+    private int totalPages;
     void Awake()
     {
         if (Instance == null)
@@ -63,6 +71,7 @@ public class SFBookSlider : MonoBehaviour
 
         SetupTags();
         UpdateTagLabels();
+        SetupPagination();
     }
 
     private void SetupTags()
@@ -97,26 +106,49 @@ public class SFBookSlider : MonoBehaviour
 
     public void UpdateTagLabels()
     {
-        if (clueData == null || tagLabels == null)
+        Debug.Log($"🔍 tagClueIDs.Length = {tagClueIDs.Length}");
+        for (int k = 0; k < tagClueIDs.Length; k++)
+            Debug.Log($"[{k}] = {tagClueIDs[k]}");
+
+        if (clueData == null || tagLabels == null || tagClueIDs == null)
             return;
+
+        int startIndex = currentPage * cluesPerPage;
+        int endIndex = Mathf.Min(startIndex + cluesPerPage, tagClueIDs.Length);
+
+        Debug.Log($"📘 更新標籤頁 {currentPage}, 顯示範圍: {startIndex} - {endIndex - 1}");
 
         for (int i = 0; i < tagLabels.Length; i++)
         {
-            if (i < tagClueIDs.Length)
+            // 先預設隱藏內容
+            tagLabels[i].text = "???";
+
+            // 不在這一頁範圍內的，不處理
+            if (i < startIndex || i >= endIndex)
+                continue;
+
+            int clueIndex = i; // 真正對應到 clueData 的 index
+
+            if (clueIndex < tagClueIDs.Length)
             {
-                string id = tagClueIDs[i];
+                string id = tagClueIDs[clueIndex];
                 var clue = clueData.clues.Find(c => c.id == id);
+
                 if (clue != null && clue.collected)
+                {
                     tagLabels[i].text = clue.name;
+                    Debug.Log($"✅ 顯示線索[{i}] = {clue.name}");
+                }
                 else
+                {
                     tagLabels[i].text = "???";
-            }
-            else
-            {
-                tagLabels[i].text = "???";
+                    Debug.Log($"❌ 線索[{i}] 尚未收集");
+                }
             }
         }
     }
+
+
 
     public void OnClueSelected(string clueID)
     {
@@ -147,6 +179,65 @@ public class SFBookSlider : MonoBehaviour
         {
             SFBattleDialogueManager.Instance.story.variablesState["current_clue"] = clue.id;
             Debug.Log($"🧩 Ink變數 current_clue (第二章) 設為：{clue.id}");
+        }
+
+    }
+
+    private void SetupPagination()
+    {
+        if (tagRects == null || tagRects.Length == 0)
+            return;
+
+        totalPages = Mathf.CeilToInt(tagRects.Length / (float)cluesPerPage);
+        currentPage = Mathf.Clamp(currentPage, 0, totalPages - 1);
+
+        ShowPage(currentPage);
+
+        if (nextPageButton != null)
+            nextPageButton.onClick.AddListener(NextPage);
+        if (prevPageButton != null)
+            prevPageButton.onClick.AddListener(PrevPage);
+
+        Debug.Log($"🔍 總標籤數: {tagRects.Length}, 每頁: {cluesPerPage}, 總頁數: {totalPages}");
+
+    }
+
+    private void ShowPage(int page)
+    {
+        int start = page * cluesPerPage;
+        int end = Mathf.Min(start + cluesPerPage, tagRects.Length);
+
+        for (int i = 0; i < tagRects.Length; i++)
+        {
+            tagRects[i].gameObject.SetActive(i >= start && i < end);
+        }
+
+        prevPageButton?.gameObject.SetActive(page > 0);
+        nextPageButton?.gameObject.SetActive(page < totalPages - 1);
+
+        // ✅ 每次顯示頁面時更新文字
+        UpdateTagLabels();
+    }
+
+
+
+    public void NextPage()
+    {
+        if (currentPage < totalPages - 1)
+        {
+            currentPage++;
+            ShowPage(currentPage);
+            UpdateTagLabels();
+        }
+    }
+
+    public void PrevPage()
+    {
+        if (currentPage > 0)
+        {
+            currentPage--;
+            ShowPage(currentPage);
+            UpdateTagLabels();
         }
     }
 
