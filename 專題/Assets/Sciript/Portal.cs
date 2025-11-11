@@ -14,9 +14,6 @@ public class Portal : MonoBehaviour
     public string requiredKeyID = "";    // ✅ 對應的鑰匙 ID（例：key_room）
     public float cooldown = 0.3f;
 
-    [Header("迷宮計數器")]
-    public bool rightway;   
-    public float wrongtime = 0;
 
     [Header("敵人設定")]
     public Transform enemySpawnPoint; // ✅ 敵人在這個傳送後會出現的位置
@@ -95,6 +92,7 @@ public class Portal : MonoBehaviour
 
                 dialogueManager.EnterDialogueMode(dialogueManager.inkJSON, $"{doorGroupID}", OnDoorDialogueEnd);
             }
+
         }
     }
 
@@ -136,11 +134,6 @@ public class Portal : MonoBehaviour
                 isTeleporting = false;
                 yield break;
             }
-        }
-
-        if (rightway == false)
-        {
-            wrongtime += 1;
         }
 
 
@@ -309,7 +302,7 @@ public class Portal : MonoBehaviour
         }
 
         // ✅ 避免對話剛結束又立刻傳送
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
         isTeleporting = false;
 
     }

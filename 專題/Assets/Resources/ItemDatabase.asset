@@ -77,3 +77,17 @@ MonoBehaviour:
     pages: []
     collected: 1
     collectedTime: 5.656906
+  - id: bracelets
+    name: "\u3010\u9ED1\u66DC\u77F3\u624B\u4E32\u3011"
+    detail: 
+    fullContent: 
+    pages: []
+    collected: 1
+    collectedTime: 5.656906
+  - id: ID_card
+    name: "\u3010\u5B78\u9577\u7684\u5B78\u751F\u8B49\u3011"
+    detail: 
+    fullContent: 
+    pages: []
+    collected: 1
+    collectedTime: 5.656906
