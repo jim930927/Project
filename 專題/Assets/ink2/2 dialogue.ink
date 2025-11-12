@@ -14,6 +14,9 @@ VAR inc_interact = 0
 VAR key_gold = false
 VAR parent_explore = 0
 VAR gate_key = false
+VAR bed_chest = false
+VAR quilt_end = false
+VAR bed_top = false
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
@@ -132,34 +135,82 @@ EXTERNAL Get_fragments(fragmentID)
 ~ speaker = "我"
 「你是剛剛的那個......？」
 ~ speaker = "引路人"
+「仔細看，紙條後面有甚麼東西」
+~ speaker = ""
+將紙條翻過來
+~ speaker = "我"
+「這後面似乎有寫過字...」
+將紙條平攤在書桌上，手指撫過那些凹凸不平的痕跡
+拿起一支桌上散落的鉛筆，輕輕在擦拭處來回塗抹，終於顯現隱藏文字——
+~ Get_Item("rule_back")
+~ speaker = ""
+......
+~ speaker = "我"
+「這也是一條規則，跟前面的有什麼不同？ 難道盒子裡有什麼線索嗎...被藏在哪裡了？」
+~ speaker = "引路人"
 「繼續前進、繼續探尋，找到最真實的你吧」
 「若你心中留有疑惑，來找我...或許我可以為你解答」
 ~ speaker = ""
+~ bed_chest = true
 【現在開始可以向AI引路人問問題（他只會回答遊戲相關的問題）或許他知道一些重要的線索】
 ->END
 
 
 == bed ==
 ~ speaker = "我"
-~ bed_interact += 1
 // 檢查是否超過互動次數
-{ bed_interact > 2:
+{ bed_interact >= 2 : 
     「好像沒有需要調查的地方了」
     -> END
 - else:
-    * 查看被子
-        ~ speaker = " "
-        ~ ChangeBedImage("bed_quilt")
-        床上凌亂的被子，留有些許溫度
-        -> quilt
+    { bed_chest == true: 
+        -> bed_inter
+    - else:
+        ->bed_again
+    }  
+}  
+
+== bed_inter
+{ bed_top == true: 
     * 查看床底下
         ~ MovePlayer("bed_side")
         ~ SpawnObject("chest")
         床底下藏著箱子，將箱子拿了出來，上面有一個4位數密碼鎖
         ~ speaker = "我"
+        ~ bed_interact += 1
         「鎖住了...密碼是多少呢...是某個日期嗎」
         -> END
+- else:
+    * 查看被子
+        ~ speaker = " "
+        ~ ChangeBedImage("bed_quilt")
+        ~ bed_interact += 1
+        床上凌亂的被子，留有些許溫度
+        -> quilt
+    * 查看床底下
+        ~ MovePlayer("bed_side")
+        ~ SpawnObject("chest")
+        ~ bed_interact += 1
+        床底下藏著箱子，將箱子拿了出來，上面有一個4位數密碼鎖
+        ~ speaker = "我"
+        「鎖住了...密碼是多少呢...是某個日期嗎」
+        -> END
+    }  
+
+== bed_again
+{ quilt_end == true: 
+    ~ speaker = ""
+    床上還留有些許餘溫
+    ->END
+- else:
+    * 查看被子
+        ~ speaker = " "
+        ~ ChangeBedImage("bed_quilt")
+        ~ bed_interact += 1
+        床上凌亂的被子，留有些許溫度
+        -> quilt
 }  
+
 
 == quilt ==
 ~ speaker = "我"
@@ -167,13 +218,21 @@ EXTERNAL Get_fragments(fragmentID)
     #no_foul
     ~ ChangeBedImage("bed_neat")
     ~ foul = false
+    ~ bed_top = true 
+    ~ quilt_end = true
     「不整理的話...總感覺會有不好的事發生」
     ->END
 * 放著不動
     #foul
     ~ foul = true
+    ~ bed_top = true 
+    ~ quilt_end = true
     「還是放著不動吧...應該...會沒事吧」
     ->END
+    
+== quilt_again
+
+->END
 
 == chest ==
 ~ speaker = "我"
@@ -988,7 +1047,14 @@ EXTERNAL Get_fragments(fragmentID)
 ~ Get_Clue("FamilyPortrait")
 ~ Get_Clue("Journal3")
 ~ Get_fragments("memory")
+~ speaker = "我"
 ......
+「這是之前那本日記缺少的前幾頁？」
+「這些畫面……笑容、擁抱、旅行……
+和我記憶裡那些吼聲、懲罰、鎖上的門……是同一個家嗎？」
+「如果兩個版本的家都是真的……那我到底生活在哪一個“家”裡？」
+「也許……這才是最可怕的地方——我不知道自己該懷念哪一個家。」
+
 【獲得線索：全家福、日記殘頁-3】
 【獲得記憶碎片8/8：記憶中的模樣】
 ->END
@@ -1017,18 +1083,43 @@ EXTERNAL Get_fragments(fragmentID)
 【使用道具：父母房間的鑰匙】
 使用鑰匙打開了門
 門緩緩打開
+#FightEnemy
 ~ speaker = "鬱的化身"
 「你...違反規則了」
-->jump_to_battle
-
-== jump_to_battle
 # jump_to_battle
--> END
+->END
+
 
 == no_parent_key ==
 ~ speaker = "我"
 「要先找到鑰匙...」
 ->END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 == parent_room

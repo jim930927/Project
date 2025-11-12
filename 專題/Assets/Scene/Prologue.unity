@@ -1735,7 +1735,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   journalImagePanel: {fileID: 194070181}
   dialogueManager: {fileID: 1654005121}
-  inkJSON: {fileID: 4900000, guid: c67fe878c0be2b54fa15cc3b78367a1a, type: 3}
+  inkJSON: {fileID: 4900000, guid: e4ccf5c8902567544bcc6d9bb6a078d9, type: 3}
   overlayPanel: {fileID: 1247052936}
   overlayText: {fileID: 462941374}
   returnButton: {fileID: 1629528309}
@@ -6106,7 +6106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   letterImagePanel: {fileID: 108210335}
   dialogueManager: {fileID: 1654005121}
-  inkJSON: {fileID: 4900000, guid: c67fe878c0be2b54fa15cc3b78367a1a, type: 3}
+  inkJSON: {fileID: 4900000, guid: e4ccf5c8902567544bcc6d9bb6a078d9, type: 3}
   overlayPanel: {fileID: 499317882}
   overlayText: {fileID: 1485253185}
   returnButton: {fileID: 1490435209}
@@ -10690,7 +10690,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d767bad668406742be208b46fcfa390, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inkJSONAsset: {fileID: 4900000, guid: c67fe878c0be2b54fa15cc3b78367a1a, type: 3}
+  inkJSONAsset: {fileID: 4900000, guid: e4ccf5c8902567544bcc6d9bb6a078d9, type: 3}
   dialogueManager: {fileID: 1654005121}
   knotName: main_npc_talk
   clueID: NPC_talk
@@ -11918,7 +11918,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bookIconUI: {fileID: 142815773}
   dialogueManager: {fileID: 1654005121}
-  inkJSONAsset: {fileID: 4900000, guid: c67fe878c0be2b54fa15cc3b78367a1a, type: 3}
+  inkJSONAsset: {fileID: 4900000, guid: e4ccf5c8902567544bcc6d9bb6a078d9, type: 3}
   interactHint: {fileID: 1996958965}
 --- !u!114 &1463728111
 MonoBehaviour:
@@ -12684,7 +12684,7 @@ MonoBehaviour:
   - {fileID: 1402468141}
   - {fileID: 681799467}
   hpRef: {fileID: 1617695726}
-  inkJSON: {fileID: 4900000, guid: c67fe878c0be2b54fa15cc3b78367a1a, type: 3}
+  inkJSON: {fileID: 4900000, guid: e4ccf5c8902567544bcc6d9bb6a078d9, type: 3}
   saveUI: {fileID: 0}
   leftPortraitImage: {fileID: 975662441}
   rightPortraitImage: {fileID: 1057043051}
@@ -18473,7 +18473,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 888784731
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -22637,7 +22637,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1f287f72258e8344982c02f61409798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inkJSONAsset: {fileID: 4900000, guid: c67fe878c0be2b54fa15cc3b78367a1a, type: 3}
+  inkJSONAsset: {fileID: 4900000, guid: e4ccf5c8902567544bcc6d9bb6a078d9, type: 3}
   dialogueManager: {fileID: 1654005121}
 --- !u!114 &2126328118
 MonoBehaviour:

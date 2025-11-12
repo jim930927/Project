@@ -40,6 +40,11 @@ public class SFBattleDialogueManager : MonoBehaviour
     private bool isShowingChoices = false;
     private bool inputLockedByChoices = false; // 🔒 用來控制選項期間的輸入鎖定
 
+    [Header("敵人圖片控制")]
+    public Image enemyImage;
+    public Sprite[] enemySprites; // 不同敵人的圖片
+
+
 
     private Action onDialogueComplete;
 
@@ -57,6 +62,15 @@ public class SFBattleDialogueManager : MonoBehaviour
     void Update()
     {
         if (!dialogueIsPlaying) return;
+        // 若正在顯示選項，完全忽略空白鍵輸入
+        if (isShowingChoices)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Debug.Log("🛑 空白鍵被吃掉（選項中）");
+            }
+            return;
+        }
 
         if (!canContinue)
         {
@@ -154,7 +168,20 @@ public class SFBattleDialogueManager : MonoBehaviour
                         PlayMusic(musicName);
                     }
                 }
+
+                if (tag.StartsWith("change_enemy"))
+                {
+                    Debug.Log("change");
+                    string[] parts = tag.Split(' ');
+                    if (parts.Length > 1)
+                    {
+                        string enemyName = parts[1];
+                        ChangeEnemyImage(enemyName);
+                    }
+                }
             }
+
+            
 
             string speakerName = "";
             try
@@ -200,16 +227,16 @@ public class SFBattleDialogueManager : MonoBehaviour
 
     private void DisplayChoices()
     {
-        StartCoroutine(LockInputTemporarily(10f)); // 0.3秒禁止空白鍵
+        // 鎖一下輸入，防止剛跳出選項時空白被誤觸
+        StartCoroutine(LockInputTemporarily(0.2f));
 
         List<Choice> choices = story.currentChoices;
-        //isShowingChoices = choices.Count >= 1;
-        
+        isShowingChoices = choices.Count > 0;
 
         if (choiceContainer != null)
-            choiceContainer.SetActive(choices.Count > 0);
+            choiceContainer.SetActive(isShowingChoices);
 
-        if (choices.Count > 0 && !questionsDropped && fightAnimator != null)
+        if (isShowingChoices && !questionsDropped && fightAnimator != null)
         {
             StartCoroutine(fightAnimator.DropQuestions(choices.Count));
             questionsDropped = true;
@@ -231,7 +258,6 @@ public class SFBattleDialogueManager : MonoBehaviour
                 int choiceIndex = i;
                 btn.onClick.RemoveAllListeners();
                 btn.onClick.AddListener(() => OnChoiceSelected(choiceIndex));
-                isShowingChoices = true;
             }
             else
             {
@@ -239,7 +265,10 @@ public class SFBattleDialogueManager : MonoBehaviour
                     choiceButtons[i].gameObject.SetActive(false);
             }
         }
+
+        Debug.Log($"🟢 DisplayChoices(): choices={choices.Count}, isShowingChoices={isShowingChoices}");
     }
+
 
     private void OnChoiceSelected(int choiceIndex)
     {
@@ -254,25 +283,16 @@ public class SFBattleDialogueManager : MonoBehaviour
 
         story.ChooseChoiceIndex(choiceIndex);
 
-        /*
-        // 🔹 檢查目前的 Tag 來判斷是否選錯
-        List<string> tags = story.currentTags;
-
-        if (tags.Contains("wrong"))
-        {
-            Debug.Log($"wrong");
-            // 扣血
-            if (hp_Battle != null)
-            {
-                hp_Battle.hp -= 1;
-                Debug.Log($"❌ 答錯！當前血量：{hp_Battle.hp}");
-            }
-        }
-        */
-        // ✅ 繼續對話流程
-        ContinueStory();
-
+        // ✅ 延遲一點再繼續，讓 Ink 更新完 currentChoices
+        StartCoroutine(ContinueAfterChoice());
     }
+
+    private IEnumerator ContinueAfterChoice()
+    {
+        yield return new WaitForEndOfFrame(); // 或 WaitForSeconds(0.05f)
+        ContinueStory();
+    }
+
 
     private void PlayMusic(string musicName)
     {
@@ -285,6 +305,32 @@ public class SFBattleDialogueManager : MonoBehaviour
         {
             Debug.LogWarning("⚠️ 找不到 BGMManager，無法播放音樂：" + musicName);
         }
+    }
+
+
+    private void ChangeEnemyImage(string enemyName)
+    {
+        if (enemyImage == null)
+        {
+            Debug.LogWarning("⚠️ 找不到 enemyImage，無法更換敵人圖片。");
+            return;
+        }
+
+        // 這裡根據名稱切換圖片，可改成你自己的邏輯
+        switch (enemyName)
+        {
+            case "anger":
+                enemyImage.sprite = enemySprites[0];
+                break;
+            case "sad":
+                enemyImage.sprite = enemySprites[1];
+                break;
+            default:
+                Debug.LogWarning($"⚠️ 未知的敵人名稱：{enemyName}");
+                break;
+        }
+
+        Debug.Log($"👹 敵人圖片切換為：{enemyName}");
     }
 
     private void EndDialogue()
@@ -312,12 +358,13 @@ public class SFBattleDialogueManager : MonoBehaviour
     }
     IEnumerator LockInputTemporarily(float duration)
     {
-        skipLocked = true;
         canContinue = false;
+        skipLocked = true;
         yield return new WaitForSeconds(duration);
         canContinue = true;
         skipLocked = false;
     }
+
 
 
 }

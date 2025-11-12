@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using static ClueData;
 
-public class BookUIManager : MonoBehaviour
+public class FinalBookUIManager : MonoBehaviour
 {
     [Header("基本UI")]
     public GameObject bookPanel;
@@ -40,7 +40,7 @@ public class BookUIManager : MonoBehaviour
     public Button closeIDetailButton;
 
     [Header("Ink 整合")]
-    public InkDialogueManager inkManager;
+    public FinalInkDialogue inkManager;
     private string pendingReturnKnot = "";
 
     [Header("線索兩頁容器")]

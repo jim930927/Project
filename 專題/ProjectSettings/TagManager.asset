@@ -14,6 +14,9 @@ TagManager:
   - StoryNPC
   - SpawnedObject
   - GateNPC
+  - FightEnemy
+  - Mother
+  - Father
   layers:
   - Default
   - TransparentFX

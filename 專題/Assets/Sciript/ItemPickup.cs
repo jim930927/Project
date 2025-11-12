@@ -100,7 +100,7 @@ public class ItemPickup : MonoBehaviour
             // 沒有 Ink，直接開啟線索
             var bookUI = FindObjectOfType<BookUIManager>();
             if (bookUI != null)
-                bookUI.OpenClueOverlay(itemID);
+                bookUI.OpenItemOverlay(itemID);
         }
 
         if (destroyOnPickup)
