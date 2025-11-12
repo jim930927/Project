@@ -120,20 +120,22 @@ public class LoadUIManager : MonoBehaviour
         if (toilet != null && !string.IsNullOrEmpty(data.toiletState))
             toilet.ChangeImage(data.toiletState);
 
-        var chest = GameObject.FindObjectOfType<ChestController>();
-        if (chest != null) chest.isUnlocked = data.chestOpened;
+        // ✅ 改為：不再直接尋找 ChestController，而是預先設定靜態狀態覆寫
+        if (!string.IsNullOrEmpty(data.chestState))
+        {
+            ChestController.pendingOverrideState = data.chestState;
+            Debug.Log($"🟢 [Load] 設定 ChestController.pendingOverrideState = {data.chestState}");
+        }
+        else
+        {
+            ChestController.pendingOverrideState = data.chestOpened ? "Open" : "Closed";
+            Debug.Log($"🟡 [Load] 使用舊欄位 chestOpened -> {ChestController.pendingOverrideState}");
+        }
 
         var safe = GameObject.FindObjectOfType<SafeController>();
         if (safe != null) safe.isUnlocked = data.safeOpened;
 
-
-        UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
-        Debug.Log("✅ 存檔資料已完整還原（Ink + 玩家位置 + 場景物件）");
-
-        // 🟩 確保 EventSystem 存在且可互動
+        // 🩹 確保 EventSystem 存在且可互動
         var evt = UnityEngine.EventSystems.EventSystem.current;
         if (evt == null)
         {
@@ -145,16 +147,13 @@ public class LoadUIManager : MonoBehaviour
             evt.enabled = true;
             Debug.Log("⚙️ EventSystem 已啟用");
         }
+
         // 🩹 修正：重設所有 Canvas 的互動層級
         int baseOrder = 0;
         foreach (var canvas in GameObject.FindObjectsOfType<Canvas>())
         {
-            if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
-            {
-                canvas.overrideSorting = true;
-                canvas.sortingOrder = baseOrder++;
-            }
-            else if (canvas.renderMode == RenderMode.ScreenSpaceCamera)
+            if (canvas.renderMode == RenderMode.ScreenSpaceOverlay ||
+                canvas.renderMode == RenderMode.ScreenSpaceCamera)
             {
                 canvas.overrideSorting = true;
                 canvas.sortingOrder = baseOrder++;
@@ -194,7 +193,6 @@ public class LoadUIManager : MonoBehaviour
         // === 生成箱子 ===
         foreach (string id in data.spawnedObjects)
         {
-            // 如果沒有該箱子實體，重新生成
             bool found = false;
             foreach (var so in FindObjectsOfType<SaveableEntity>())
                 if (so.uniqueID == id) found = true;
@@ -202,7 +200,7 @@ public class LoadUIManager : MonoBehaviour
             if (!found)
             {
                 var beds = FindObjectOfType<BedController>();
-                if (beds != null) bed.SpawnObject("chest");
+                if (beds != null) beds.SpawnObject("chest");
             }
         }
 
@@ -216,14 +214,11 @@ public class LoadUIManager : MonoBehaviour
             if (!found)
             {
                 var npcManager = FindObjectOfType<NPCManager>();
-                if (npcManager != null) npcManager.SpawnNPC("Guard"); // 依照你的 Ink 內容命名
+                if (npcManager != null) npcManager.SpawnNPC("Guard");
             }
         }
 
-
-
         Debug.Log($"📜 載入結果：道具 {data.collectedItems.Count}、線索 {data.collectedClues.Count}、互動 {data.finishedInteractions.Count}、生成物 {data.spawnedObjects.Count}、NPC {data.spawnedNPCs.Count}");
-
-
+        Debug.Log("✅ 存檔資料已完整還原（Ink + 玩家位置 + 場景物件）");
     }
 }

@@ -73,7 +73,12 @@ public class SaveUIManager : MonoBehaviour
         if (toilet != null) data.toiletState = toilet.GetCurrentState();
 
         var chest = FindObjectOfType<ChestController>();
-        if (chest != null) data.chestOpened = chest.isUnlocked;
+        if (chest != null)
+        {
+            data.chestOpened = chest.isUnlocked; // 舊欄位保留相容
+            data.chestState = chest.GetCurrentState(); // ✅ 新增
+        }
+
 
         var safe = FindObjectOfType<SafeController>();
         if (safe != null) data.safeOpened = safe.isUnlocked;
@@ -182,6 +187,7 @@ public class SaveData
     public string storyState;
     public string sceneName;
     public string saveTime;
+    public string chestState; // ✅ 新增
 
     // 🔹 新增
     public float playerX;

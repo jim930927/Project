@@ -5,6 +5,15 @@ using System.Collections.Generic;
 
 public class ChestController : MonoBehaviour
 {
+    public enum ChestState
+    {
+        Closed,
+        Open
+    }
+
+    // 🟢 靜態欄位：由 LoadUIManager 在載入時設定，任何新生成的箱子都會自動吃到這個值
+    public static string pendingOverrideState = null;
+
     [Header("箱子狀態圖片")]
     public SpriteRenderer chestRenderer;
     public Sprite closedChest;
@@ -31,11 +40,25 @@ public class ChestController : MonoBehaviour
     public ItemData itemDatabase;
     public ClueData clueDatabase;
 
-
     public bool isUnlocked = false;
     public bool hasInteracted = false;
+    public ChestState currentState = ChestState.Closed;
 
     private InkDialogueManager dialogueManager;
+
+    // ✅ 改在 Awake 初始化 + 自動吃載入狀態
+    void Awake()
+    {
+        ApplyState();
+
+        // 🟢 如果是從讀檔載入的，這裡會自動套用狀態
+        if (!string.IsNullOrEmpty(pendingOverrideState))
+        {
+            ChangeState(pendingOverrideState);
+            Debug.Log($"[Chest] Apply pending override -> {pendingOverrideState}");
+            pendingOverrideState = null; // 用完即清空，避免新箱子被誤套
+        }
+    }
 
     void Start()
     {
@@ -49,7 +72,6 @@ public class ChestController : MonoBehaviour
             clueDatabase = dialogueManager.clueDatabase;
         }
 
-
         if (passwordPanel != null)
             passwordPanel.SetActive(false);
 
@@ -60,6 +82,51 @@ public class ChestController : MonoBehaviour
             cancelButton.onClick.AddListener(ClosePasswordUI);
     }
 
+    // ======================
+    // 狀態控制部分
+    // ======================
+    public string GetCurrentState()
+    {
+        return currentState.ToString();
+    }
+
+    public void ChangeState(string newState)
+    {
+        if (System.Enum.TryParse(newState, true, out ChestState state))
+        {
+            currentState = state;
+            ApplyState();
+            Debug.Log($"[Chest] ChangeState -> {currentState}");
+        }
+        else
+        {
+            Debug.LogWarning($"[Chest] ❌ 無法解析狀態字串：{newState}");
+        }
+    }
+
+    private void ApplyState()
+    {
+        switch (currentState)
+        {
+            case ChestState.Closed:
+                if (chestRenderer != null && closedChest != null)
+                    chestRenderer.sprite = closedChest;
+                isUnlocked = false;
+                break;
+
+            case ChestState.Open:
+                if (chestRenderer != null && openChest != null)
+                    chestRenderer.sprite = openChest;
+                isUnlocked = true;
+                break;
+        }
+
+        Debug.Log($"[Chest] ApplyState -> {currentState}");
+    }
+
+    // ======================
+    // 互動邏輯
+    // ======================
     public void Interact()
     {
         if (hasInteracted)
@@ -97,10 +164,10 @@ public class ChestController : MonoBehaviour
     void UnlockChest()
     {
         isUnlocked = true;
+        currentState = ChestState.Open;
         Debug.Log("✅ 密碼正確，箱子打開");
 
-        if (chestRenderer != null && openChest != null)
-            chestRenderer.sprite = openChest;
+        ApplyState();
 
         if (passwordPanel != null)
             passwordPanel.SetActive(false);
@@ -108,45 +175,34 @@ public class ChestController : MonoBehaviour
         if (itemInside != null && itemSpawnPoint != null)
             Instantiate(itemInside, itemSpawnPoint.position, Quaternion.identity);
 
-        // ✅ 自動新增多個道具
+        // ✅ 獎勵加入資料庫
         if (itemDatabase != null)
         {
             foreach (string id in rewardItemIDs)
-            {
                 itemDatabase.AddItem(id);
-            }
         }
 
-        // ✅ 自動新增多個線索
         if (clueDatabase != null)
         {
             foreach (string id in rewardClueIDs)
-            {
                 clueDatabase.AddClue(id);
-            }
         }
 
-        // ✅ 關閉對話，進入 chest_open
         if (dialogueManager != null)
         {
             dialogueManager.ForceEndDialogue();
             Invoke(nameof(StartChestOpenDialogue), 0.3f);
         }
 
-        // ✅ 停止重複互動
         var interactable = GetComponent<SceneInteractable>();
         if (interactable != null)
-        {
             interactable.canInteract = false;
-        }
     }
 
     void StartChestOpenDialogue()
     {
         if (dialogueManager != null)
-        {
             dialogueManager.EnterDialogueMode(dialogueManager.inkJSON, "chest_open");
-        }
     }
 
     public void ClosePasswordUI()
@@ -155,6 +211,4 @@ public class ChestController : MonoBehaviour
             passwordPanel.SetActive(false);
         hasInteracted = false;
     }
-
-
 }
