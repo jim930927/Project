@@ -419,28 +419,6 @@ public class InkDialogueManager : MonoBehaviour
                 {
                     string savePath = Application.persistentDataPath + "/autosave_spawn.txt";
                 }
-
-                /*
-                // 尋找場景中的出生點
-                var spawnPoint = GameObject.Find($"{npcName}SpawnPoint");
-                if (spawnPoint == null)
-                {
-                    Debug.LogWarning($"⚠️ 找不到 {npcName}SpawnPoint，NPC 將生成在 (0,0,0)");
-                }
-
-                // 從 Resources 載入 NPC prefab
-                GameObject npcPrefab = Resources.Load<GameObject>($"NPCs/{npcName}");
-                if (npcPrefab != null)
-                {
-                    Vector3 spawnPos = spawnPoint != null ? spawnPoint.transform.position : Vector3.zero;
-                    GameObject npc = GameObject.Instantiate(npcPrefab, spawnPos, Quaternion.identity);
-                    Debug.Log($"👤 已生成 NPC：{npcName}，位置：{spawnPos}");
-                }
-                else
-                {
-                    Debug.LogWarning($"⚠️ 無法找到 NPC Prefab：{npcName}（請放在 Resources/NPCs 下）");
-                }
-                */
             });
 
 

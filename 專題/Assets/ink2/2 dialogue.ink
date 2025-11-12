@@ -367,6 +367,7 @@ EXTERNAL Get_fragments(fragmentID)
 ->END
 
 == sink
+~ speaker = "我"
 洗手台裡放滿了水，水上面放了一張被水浸濕的信封，還有幾根不知道是甚麼動物的毛
 ~ speaker = "我"
 「為什麼這洗手台上有這麼多的毛啊...？」
@@ -649,6 +650,14 @@ EXTERNAL Get_fragments(fragmentID)
 
 == chase
 #start_chase
+#play_music running
+->END
+
+== gone
+~ speaker = "我"
+「......」
+「好像走了...」
+#play_music second_theme
 ->END
 
 == storehouse
@@ -1094,24 +1103,6 @@ EXTERNAL Get_fragments(fragmentID)
 ~ speaker = "我"
 「要先找到鑰匙...」
 ->END
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

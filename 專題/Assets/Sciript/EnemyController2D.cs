@@ -92,6 +92,10 @@ public class EnemyController2D : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         gameObject.SetActive(false);
         Debug.Log("✅ 敵人已消失");
+        if (dialogueManager != null)
+        {
+            dialogueManager.EnterDialogueMode(dialogueManager.inkJSON, "gone");
+        }
     }
 
     public void StartChase()

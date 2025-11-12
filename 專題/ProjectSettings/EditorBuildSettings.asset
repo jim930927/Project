@@ -23,5 +23,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scene/Second Fighting.unity
     guid: 6ce115412413e524b8a150d89edc829c
+  - enabled: 1
+    path: Assets/Scene/Final.unity
+    guid: b6842bc403f9fc746b445ca53425c8f2
+  - enabled: 1
+    path: Assets/Scene/FinalBattle.unity
+    guid: fa3a080c721e8d445a98abead86d379c
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
