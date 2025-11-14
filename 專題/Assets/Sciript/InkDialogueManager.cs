@@ -1408,6 +1408,9 @@ public class InkDialogueManager : MonoBehaviour
                         }
                         break;
                     }
+                case "enter_final":
+                    StartCoroutine(EnterFinal());
+                    break;
             }
             // ====== GameOver 支援 ======
             if (tag.StartsWith("GameOver"))
@@ -1444,6 +1447,16 @@ public class InkDialogueManager : MonoBehaviour
     }
 
 
+
+    public IEnumerator EnterFinal()
+    {
+        Sequence seq2 = DOTween.Sequence();
+        seq2.Append(leftCurtain.DOAnchorPos(leftClosePos, curtainCloseDuration));
+        seq2.Join(rightCurtain.DOAnchorPos(rightClosePos, curtainCloseDuration));
+        yield return seq2.WaitForCompletion();
+        yield return new WaitForSeconds(0.3f);
+        SceneManager.LoadScene("Final");
+    }
     // -----------------------------
     // 記憶場景切換、NPC出現
     // -----------------------------

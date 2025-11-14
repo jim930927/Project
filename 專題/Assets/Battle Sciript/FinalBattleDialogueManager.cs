@@ -90,6 +90,7 @@ public class FinalBattleDialogueManager : MonoBehaviour
             return;
         }
 
+       
 
         if (Input.GetKeyDown(KeyCode.Space) && canContinue && !skipLocked && !isContinuing)
         {
@@ -154,6 +155,19 @@ public class FinalBattleDialogueManager : MonoBehaviour
                 }
             }
 
+            // 🔹 支援影片播放 #play_cg xxx
+            foreach (var tag in story.currentTags)
+            {
+                if (tag.StartsWith("play_cg"))
+                {
+                    string[] parts = tag.Split(' ');
+                    string cgName = parts.Length > 1 ? parts[1] : "DefaultCG";
+                    StartCoroutine(PlayCGThenContinue(cgName));
+                    return; // 暫停，等待 CG 播完
+                }
+            }
+
+
             if (dialogueText != null)
                 dialogueText.text = line;
 
@@ -169,8 +183,6 @@ public class FinalBattleDialogueManager : MonoBehaviour
                     }
                 }
             }
-
-            
 
             string speakerName = "";
             try
@@ -261,6 +273,7 @@ public class FinalBattleDialogueManager : MonoBehaviour
 
     private void OnChoiceSelected(int choiceIndex)
     {
+        UpdateClueVariablesInInk();
         isShowingChoices = false;
         if (choiceContainer != null) choiceContainer.SetActive(false);
 
@@ -328,6 +341,125 @@ public class FinalBattleDialogueManager : MonoBehaviour
         skipLocked = false;
     }
 
+    private void UpdateClueVariablesInInk()
+    {
+        if (story == null) return;
+
+        // 從 FinalBookSlider 取得目前選取的線索
+        var book = FinalBookSlider.Instance;
+        if (book != null)
+        {
+            string joinedIDs = "";
+
+            // 如果多選模式中，取多個
+            if (book.multiSelectMode)
+            {
+                joinedIDs = string.Join(",", book.selectedClues);
+            }
+            else
+            {
+                joinedIDs = book.currentClueId;
+            }
+
+            story.variablesState["selected_clues"] = joinedIDs ?? "";
+            Debug.Log($"📤 更新 Ink 變數 selected_clues = {joinedIDs}");
+        }
+    }
+
+    private IEnumerator PlayCGThenContinue(string cgName = "DefaultCG")
+    {
+        dialoguePanel.SetActive(false);
+
+        // 尋找 CGPanel
+        GameObject cgPanel = GameObject.Find("CGPanel");
+        if (cgPanel == null)
+        {
+            Debug.LogWarning("⚠️ FinalBattle 找不到 CGPanel");
+            yield break;
+        }
+
+        // 找 RawImage
+        var raws = cgPanel.GetComponentsInChildren<UnityEngine.UI.RawImage>(true);
+        foreach (var r in raws)
+            r.gameObject.SetActive(false);
+
+        UnityEngine.UI.RawImage targetRaw = null;
+
+        foreach (var r in raws)
+        {
+            if (r.name.Equals(cgName, StringComparison.OrdinalIgnoreCase) ||
+                r.name.Contains(cgName))
+            {
+                targetRaw = r;
+                break;
+            }
+        }
+
+        if (targetRaw == null && raws.Length > 0)
+            targetRaw = raws[0];
+
+        if (targetRaw == null)
+        {
+            Debug.LogWarning("⚠️ 找不到對應的 RawImage");
+            yield break;
+        }
+
+        targetRaw.gameObject.SetActive(true);
+
+        // 找 VideoPlayer
+        var video = cgPanel.GetComponent<UnityEngine.Video.VideoPlayer>();
+        if (video == null)
+            video = targetRaw.GetComponent<UnityEngine.Video.VideoPlayer>();
+
+        if (video == null)
+        {
+            Debug.LogWarning("⚠️ 找不到 VideoPlayer");
+            yield break;
+        }
+
+        // Load resources/CG/cgName
+        var clip = Resources.Load<UnityEngine.Video.VideoClip>($"CG/{cgName}");
+        if (clip != null)
+        {
+            video.source = UnityEngine.Video.VideoSource.VideoClip;
+            video.clip = clip;
+        }
+        else
+        {
+            Debug.LogWarning($"⚠️ 找不到影片：Resources/CG/{cgName}.mp4");
+        }
+
+        video.Prepare();
+        while (!video.isPrepared) yield return null;
+
+        // 播放！
+        targetRaw.texture = video.targetTexture;
+        video.Play();
+
+        bool finished = false;
+        video.loopPointReached += (v) => { finished = true; };
+
+        while (!finished)
+        {
+            if (Input.anyKeyDown)
+            {
+                video.Stop();
+                finished = true;
+            }
+            yield return null;
+        }
+
+        // 關閉所有 CG 畫面
+        foreach (var r in raws) r.gameObject.SetActive(false);
+
+        // 回到對話
+        if (story.canContinue)
+            ContinueStory();
+        else
+            EndDialogue();
+
+        dialoguePanel.SetActive(true);
+    }
 
 
 }

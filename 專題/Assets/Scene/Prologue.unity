@@ -7910,8 +7910,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 679174819748606707, guid: d97284c3f70cc904d99ef0fba3208fbb, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -12447,11 +12447,11 @@ Transform:
   m_GameObject: {fileID: 1617695725}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -866.9873, y: -189.30475, z: -22.138088}
+  m_LocalPosition: {x: 953.9457, y: 147.96634, z: -32.852833}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2106979317}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1629528307
 GameObject:
@@ -12902,7 +12902,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u3010\u71C8\u706B\u503C\u3011\n\u4F60\u7684\u9078\u64C7\u3001\u6230\u9B25\u6210\u529F\u6216\u5931\u6557\u90FD\u6703\u76F4\u63A5\u5F71\u97FF\u5230\u71C8\u706B\u7684\u660E\u4EAE\u503C\uFF0C\u4E0D\u540C\u7684\u71C8\u706B\u503C\u5C07\u6703\u5C0E\u81F4\u9032\u5165\u5230\u4E0D\u540C\u7684\u7D50\u5C40\uFF0C\u8ACB\u8B66\u614E\u9078\u64C7\u3002"
+  m_Text: "\u3010\u71C8\u706B\u503C\u3011\n\u4F60\u7684\u9078\u64C7\u3001\u6230\u9B25\u6210\u529F\u6216\u5931\u6557\u90FD\u6703\u76F4\u63A5\u5F71\u97FF\u5230\u71C8\u706B\u7684\u660E\u4EAE\u503C\uFF0C\u4E0D\u540C\u7684\u71C8\u706B\u503C\u5C07\u6703\u5C0E\u81F4\u9032\u5165\u5230\u4E0D\u540C\u7684\u7D50\u5C40\uFF0C\u8ACB\u8B39\u614E\u9078\u64C7\u3002"
 --- !u!222 &1670076651
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17852,7 +17852,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -327546271
-  m_SortingLayer: 8
+  m_SortingLayer: 9
   m_SortingOrder: 0
   m_Sprite: {fileID: -3696221873857123330, guid: a47a97bfd5293414eacdf1d5aab36688, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -17874,7 +17874,7 @@ Transform:
   m_GameObject: {fileID: 1997663419}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.065, y: -9.761, z: 0}
+  m_LocalPosition: {x: -3.09, y: -9.84, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -18597,7 +18597,7 @@ TilemapRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 888784731
-  m_SortingLayer: 11
+  m_SortingLayer: 12
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -22691,7 +22691,6 @@ Transform:
   m_Children:
   - {fileID: 1650025391}
   - {fileID: 1109433922}
-  - {fileID: 1617695727}
   - {fileID: 1781081153}
   - {fileID: 1041794516}
   - {fileID: 1858211847}
@@ -24391,3 +24390,4 @@ SceneRoots:
   - {fileID: 1463728109}
   - {fileID: 888020176}
   - {fileID: 2106979317}
+  - {fileID: 1617695727}

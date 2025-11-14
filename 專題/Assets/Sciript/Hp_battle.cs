@@ -28,23 +28,6 @@ public class Hp_battle : MonoBehaviour
 
     public bool hasShownHP = true;
 
-    private static Hp_battle instance;
-
-    void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-            SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
-
     void Start()
     {
         StartCoroutine(InitUI());
@@ -55,10 +38,9 @@ public class Hp_battle : MonoBehaviour
     {
         if (hp <= 0)
         {
-            EnterMainMenu();
+            TriggerFinalFailDialogue();
         }
-        
-        UpdateHpUI();
+
     }
 
     void UpdateHpUI()
@@ -75,14 +57,33 @@ public class Hp_battle : MonoBehaviour
             hpImage.sprite = hp_2;
         else if (hp == 1)
             hpImage.sprite = hp_1;
-        else if (hp == 0)
-            hpImage.sprite = hp_0;
+
     }
 
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    void TriggerFinalFailDialogue()
     {
-        // 🔹 延遲 0.1 秒再綁定，確保 Canvas 已載入
-        StartCoroutine(DelayedFindUI());
+        // 防止重複觸發
+        if (hp != 0) return;
+
+        Debug.Log("💀 HP 歸零，進入 FAILED 對話");
+
+        var dm = FinalBattleDialogueManager.Instance;
+        if (dm != null)
+        {
+            // 這裡假設你的 Ink 裡有 Knot: "FAILED"
+            dm.EnterDialogueMode(dm.inkJSON, "FAILED", () =>
+            {
+                // 這個 callback 是對話結束後要做的事
+                SceneManager.LoadScene(SceneName);
+            });
+        }
+        else
+        {
+            Debug.LogWarning("⚠ 找不到 FinalBattleDialogueManager，改直接回主選單");
+            SceneManager.LoadScene(SceneName);
+        }
+
+        hp = -999; // 防止 Update() 無限觸發
     }
 
     IEnumerator DelayedFindUI()
@@ -119,12 +120,6 @@ public class Hp_battle : MonoBehaviour
             }
         }
         Debug.LogWarning("⚠️ 沒找到血量圖像：" + hpImageName);
-    }
-
-    IEnumerator EnterMainMenu()
-    {
-        yield return new WaitForSeconds(1.5f);
-        SceneManager.LoadScene(SceneName);
     }
 
     public void PlayDamageEffect()

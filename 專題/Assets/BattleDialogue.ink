@@ -1,6 +1,7 @@
 VAR speaker = "???"
 VAR current_clue = ""
 
+EXTERNAL HP_Add(hp)
 
 === start ===
 #play_music battle_theme
