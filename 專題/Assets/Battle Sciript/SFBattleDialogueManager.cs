@@ -17,7 +17,7 @@ public class SFBattleDialogueManager : MonoBehaviour
     public GameObject choiceContainer;
     public Button[] choiceButtons;
 
-    public Hp_battle hp_Battle;
+    public second_Hp_battle hp_Battle;
 
     public static SFBattleDialogueManager Instance;
 

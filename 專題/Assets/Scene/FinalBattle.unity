@@ -6081,7 +6081,6 @@ MonoBehaviour:
   blackScreen: {fileID: 1366457892}
   blackScreenAct: {fileID: 1366457890}
   blackScreenDuration: 1
-  dialogueManager: {fileID: 785586798}
   hasShownHP: 1
 --- !u!1 &917375646
 GameObject:
@@ -7707,7 +7706,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -8837662124977604909, guid: ba47c9b047901a04483b1ff55e2a10e2, type: 3}
+  m_Sprite: {fileID: -8327762305018808194, guid: 3523cffbb4363734ab175fe1ae11230a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7741,8 +7740,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -50.734985, y: -681}
-  m_SizeDelta: {x: 53, y: 100}
+  m_AnchoredPosition: {x: 0, y: -458}
+  m_SizeDelta: {x: 128.2779, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1319381115
 GameObject:
