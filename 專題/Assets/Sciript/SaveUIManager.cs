@@ -44,7 +44,6 @@ public class SaveUIManager : MonoBehaviour
     {
         SaveData data = new SaveData();
 
-
         // 儲存 Ink 劇情狀態
         data.storyState = currentStoryJson;
         data.sceneName = SceneManager.GetActiveScene().name;
@@ -75,15 +74,14 @@ public class SaveUIManager : MonoBehaviour
         var chest = FindObjectOfType<ChestController>();
         if (chest != null)
         {
-            data.chestOpened = chest.isUnlocked; // 舊欄位保留相容
-            data.chestState = chest.GetCurrentState(); // ✅ 新增
+            data.chestOpened = chest.isUnlocked;           // 舊欄位保留相容
+            data.chestState = chest.GetCurrentState();     // ✅ 新增
         }
-
 
         var safe = FindObjectOfType<SafeController>();
         if (safe != null) data.safeOpened = safe.isUnlocked;
 
-        // === 儲存可撿道具 ===
+        // === 儲存可撿道具（場景實體，用 uniqueID）===
         data.collectedItems.Clear();
         foreach (var pickup in Resources.FindObjectsOfTypeAll<ItemPickup>())
         {
@@ -96,7 +94,8 @@ public class SaveUIManager : MonoBehaviour
                     data.collectedItems.Add(id.uniqueID);
             }
         }
-        // === 儲存線索 ===
+
+        // === 儲存線索（場景實體，用 uniqueID）===
         data.collectedClues.Clear();
         foreach (var pickup in Resources.FindObjectsOfTypeAll<CluePickup>())
         {
@@ -110,7 +109,37 @@ public class SaveUIManager : MonoBehaviour
             }
         }
 
-        // === 儲存可撿道具 ===
+        // ⭐⭐ 新增：把「資料庫裡已收集的線索 / 道具」也記錄起來 ⭐⭐
+
+        // --- ClueData ---
+        data.databaseCollectedClueIds.Clear();
+        var anyCluePickup = Resources.FindObjectsOfTypeAll<CluePickup>()
+                                     .FirstOrDefault(p => p != null && p.clueData != null);
+        if (anyCluePickup != null)
+        {
+            ClueData clueDB = anyCluePickup.clueData;
+            foreach (var clue in clueDB.clues)
+            {
+                if (clue.collected)
+                    data.databaseCollectedClueIds.Add(clue.id);
+            }
+        }
+
+        // --- ItemData ---
+        data.databaseCollectedItemIds.Clear();
+        var anyItemPickup = Resources.FindObjectsOfTypeAll<ItemPickup>()
+                                     .FirstOrDefault(p => p != null && p.itemData != null);
+        if (anyItemPickup != null)
+        {
+            ItemData itemDB = anyItemPickup.itemData;
+            foreach (var item in itemDB.items)
+            {
+                if (item.collected)
+                    data.databaseCollectedItemIds.Add(item.id);
+            }
+        }
+
+        // === 儲存互動物件 ===
         data.finishedInteractions.Clear();
         foreach (var inter in FindObjectsOfType<SceneInteractable>())
         {
@@ -124,6 +153,7 @@ public class SaveUIManager : MonoBehaviour
             }
         }
 
+        // === 儲存生成的箱子 ===
         data.spawnedObjects.Clear();
         foreach (var interactables in FindObjectsOfType<SceneInteractable>())
         {
@@ -143,10 +173,14 @@ public class SaveUIManager : MonoBehaviour
                 data.spawnedNPCs.Add(npc.uniqueID);
         }
 
+        // === 儲存敵人狀態 ===
+        if (EnemyStateManager.Instance != null)
+        {
+            data.enemyStatesJson = EnemyStateManager.Instance.ToJson();
+            Debug.Log($"🧠 已儲存敵人狀態：{data.enemyStatesJson.Length} 字元");
+        }
+
         Debug.Log($"💾 Save Completed: 道具 {data.collectedItems.Count}、線索 {data.collectedClues.Count}、互動 {data.finishedInteractions.Count}、箱子 {data.spawnedObjects.Count}、NPC {data.spawnedNPCs.Count}");
-
-
-
 
         string path = Application.persistentDataPath + $"/save_{slotIndex}.json";
         File.WriteAllText(path, JsonUtility.ToJson(data, true));
@@ -157,10 +191,8 @@ public class SaveUIManager : MonoBehaviour
         UpdateSlotInfo(slotIndex);
         saveMenu.SetActive(false);
 
-        Debug.Log("✅ Save Completed. Items:" + data.collectedItems.Count + " Interacts:" + data.finishedInteractions.Count + "Clues:" + data.collectedClues.Count);
-
+        Debug.Log("✅ Save Completed. Items:" + data.collectedItems.Count + " Interacts:" + data.finishedInteractions.Count + " Clues:" + data.collectedClues.Count);
     }
-
 
     public void UpdateSlotInfo(int slotIndex)
     {
@@ -177,8 +209,6 @@ public class SaveUIManager : MonoBehaviour
             slotInfoTexts[slotIndex].text = "尚未存檔";
         }
     }
-
-
 }
 
 [System.Serializable]
@@ -189,24 +219,28 @@ public class SaveData
     public string saveTime;
     public string chestState; // ✅ 新增
 
-    // 🔹 新增
+    // 位置
     public float playerX;
     public float playerY;
     public float playerZ;
 
     public int playerHp;
 
-    // 🔹 可擴充場景內互動物件（例如床、箱子、門的狀態）
+    // 場景物件狀態
     public string bedState;
     public string toiletState;
     public bool chestOpened;
     public bool safeOpened;
+    public string enemyStatesJson; // 敵人狀態 JSON
 
+    // 場景內實體物件的 uniqueID
     public List<string> collectedItems = new List<string>();
     public List<string> collectedClues = new List<string>();
     public List<string> finishedInteractions = new List<string>();
     public List<string> spawnedObjects = new List<string>();
     public List<string> spawnedNPCs = new List<string>();
 
+    // ⭐⭐ 新增：ScriptableObject 資料庫裡「哪些條目已 collected」 ⭐⭐
+    public List<string> databaseCollectedClueIds = new List<string>();
+    public List<string> databaseCollectedItemIds = new List<string>();
 }
-

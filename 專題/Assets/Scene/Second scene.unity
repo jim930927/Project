@@ -480,8 +480,6 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 386832590}
   oneWay: 0
   canTP: 1
@@ -714,8 +712,6 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 1525427717}
   oneWay: 0
   canTP: 1
@@ -1370,8 +1366,6 @@ MonoBehaviour:
   isLockedDoor: 1
   requiredKeyID: key_room
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 1966138269}
   oneWay: 0
   canTP: 1
@@ -1805,8 +1799,6 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 633437333}
   oneWay: 0
   canTP: 1
@@ -2647,8 +2639,6 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 1357502648}
   oneWay: 0
   canTP: 1
@@ -11674,8 +11664,6 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 500901918}
   oneWay: 0
   canTP: 1
@@ -29260,8 +29248,6 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 1622314742}
   oneWay: 0
   canTP: 1
@@ -38475,8 +38461,6 @@ MonoBehaviour:
   isLockedDoor: 1
   requiredKeyID: key_unknow
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 1435674243}
   oneWay: 0
   canTP: 1
@@ -42298,6 +42282,7 @@ GameObject:
   - component: {fileID: 998744669}
   - component: {fileID: 998744666}
   - component: {fileID: 998744665}
+  - component: {fileID: 998744670}
   m_Layer: 0
   m_Name: EnemyRule
   m_TagString: Enemy
@@ -42462,6 +42447,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inkManager: {fileID: 1222130035}
   targetKnot: enemy
+--- !u!114 &998744670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 998744663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b7f3ab545d590488cba7dce2c0c995, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyId: enemy_room
 --- !u!1 &1000281660
 GameObject:
   m_ObjectHideFlags: 0
@@ -42777,8 +42775,6 @@ MonoBehaviour:
   isLockedDoor: 1
   requiredKeyID: key_parent
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 786290701}
   oneWay: 0
   canTP: 1
@@ -43630,8 +43626,6 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 1799302970}
   oneWay: 0
   canTP: 1
@@ -45879,8 +45873,6 @@ MonoBehaviour:
   isLockedDoor: 1
   requiredKeyID: key_parent
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 745745391}
   oneWay: 0
   canTP: 1
@@ -55957,8 +55949,6 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 506691205}
   oneWay: 0
   canTP: 1
@@ -57747,8 +57737,6 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 781480822}
   oneWay: 0
   canTP: 1
@@ -58721,8 +58709,6 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 480805912}
   oneWay: 0
   canTP: 1
@@ -59013,8 +58999,6 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 1803004455}
   oneWay: 0
   canTP: 1
@@ -61530,8 +61514,6 @@ MonoBehaviour:
   isLockedDoor: 0
   requiredKeyID: 
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 724175608}
   oneWay: 0
   canTP: 1
@@ -61838,6 +61820,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1890429482}
   m_CullTransparentMesh: 1
+--- !u!1 &1897389245
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1897389247}
+  - component: {fileID: 1897389246}
+  m_Layer: 0
+  m_Name: EnemyStateManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1897389246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1897389245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a50a1905f836abc479c0025ac273be1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1897389247
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1897389245}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 20.5414, y: 54.2901, z: 0.21684335}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1897691304
 GameObject:
   m_ObjectHideFlags: 0
@@ -65549,8 +65575,6 @@ MonoBehaviour:
   isLockedDoor: 1
   requiredKeyID: key_room
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 1604133166}
   oneWay: 0
   canTP: 1
@@ -66202,8 +66226,6 @@ MonoBehaviour:
   isLockedDoor: 1
   requiredKeyID: key_unknow
   cooldown: 0.3
-  rightway: 0
-  wrongtime: 0
   enemySpawnPoint: {fileID: 1355822403}
   oneWay: 0
   canTP: 1
@@ -66854,3 +66876,4 @@ SceneRoots:
   - {fileID: 412528331}
   - {fileID: 701002398}
   - {fileID: 759623370}
+  - {fileID: 1897389247}

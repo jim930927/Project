@@ -76,7 +76,6 @@ public class LoadUIManager : MonoBehaviour
         SceneManager.LoadScene(data.sceneName);
     }
 
-
     // ✅ 在新場景中由 InkDialogueManager 呼叫
     public static IEnumerator ApplyPendingLoadData()
     {
@@ -120,70 +119,82 @@ public class LoadUIManager : MonoBehaviour
         if (toilet != null && !string.IsNullOrEmpty(data.toiletState))
             toilet.ChangeImage(data.toiletState);
 
-        // ✅ 改為：不再直接尋找 ChestController，而是預先設定靜態狀態覆寫
+        // 🔐 Chest 狀態
         if (!string.IsNullOrEmpty(data.chestState))
         {
             ChestController.pendingOverrideState = data.chestState;
-            Debug.Log($"🟢 [Load] 設定 ChestController.pendingOverrideState = {data.chestState}");
         }
         else
         {
             ChestController.pendingOverrideState = data.chestOpened ? "Open" : "Closed";
-            Debug.Log($"🟡 [Load] 使用舊欄位 chestOpened -> {ChestController.pendingOverrideState}");
         }
 
         var safe = GameObject.FindObjectOfType<SafeController>();
         if (safe != null) safe.isUnlocked = data.safeOpened;
 
-        // 🩹 確保 EventSystem 存在且可互動
+        // ⭐⭐ 還原 ClueData / ItemData collected 狀態 ⭐⭐
+        ClueData clueDB = null;
+        ItemData itemDB = null;
+
+        var clueSample = GameObject.FindObjectOfType<CluePickup>();
+        if (clueSample != null) clueDB = clueSample.clueData;
+
+        var itemSample = GameObject.FindObjectOfType<ItemPickup>();
+        if (itemSample != null) itemDB = itemSample.itemData;
+
+        if (clueDB != null)
+        {
+            foreach (var clue in clueDB.clues)
+                clue.collected = data.databaseCollectedClueIds.Contains(clue.id);
+        }
+
+        if (itemDB != null)
+        {
+            foreach (var item in itemDB.items)
+                item.collected = data.databaseCollectedItemIds.Contains(item.id);
+        }
+
+        // 🛠 UI 系統修復
         var evt = UnityEngine.EventSystems.EventSystem.current;
         if (evt == null)
         {
-            GameObject newEvt = new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.EventSystems.StandaloneInputModule));
-            Debug.Log("⚙️ 自動建立新的 EventSystem");
+            new GameObject("EventSystem",
+                typeof(UnityEngine.EventSystems.EventSystem),
+                typeof(UnityEngine.EventSystems.StandaloneInputModule));
         }
-        else
-        {
-            evt.enabled = true;
-            Debug.Log("⚙️ EventSystem 已啟用");
-        }
+        else evt.enabled = true;
 
-        // 🩹 修正：重設所有 Canvas 的互動層級
-        int baseOrder = 0;
         foreach (var canvas in GameObject.FindObjectsOfType<Canvas>())
         {
-            if (canvas.renderMode == RenderMode.ScreenSpaceOverlay ||
-                canvas.renderMode == RenderMode.ScreenSpaceCamera)
-            {
-                canvas.overrideSorting = true;
-                canvas.sortingOrder = baseOrder++;
-            }
-
-            // 確保 Canvas 可以互動
+            canvas.overrideSorting = true;
             var ray = canvas.GetComponent<UnityEngine.UI.GraphicRaycaster>();
-            if (ray == null)
-                canvas.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+            if (ray == null) canvas.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
         }
-        Debug.Log("🧩 已重建 Canvas SortingOrder 與 Raycaster");
 
         // === 道具 ===
-        foreach (var item in FindObjectsOfType<ItemPickup>())
+        foreach (var item in GameObject.FindObjectsOfType<ItemPickup>())
         {
             var id = item.GetComponent<SaveableEntity>();
             if (id != null && data.collectedItems.Contains(id.uniqueID))
+            {
+                item.collected = true;        // 🔥 必須還原
                 item.gameObject.SetActive(false);
+            }
         }
 
         // === 線索 ===
-        foreach (var clue in FindObjectsOfType<CluePickup>())
+        foreach (var clue in GameObject.FindObjectsOfType<CluePickup>())
         {
             var id = clue.GetComponent<SaveableEntity>();
             if (id != null && data.collectedClues.Contains(id.uniqueID))
+            {
+                clue.collected = true;         // 🔥 必須還原
                 clue.gameObject.SetActive(false);
+            }
         }
 
         // === 互動物件 ===
-        foreach (var inter in FindObjectsOfType<SceneInteractable>())
+        foreach (var inter in GameObject.FindObjectsOfType<SceneInteractable>())
         {
             var id = inter.GetComponent<SaveableEntity>();
             if (id != null && data.finishedInteractions.Contains(id.uniqueID))
@@ -194,12 +205,12 @@ public class LoadUIManager : MonoBehaviour
         foreach (string id in data.spawnedObjects)
         {
             bool found = false;
-            foreach (var so in FindObjectsOfType<SaveableEntity>())
+            foreach (var so in GameObject.FindObjectsOfType<SaveableEntity>())
                 if (so.uniqueID == id) found = true;
 
             if (!found)
             {
-                var beds = FindObjectOfType<BedController>();
+                var beds = GameObject.FindObjectOfType<BedController>();
                 if (beds != null) beds.SpawnObject("chest");
             }
         }
@@ -208,17 +219,23 @@ public class LoadUIManager : MonoBehaviour
         foreach (string id in data.spawnedNPCs)
         {
             bool found = false;
-            foreach (var npc in FindObjectsOfType<SaveableEntity>())
+            foreach (var npc in GameObject.FindObjectsOfType<SaveableEntity>())
                 if (npc.uniqueID == id) found = true;
 
             if (!found)
             {
-                var npcManager = FindObjectOfType<NPCManager>();
+                var npcManager = GameObject.FindObjectOfType<NPCManager>();
                 if (npcManager != null) npcManager.SpawnNPC("Guard");
             }
         }
 
-        Debug.Log($"📜 載入結果：道具 {data.collectedItems.Count}、線索 {data.collectedClues.Count}、互動 {data.finishedInteractions.Count}、生成物 {data.spawnedObjects.Count}、NPC {data.spawnedNPCs.Count}");
-        Debug.Log("✅ 存檔資料已完整還原（Ink + 玩家位置 + 場景物件）");
+        // === 敵人狀態 ===
+        if (!string.IsNullOrEmpty(data.enemyStatesJson))
+        {
+            if (EnemyStateManager.Instance != null)
+                EnemyStateManager.Instance.LoadFromJson(data.enemyStatesJson);
+        }
+
+        Debug.Log("✅ 載入資料全部還原完成");
     }
 }
