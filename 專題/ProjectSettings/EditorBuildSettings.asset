@@ -38,5 +38,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scene/TrueEnd.unity
     guid: 14b664c8c1647fa4ebaa8cf8490488cb
+  - enabled: 1
+    path: Assets/Scene/Back_second.unity
+    guid: 4b9f81a6d9901e9458cd0ead5f43084f
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

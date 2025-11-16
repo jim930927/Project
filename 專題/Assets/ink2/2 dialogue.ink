@@ -128,7 +128,7 @@ EXTERNAL Get_fragments(fragmentID)
 【獲得道具“家規”】
 ~ speaker = "我"
 「為什麼這裡會有這種東西？不知道觸發規則會怎樣……好像也跟出去無關。」
- ~ SpawnNPC("Guide")
+#SpawnGuideNPC
  ~ speaker = " "
 一個幽暗身影出現在旁邊
 #turn_back

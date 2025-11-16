@@ -50,6 +50,7 @@ public class HP : MonoBehaviour
     void Update()
     {
         if (hp < 0) hp = 0;
+        if (hp >= 10) hp = 10;
         UpdateHpUI();
     }
 

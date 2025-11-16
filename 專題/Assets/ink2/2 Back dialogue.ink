@@ -281,6 +281,13 @@ EXTERNAL Get_fragments(fragmentID)
     -
 ->END
 
+== mirror ==
+~ speaker = " "
+一面鏡子
+~ SaveGame() 
+站在鏡子前面，記住了自己現在的模樣
+-> END
+
 == gate_lock
 大門緊鎖著
 從窗戶看出去白茫茫一片，像是一層厚重的白霧

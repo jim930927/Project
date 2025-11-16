@@ -72,6 +72,6 @@ EXTERNAL canStartBattle()
 「我替你準備的大禮，還喜歡嗎？嘻嘻~」
 「我只答應你不再纏著你，可沒說...你的人生，我不能動。」
 #black_screen
-#MainMenu
+#MainMeun
 -> DONE
 

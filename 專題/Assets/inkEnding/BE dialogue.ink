@@ -31,6 +31,6 @@ EXTERNAL canStartBattle()
 「所有欺負我的人...」
 「都從這世界上消失......」
 #black_screen
-#MainMenu
+# MainMeun
 -> END
 

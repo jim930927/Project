@@ -148,9 +148,9 @@ public class SFBattleDialogueManager : MonoBehaviour
             {
                 if (hp_Battle != null)
                 {
-                    hp_Battle.hp -= 1;
+                    hp_Battle.Bhp -= 1;
                     hp_Battle.PlayDamageEffect();
-                    Debug.Log($"❌ 答錯！扣血 -> 當前血量：{hp_Battle.hp}");
+                    Debug.Log($"❌ 答錯！扣血 -> 當前血量：{hp_Battle.Bhp}");
                 }
             }
 
@@ -214,6 +214,10 @@ public class SFBattleDialogueManager : MonoBehaviour
                 List<string> tags = story.currentTags ?? new List<string>();
                 if (tags.Contains("DONE"))
                 {
+                    // 🩸 戰鬥勝利 → HP +1
+                    var hp = FindObjectOfType<HP>();
+                    if (hp != null) hp.hp += 1;
+
                     if (fightAnimator != null)
                     {
                         StartCoroutine(fightAnimator.PlayBattleOutro(() =>

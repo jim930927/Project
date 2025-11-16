@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static ClueData;
 
@@ -38,6 +39,8 @@ public class FinalBookUIManager : MonoBehaviour
     public Button IDprevPageButton;
     public Button closeCDetailButton;
     public Button closeIDetailButton;
+
+    public Button BackMenuButton;
 
     [Header("Ink 整合")]
     public FinalInkDialogue inkManager;
@@ -101,6 +104,8 @@ public class FinalBookUIManager : MonoBehaviour
         cluePrevPageButton?.onClick.AddListener(PrevClueListPage);
         itemNextPageButton?.onClick.AddListener(NextItemListPage);
         itemPrevPageButton?.onClick.AddListener(PrevItemListPage);
+
+        BackMenuButton?.onClick.AddListener(BackMenu);
 
         GenerateClueButtons();
         GenerateItemButtons(); // 🟦 新增
@@ -223,7 +228,10 @@ public class FinalBookUIManager : MonoBehaviour
         GenerateClueButtons();
     }
 
-
+    void BackMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
     public void ShowClueDetail(ClueData.Clue clue)
     {
         if (clue == null) return;

@@ -6,7 +6,7 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class second_Hp_battle : MonoBehaviour
 {
-    public int hp = 5;
+    public int Bhp = 5;
 
     [Header("血量 UI")]
     public Image hpImage;
@@ -31,12 +31,13 @@ public class second_Hp_battle : MonoBehaviour
     void Start()
     {
         StartCoroutine(InitUI());
+        StartCoroutine(DelayedFindUI());
         blackScreenAct.SetActive(false);
     }
 
     void Update()
     {
-        if (hp <= 0)
+        if (Bhp <= 0)
         {
             TriggerSecondFailDialogue();
         }
@@ -47,15 +48,15 @@ public class second_Hp_battle : MonoBehaviour
     {
         if (hpImage == null) return;
 
-        if (hp == 5)
+        if (Bhp == 5)
             hpImage.sprite = hp_5;
-        else if (hp == 4)
+        else if (Bhp == 4)
             hpImage.sprite = hp_4;
-        else if (hp == 3)
+        else if (Bhp == 3)
             hpImage.sprite = hp_3;
-        else if (hp == 2)
+        else if (Bhp == 2)
             hpImage.sprite = hp_2;
-        else if (hp == 1)
+        else if (Bhp == 1)
             hpImage.sprite = hp_1;
 
     }
@@ -100,7 +101,7 @@ public class second_Hp_battle : MonoBehaviour
     void TriggerSecondFailDialogue()
     {
         // 防止重複觸發
-        if (hp != 0) return;
+        if (Bhp != 0) return;
 
         Debug.Log("💀 HP 歸零，進入 FAILED 對話");
 
@@ -120,7 +121,7 @@ public class second_Hp_battle : MonoBehaviour
             SceneManager.LoadScene(SceneName);
         }
 
-        hp = -999; // 防止 Update() 無限觸發
+        Bhp = -999; // 防止 Update() 無限觸發
     }
 public void PlayDamageEffect()
     {

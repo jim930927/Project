@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.U2D;
 using UnityEngine.UI;
 using static ClueData;
 using static FinalInkDialogue;
-using static UnityEditor.Experimental.GraphView.GraphView;
 using static UnityEngine.EventSystems.EventTrigger;
 
 public class EndingInkDialogue : MonoBehaviour
@@ -41,10 +41,16 @@ public class EndingInkDialogue : MonoBehaviour
     private bool canAutoContinue = true; // ← 控制是否自動Continue
 
     public Transform player;
+    public Transform player_fake;
     public Transform Hospital;
     public Transform School;
     public Transform Home;
     public Transform BackMountain;
+    public Transform monster;
+
+
+    public GameObject talismanFX;
+
 
     public GameObject classmate;
 
@@ -72,6 +78,10 @@ public class EndingInkDialogue : MonoBehaviour
     public SpriteRenderer spriteRenderer1;
     public SpriteRenderer spriteRenderer2;
     public GameObject Him;
+
+    public CanvasGroup whiteScreenCanvasGroup;
+
+
     public bool dialogueIsPlaying { get; private set; }
     public bool IsInCooldown => dialogueEndTimer > 0f;
 
@@ -622,7 +632,11 @@ public class EndingInkDialogue : MonoBehaviour
         foreach (string tag in currentTags)
         {
             switch (tag)
-            { 
+            {
+                case "MainMeun":
+                    Debug.Log("MainMenu");
+                    SceneManager.LoadScene("MainMenu");
+                    break;
                 case "black_screen":
                     fullblackScreen.SetActive(true);
                     break;
@@ -643,7 +657,6 @@ public class EndingInkDialogue : MonoBehaviour
                         }
                         break;
                     }
-
                 // 🟩 繼續播放音樂
                 case "keep_music":
                     {
@@ -657,12 +670,8 @@ public class EndingInkDialogue : MonoBehaviour
                         {
                             Debug.LogWarning("⚠️ 找不到 BGMManager，無法繼續音樂");
                         }
-                        break;
                     }
-                case "MainMenu":
-                    SceneManager.LoadScene(SceneName);
-                    break;
-
+                    break ;
                 case "Hospital":
                     player.position = Hospital.position;
                     break;
@@ -700,8 +709,96 @@ public class EndingInkDialogue : MonoBehaviour
 
                         break;
                     }
+
+                case "lift_player":
+                    {
+                        Debug.Log("🔺 觸發：角色被拉起");
+
+                        if (player_fake != null)
+                        {
+                            // 向上拉 2 單位
+                            player_fake.DOMoveY(player_fake.position.y + 1f, 0.8f)
+                                .SetEase(Ease.OutCubic);
+                        }
+                        break;
+                    }
+
+                case "push_enemy":
+                    {
+                        Debug.Log("💥 敵人被震退");
+
+                        if (monster != null)
+                        {
+                            monster.DOMove(monster.position + new Vector3(0, 1.0f, 0), 0.3f)
+                                   .SetEase(Ease.OutExpo);
+                        }
+                        break;
+                    }
+
+                case "flash_white":
+                    {
+                        Debug.Log("⚡ 觸發閃白特效");
+                        StartCoroutine(FlashWhiteEffect());
+                        break;
+                    }
+
+                case "enemy_disappear":
+                    var enemy = GameObject.FindWithTag("Boss");
+                    var sprite = enemy.GetComponent<SpriteRenderer>();
+                    sprite.DOFade(0f, 0.5f).OnComplete(() => enemy.SetActive(false));
+                    break;
+
+                
             }
         }
+
+    }
+
+    IEnumerator DisableAfterSeconds(GameObject obj, float sec)
+    {
+        yield return new WaitForSeconds(sec);
+        obj.SetActive(false);
+    }
+
+
+    private IEnumerator FlashWhiteEffect()
+    {
+        if (whiteScreenCanvasGroup == null)
+        {
+            Debug.LogWarning("⚠️ whiteScreenCanvasGroup 未指定");
+            yield break;
+        }
+
+        // 0.15 秒快速亮到全白
+        whiteScreenCanvasGroup.alpha = 0;
+        whiteScreenCanvasGroup.gameObject.SetActive(true);
+
+        float durationIn = 0.15f;
+        float timer = 0;
+
+        while (timer < durationIn)
+        {
+            timer += Time.deltaTime;
+            whiteScreenCanvasGroup.alpha = Mathf.Lerp(0, 1, timer / durationIn);
+            yield return null;
+        }
+
+        // 保持全白 0.05 秒
+        yield return new WaitForSeconds(0.05f);
+
+        // 0.3 秒淡回正常畫面
+        float durationOut = 0.3f;
+        timer = 0;
+
+        while (timer < durationOut)
+        {
+            timer += Time.deltaTime;
+            whiteScreenCanvasGroup.alpha = Mathf.Lerp(1, 0, timer / durationOut);
+            yield return null;
+        }
+
+        whiteScreenCanvasGroup.alpha = 0;
+        whiteScreenCanvasGroup.gameObject.SetActive(false);
     }
 
     private void TurnPlayerLeft()

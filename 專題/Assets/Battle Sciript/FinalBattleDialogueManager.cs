@@ -149,9 +149,9 @@ public class FinalBattleDialogueManager : MonoBehaviour
             {
                 if (hp_Battle != null)
                 {
-                    hp_Battle.hp -= 1;
+                    hp_Battle.Bhp -= 1;
                     hp_Battle.PlayDamageEffect();
-                    Debug.Log($"❌ 答錯！扣血 -> 當前血量：{hp_Battle.hp}");
+                    Debug.Log($"❌ 答錯！扣血 -> 當前血量：{hp_Battle.Bhp}");
                 }
             }
 
@@ -204,19 +204,43 @@ public class FinalBattleDialogueManager : MonoBehaviour
                 List<string> tags = story.currentTags ?? new List<string>();
                 if (tags.Contains("DONE"))
                 {
+                    // 🩸 戰鬥勝利 → HP +1
+                    var hp = FindObjectOfType<HP>();
+                    if (hp != null && hp.hp < 10) hp.hp += 1;
+                    Debug.Log($"🔥 最終 HP 數值 = {hp.hp}");
+
+                    // =====🔽 新增：依照 HP 分支跳結局場景 =====
+                    string targetScene = "";
+
+                    if (hp != null)
+                    {
+                        if (hp.hp == 10)
+                            targetScene = "TrueEnd";
+                        else if (hp.hp >= 4 && hp.hp <= 9)
+                            targetScene = "NormalEnd";
+                        else
+                            targetScene = "BadEnd"; // 預設（避免意外情況）
+                    }
+                    else
+                    {
+                        targetScene = nextSceneOnDone;
+                    }
+                    // =====🔼 結束：依照 HP 分支跳結局 =====
+
                     if (fightAnimator != null)
                     {
                         StartCoroutine(fightAnimator.PlayBattleOutro(() =>
                         {
-                            UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneOnDone);
+                            UnityEngine.SceneManagement.SceneManager.LoadScene(targetScene);
                         }));
                     }
                     else
                     {
-                        UnityEngine.SceneManagement.SceneManager.LoadScene(nextSceneOnDone);
+                        UnityEngine.SceneManagement.SceneManager.LoadScene(targetScene);
                     }
                     return;
                 }
+
             }
             EndDialogue();
         }

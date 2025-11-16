@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class FirstBookUI : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class FirstBookUI : MonoBehaviour
     public Button itemTabButton;
     public GameObject cluePage;  // 線索頁
     public GameObject itemPage;  // 道具頁
+
+    public Button BackMenuButton;
 
     [Header("線索資料庫與模板")]
     public ClueData clueData;
@@ -95,6 +98,8 @@ public class FirstBookUI : MonoBehaviour
         cluePrevPageButton?.onClick.AddListener(PrevClueListPage);
         itemNextPageButton?.onClick.AddListener(NextItemListPage);
         itemPrevPageButton?.onClick.AddListener(PrevItemListPage);
+
+        BackMenuButton?.onClick.AddListener(BackMenu);
 
         GenerateClueButtons();
         GenerateItemButtons(); // 🟦 新增
@@ -324,6 +329,10 @@ public class FirstBookUI : MonoBehaviour
         GenerateItemButtons();
     }
 
+    void BackMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
     void ShowItemDetail(ItemData.Item item)
     {
         if (item == null) return;

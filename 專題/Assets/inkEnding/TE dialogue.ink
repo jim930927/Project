@@ -10,9 +10,6 @@ EXTERNAL UnlockTalk()
 EXTERNAL canStartBattle()
 
 == CG ==
-~ speaker = " "
-#play_cg NEWS
-「......」
 ->start
 
 
@@ -30,6 +27,7 @@ EXTERNAL canStartBattle()
 ~ speaker = "“它”"
 「不要忘了，你的一切都是我賜予的，只要我高興，隨時都能收回。你以為憑你區區一個人類就能威脅我？」
 （此時，墨涅的身體被一股不明的力量拉起來）
+#lift_player
 ~ speaker = "我"
 「你想幹嘛？！」
 ~ speaker = "“它”"
@@ -37,11 +35,15 @@ EXTERNAL canStartBattle()
 ~ speaker = "我"
 「放...放開我......！」
 ~ speaker = ""
-（在墨涅即將被“它”吞噬的瞬間，他口袋裡的平安符再次綻放出耀眼的光，強光將“它”的力量驅散，同時喚醒了早已變成木偶的引路人）
+（在墨涅即將被“它”吞噬的瞬間，他口袋裡的平安符再次綻放出耀眼的光）
+#flash_white
+（強光將“它”的力量驅散，同時喚醒了早已變成木偶的引路人）
+#push_enemy
 ~ speaker = "“它”"
 「唔...」
 ~ speaker = "我"
 「這是......？」
+#awake
 ~ speaker = "引路人"
 「是平安符。」
 ~ speaker = "我"
@@ -56,8 +58,10 @@ EXTERNAL canStartBattle()
 「我來幫你。」
 ~ speaker = ""
 （引路人舉起手中的燈籠，燈籠的光芒在風中搖曳，照亮了整座山林，也將這終年照射不到陽光的地方逐漸染上光明）
+#flash_white
 （霧氣翻湧、退散，“它”的身影被撕裂成無數碎片，像被風吞沒的陰影般消散。）
-~ speaker = "回音"
+#enemy_disappear
+~ speaker = "“它”"
 「第366次…居然失敗了…」
 ~ speaker = "我"
 「它……消失了？結束了嗎？我……可以回家了？」
@@ -88,7 +92,8 @@ EXTERNAL canStartBattle()
 他也還是沒少被其他同學繼續酸言酸語，但他這次選擇不予理會
 每個人在這世界上都是獨一無二的，不需要為了迎合他人去改變自己
 也不需要因為別人說的兩三句話就否定自己，活出自己生命的價值才是最重要的。
-#school
+#School
+#back_screen
 ~ speaker = ""
 新的學期開始了，墨涅也進到了高二階段，他選擇讀文組，班上的同學們也換了一批
 相比於高一的班級，這次的班明顯思想比較開放，對他的意見跟反彈沒有之前的班嚴重。
@@ -131,6 +136,6 @@ EXTERNAL canStartBattle()
 ~ speaker = ""
 陰廟的傳說並沒有因此失傳，而是以不同的方式繼續流傳，誰也不知道“故事”究竟何時會終結......
 #black_screen
-#MainMeun
--> DONE
+# MainMeun
+->END
 

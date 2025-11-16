@@ -8160,7 +8160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 750cecfbd4674104e9fe5bc9b28c447e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 5
+  Bhp: 5
   hpImage: {fileID: 529481089}
   hpImageName: HPImage
   hp_5: {fileID: -458722458990276368, guid: bc2ed4621934aa446ad9d2b72477715f, type: 3}

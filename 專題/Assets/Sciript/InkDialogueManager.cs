@@ -9,7 +9,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static ClueData;
-using static UnityEditor.Experimental.GraphView.GraphView;
 using static UnityEngine.EventSystems.EventTrigger;
 
 public class InkDialogueManager : MonoBehaviour
@@ -1301,7 +1300,9 @@ public class InkDialogueManager : MonoBehaviour
                         FightEnemy.gameObject.SetActive(true);
                     }
                     break;
-
+                case "SpawnGuideNPC":
+                    AiNpc.SetActive(true); 
+                    break;
                 case "lay_down":
                     FadePlayer();
                     PlayerLaySprite.SetActive(true);

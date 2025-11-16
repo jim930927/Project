@@ -4922,10 +4922,10 @@ RectTransform:
   - {fileID: 2075224151}
   - {fileID: 979422387}
   - {fileID: 1500476085}
-  - {fileID: 2009884633}
   - {fileID: 1448755079}
-  - {fileID: 1545530708}
+  - {fileID: 2009884633}
   - {fileID: 270135986}
+  - {fileID: 1545530708}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -14576,10 +14576,13 @@ MonoBehaviour:
   blackScreenCanvasGroup: {fileID: 1496493888}
   justLoaded: 0
   player: {fileID: 0}
+  player_fake: {fileID: 0}
   Hospital: {fileID: 0}
   School: {fileID: 0}
   Home: {fileID: 0}
   BackMountain: {fileID: 0}
+  monster: {fileID: 0}
+  talismanFX: {fileID: 0}
   classmate: {fileID: 0}
   mainPortraitImage: {fileID: 994677303}
   guidePortraitImage: {fileID: 1253318740}
@@ -14590,6 +14593,7 @@ MonoBehaviour:
   spriteRenderer1: {fileID: 0}
   spriteRenderer2: {fileID: 0}
   Him: {fileID: 0}
+  whiteScreenCanvasGroup: {fileID: 0}
   portraits:
   - speakerName: "\u6211"
     sprite: {fileID: -1067545317484713298, guid: 6e9546b4ee3dab142831f085b8214b8a, type: 3}
