@@ -911,7 +911,7 @@ public class InkDialogueManager : MonoBehaviour
             object unlockObj = null;
             try
             {
-                unlockObj = story.variablesState["Unlock_door"];
+                unlockObj = story.variablesState["Unlockdoor"];
             }
             catch
             {

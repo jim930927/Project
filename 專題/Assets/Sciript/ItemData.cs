@@ -22,7 +22,6 @@ public class ItemData : ScriptableObject
         public bool collected;
 
         public float collectedTime = 0f;
-
     }
 
     public List<Item> items = new List<Item>();
@@ -30,25 +29,59 @@ public class ItemData : ScriptableObject
     public delegate void ItemAddedHandler(Item item);
     public event ItemAddedHandler OnItemAdded;
 
+    // ============================
+    // 🔍 是否已經擁有某個道具？
+    // ============================
     public bool HasItem(string id)
     {
+        if (string.IsNullOrEmpty(id))
+            return false;
+
         Item item = items.Find(i => i.id == id);
-        return item != null && item.collected;
+
+        // 道具不存在（尚未被初始化加入資料庫）
+        if (item == null)
+            return false;
+
+        return item.collected;
     }
 
+    // ============================
+    // ➕ 新增道具（撿到場景物品）
+    // ============================
     public void AddItem(string id, string name = null)
     {
+        if (string.IsNullOrEmpty(id))
+        {
+            Debug.LogWarning("❌ AddItem 被呼叫但 id 為空！");
+            return;
+        }
+
         Item item = items.Find(i => i.id == id);
+
         if (item != null)
         {
+            // 已存在，直接標記已取得
             item.collected = true;
             item.collectedTime = Time.time;
+
             if (!string.IsNullOrEmpty(name))
                 item.name = name;
         }
         else
         {
-            item = new Item { id = id, name = name ?? id, collected = true };
+            // 若資料庫沒有該道具 → 新增一筆
+            item = new Item
+            {
+                id = id,
+                name = string.IsNullOrEmpty(name) ? id : name,
+                collected = true,
+                collectedTime = Time.time,
+                detail = "",
+                fullContent = "",
+                pages = new List<string>()
+            };
+
             items.Add(item);
         }
 
@@ -56,26 +89,44 @@ public class ItemData : ScriptableObject
         OnItemAdded?.Invoke(item);
     }
 
-    // 新增：移除 / 消耗道具（例如使用鑰匙後讓它消失）
+    // ============================
+    // ➖ 移除 / 消耗道具
+    // ============================
     public void RemoveItem(string id)
     {
-        Debug.Log($"正在嘗試移除 {id}，是否存在？" + HasItem(id));
+        if (string.IsNullOrEmpty(id))
+        {
+            Debug.LogWarning("❌ RemoveItem 被呼叫但 id 為空！");
+            return;
+        }
 
         Item item = items.Find(i => i.id == id);
+        Debug.Log($"🔍 正在嘗試移除 {id} ，擁有狀態 = {(item != null && item.collected)}");
+
         if (item != null && item.collected)
         {
             item.collected = false;
-            Debug.Log($"🗑️ 道具已被移除：{item.name} ({id})");
-            // 若需要，可以在這裡擴充 OnItemRemoved 事件
+            item.collectedTime = 0f;
+
+            Debug.Log($"🗑️ 道具已移除：{item.name} ({id})");
         }
     }
 
+    // ============================
+    // 🔄 重置所有道具
+    // ============================
     public void ResetAll()
     {
         foreach (var i in items)
+        {
             i.collected = false;
+            i.collectedTime = 0f;
+        }
     }
 
+    // ============================
+    // 📝 修改內容
+    // ============================
     public void SetItemFullContent(string id, string newContent)
     {
         Item item = items.Find(i => i.id == id);
@@ -96,6 +147,9 @@ public class ItemData : ScriptableObject
         }
     }
 
+    // ============================
+    // ✔ 是否所有道具都已取得？
+    // ============================
     public bool AllItemsCollected()
     {
         if (items == null || items.Count == 0)
@@ -106,7 +160,6 @@ public class ItemData : ScriptableObject
             if (!i.collected)
                 return false;
         }
-
         return true;
     }
 }

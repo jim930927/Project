@@ -44,12 +44,12 @@ public class SaveUIManager : MonoBehaviour
     {
         SaveData data = new SaveData();
 
-        // 儲存 Ink 劇情狀態
+        // === 劇情 ===
         data.storyState = currentStoryJson;
         data.sceneName = SceneManager.GetActiveScene().name;
         data.saveTime = DateTime.Now.ToString("yyyy/MM/dd HH:mm");
 
-        // 🔹 儲存玩家位置
+        // === 玩家位置 ===
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
         {
@@ -59,12 +59,12 @@ public class SaveUIManager : MonoBehaviour
             data.playerZ = pos.z;
         }
 
-        // 🔹 儲存 HP
+        // === 玩家 HP ===
         HP hpRef = FindObjectOfType<HP>();
         if (hpRef != null)
             data.playerHp = hpRef.hp;
 
-        // 🔹 儲存場景物件狀態（舉例）
+        // === 場景物件狀態 ===
         var bed = FindObjectOfType<BedController>();
         if (bed != null) data.bedState = bed.GetCurrentState();
 
@@ -74,124 +74,98 @@ public class SaveUIManager : MonoBehaviour
         var chest = FindObjectOfType<ChestController>();
         if (chest != null)
         {
-            data.chestOpened = chest.isUnlocked;           // 舊欄位保留相容
-            data.chestState = chest.GetCurrentState();     // ✅ 新增
+            data.chestOpened = chest.isUnlocked;
+            data.chestState = chest.GetCurrentState();
         }
 
         var safe = FindObjectOfType<SafeController>();
-        if (safe != null) data.safeOpened = safe.isUnlocked;
+        if (safe != null)
+            data.safeOpened = safe.isUnlocked;
 
-        // === 儲存可撿道具（場景實體，用 uniqueID）===
+        // === 儲存「場景實體的道具」 ===
         data.collectedItems.Clear();
         foreach (var pickup in Resources.FindObjectsOfTypeAll<ItemPickup>())
         {
-            if (pickup == null) continue;
-            if (!pickup.gameObject.scene.IsValid()) continue; // 排除預製件
+            if (pickup == null || !pickup.gameObject.scene.IsValid()) continue;
             if (pickup.collected)
             {
                 var id = pickup.GetComponent<SaveableEntity>();
-                if (id != null)
-                    data.collectedItems.Add(id.uniqueID);
+                if (id != null) data.collectedItems.Add(id.uniqueID);
             }
         }
 
-        // === 儲存線索（場景實體，用 uniqueID）===
+        // === 儲存「場景實體的線索」 ===
         data.collectedClues.Clear();
         foreach (var pickup in Resources.FindObjectsOfTypeAll<CluePickup>())
         {
-            if (pickup == null) continue;
-            if (!pickup.gameObject.scene.IsValid()) continue; // 排除預製件
+            if (pickup == null || !pickup.gameObject.scene.IsValid()) continue;
             if (pickup.collected)
             {
                 var id = pickup.GetComponent<SaveableEntity>();
-                if (id != null)
-                    data.collectedClues.Add(id.uniqueID);
+                if (id != null) data.collectedClues.Add(id.uniqueID);
             }
         }
 
-        // ⭐⭐ 新增：把「資料庫裡已收集的線索 / 道具」也記錄起來 ⭐⭐
-
-        // --- ClueData ---
+        // === ⭐ ScriptableObject：儲存資料庫的 Collected 狀態（永不復活）⭐⭐
         data.databaseCollectedClueIds.Clear();
-        var anyCluePickup = Resources.FindObjectsOfTypeAll<CluePickup>()
-                                     .FirstOrDefault(p => p != null && p.clueData != null);
-        if (anyCluePickup != null)
+        var anyClue = Resources.FindObjectsOfTypeAll<CluePickup>().FirstOrDefault(p => p?.clueData != null);
+        if (anyClue != null)
         {
-            ClueData clueDB = anyCluePickup.clueData;
-            foreach (var clue in clueDB.clues)
-            {
-                if (clue.collected)
-                    data.databaseCollectedClueIds.Add(clue.id);
-            }
+            foreach (var c in anyClue.clueData.clues)
+                if (c.collected) data.databaseCollectedClueIds.Add(c.id);
         }
 
-        // --- ItemData ---
         data.databaseCollectedItemIds.Clear();
-        var anyItemPickup = Resources.FindObjectsOfTypeAll<ItemPickup>()
-                                     .FirstOrDefault(p => p != null && p.itemData != null);
-        if (anyItemPickup != null)
+        var anyItem = Resources.FindObjectsOfTypeAll<ItemPickup>().FirstOrDefault(p => p?.itemData != null);
+        if (anyItem != null)
         {
-            ItemData itemDB = anyItemPickup.itemData;
-            foreach (var item in itemDB.items)
-            {
-                if (item.collected)
-                    data.databaseCollectedItemIds.Add(item.id);
-            }
+            foreach (var i in anyItem.itemData.items)
+                if (i.collected) data.databaseCollectedItemIds.Add(i.id);
         }
 
         // === 儲存互動物件 ===
         data.finishedInteractions.Clear();
         foreach (var inter in FindObjectsOfType<SceneInteractable>())
         {
-            if (inter == null) continue;
-            if (!inter.gameObject.scene.IsValid()) continue; // 排除預製件
-            if (inter.canInteract)
+            if (inter == null || !inter.gameObject.scene.IsValid()) continue;
+            if (!inter.canInteract)
             {
                 var id = inter.GetComponent<SaveableEntity>();
-                if (id != null)
-                    data.finishedInteractions.Add(id.uniqueID);
+                if (id != null) data.finishedInteractions.Add(id.uniqueID);
             }
         }
 
-        // === 儲存生成的箱子 ===
+        // === 儲存箱子（SpawnedObject）===
         data.spawnedObjects.Clear();
-        foreach (var interactables in FindObjectsOfType<SceneInteractable>())
+        foreach (var so in FindObjectsOfType<SaveableEntity>())
         {
-            if (interactables == null) continue;
-            foreach (var so in FindObjectsOfType<SaveableEntity>())
-            {
-                if (so.CompareTag("SpawnedObject"))
-                    data.spawnedObjects.Add(so.uniqueID);
-            }
+            if (so.CompareTag("SpawnedObject"))
+                data.spawnedObjects.Add(so.uniqueID);
         }
 
         // === 儲存 NPC ===
         data.spawnedNPCs.Clear();
-        foreach (var npc in FindObjectsOfType<SaveableEntity>())
+        foreach (var so in FindObjectsOfType<SaveableEntity>())
         {
-            if (npc.CompareTag("NPC"))
-                data.spawnedNPCs.Add(npc.uniqueID);
+            if (so.CompareTag("NPC"))
+                data.spawnedNPCs.Add(so.uniqueID);
         }
 
-        // === 儲存敵人狀態 ===
+        // === 儲存敵人 ===
         if (EnemyStateManager.Instance != null)
-        {
             data.enemyStatesJson = EnemyStateManager.Instance.ToJson();
-            Debug.Log($"🧠 已儲存敵人狀態：{data.enemyStatesJson.Length} 字元");
-        }
 
-        Debug.Log($"💾 Save Completed: 道具 {data.collectedItems.Count}、線索 {data.collectedClues.Count}、互動 {data.finishedInteractions.Count}、箱子 {data.spawnedObjects.Count}、NPC {data.spawnedNPCs.Count}");
+        // === ⭐⭐ 儲存永久解鎖的門 ⭐⭐
+        if (DoorManager.Instance != null)
+            data.unlockedDoors = DoorManager.Instance.GetUnlockedDoorList();
 
+        // ===== 寫入檔案 =====
         string path = Application.persistentDataPath + $"/save_{slotIndex}.json";
         File.WriteAllText(path, JsonUtility.ToJson(data, true));
 
-        Debug.Log($"💾 已存入存檔槽 {slotIndex + 1}");
-        Debug.Log("存檔位置：" + Application.persistentDataPath);
-
+        Debug.Log("💾 已存檔：" + path);
         UpdateSlotInfo(slotIndex);
         saveMenu.SetActive(false);
-
-        Debug.Log("✅ Save Completed. Items:" + data.collectedItems.Count + " Interacts:" + data.finishedInteractions.Count + " Clues:" + data.collectedClues.Count);
     }
 
     public void UpdateSlotInfo(int slotIndex)
@@ -217,7 +191,6 @@ public class SaveData
     public string storyState;
     public string sceneName;
     public string saveTime;
-    public string chestState; // ✅ 新增
 
     // 位置
     public float playerX;
@@ -230,17 +203,24 @@ public class SaveData
     public string bedState;
     public string toiletState;
     public bool chestOpened;
+    public string chestState;
     public bool safeOpened;
-    public string enemyStatesJson; // 敵人狀態 JSON
 
-    // 場景內實體物件的 uniqueID
+    public string enemyStatesJson;
+
+    // 場景內實體 uniqueID 清單
     public List<string> collectedItems = new List<string>();
     public List<string> collectedClues = new List<string>();
     public List<string> finishedInteractions = new List<string>();
-    public List<string> spawnedObjects = new List<string>();
-    public List<string> spawnedNPCs = new List<string>();
 
-    // ⭐⭐ 新增：ScriptableObject 資料庫裡「哪些條目已 collected」 ⭐⭐
+    // 生成物件
+    public List<string> spawnedObjects = new List<string>(); // chest
+    public List<string> spawnedNPCs = new List<string>();    // NPC
+
+    // ScriptableObject：資料庫中的「已收集 id」
     public List<string> databaseCollectedClueIds = new List<string>();
     public List<string> databaseCollectedItemIds = new List<string>();
+
+    // ⭐ 新增：永久解鎖的門（uniqueID）
+    public List<string> unlockedDoors = new List<string>();
 }

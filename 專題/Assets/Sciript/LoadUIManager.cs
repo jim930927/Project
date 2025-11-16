@@ -60,33 +60,33 @@ public class LoadUIManager : MonoBehaviour
         string json = File.ReadAllText(path);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-        // 🔹 將資料暫存起來
+        // 暫存存檔資料
         pendingLoadData = data;
 
         InkDialogueManager.shouldAutoStartInk = false;
 
-        // 🩹 修正：避免 EventSystem 重複
+        // 避免 EventSystem 重複
         var evt = UnityEngine.EventSystems.EventSystem.current;
         if (evt != null)
         {
             GameObject.Destroy(evt.gameObject);
-            Debug.Log("🧹 已刪除舊 EventSystem，避免 UI 鎖死");
         }
 
         SceneManager.LoadScene(data.sceneName);
     }
 
-    // ✅ 在新場景中由 InkDialogueManager 呼叫
+    // === 在新場景中由 InkDialogueManager 呼叫 ===
     public static IEnumerator ApplyPendingLoadData()
     {
         if (pendingLoadData == null)
             yield break;
 
-        yield return new WaitForSeconds(0.1f); // 確保新場景物件初始化完畢
+        yield return new WaitForSeconds(0.1f);
 
         SaveData data = pendingLoadData;
-        pendingLoadData = null; // 清除暫存
+        pendingLoadData = null;
 
+        // === Ink ===
         InkDialogueManager inkManager = GameObject.FindObjectOfType<InkDialogueManager>();
         if (inkManager == null)
         {
@@ -96,7 +96,7 @@ public class LoadUIManager : MonoBehaviour
 
         inkManager.ReloadInkState(data.storyState);
 
-        // 恢復玩家位置
+        // === 恢復玩家位置 ===
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
         {
@@ -105,12 +105,12 @@ public class LoadUIManager : MonoBehaviour
             if (pm != null) pm.canMove = true;
         }
 
-        // 恢復 HP
+        // === 恢復 HP ===
         HP hpRef = GameObject.FindObjectOfType<HP>();
         if (hpRef != null)
             hpRef.hp = data.playerHp;
 
-        // 恢復場景物件狀態
+        // === 恢復場景物件 ===
         var bed = GameObject.FindObjectOfType<BedController>();
         if (bed != null && !string.IsNullOrEmpty(data.bedState))
             bed.ChangeImage(data.bedState);
@@ -119,20 +119,17 @@ public class LoadUIManager : MonoBehaviour
         if (toilet != null && !string.IsNullOrEmpty(data.toiletState))
             toilet.ChangeImage(data.toiletState);
 
-        // 🔐 Chest 狀態
+        // === 恢復箱子狀態 ===
         if (!string.IsNullOrEmpty(data.chestState))
-        {
             ChestController.pendingOverrideState = data.chestState;
-        }
         else
-        {
             ChestController.pendingOverrideState = data.chestOpened ? "Open" : "Closed";
-        }
 
         var safe = GameObject.FindObjectOfType<SafeController>();
-        if (safe != null) safe.isUnlocked = data.safeOpened;
+        if (safe != null)
+            safe.isUnlocked = data.safeOpened;
 
-        // ⭐⭐ 還原 ClueData / ItemData collected 狀態 ⭐⭐
+        // === 還原 ScriptableObject：線索、道具 ===
         ClueData clueDB = null;
         ItemData itemDB = null;
 
@@ -144,17 +141,17 @@ public class LoadUIManager : MonoBehaviour
 
         if (clueDB != null)
         {
-            foreach (var clue in clueDB.clues)
-                clue.collected = data.databaseCollectedClueIds.Contains(clue.id);
+            foreach (var c in clueDB.clues)
+                c.collected = data.databaseCollectedClueIds.Contains(c.id);
         }
 
         if (itemDB != null)
         {
-            foreach (var item in itemDB.items)
-                item.collected = data.databaseCollectedItemIds.Contains(item.id);
+            foreach (var i in itemDB.items)
+                i.collected = data.databaseCollectedItemIds.Contains(i.id);
         }
 
-        // 🛠 UI 系統修復
+        // === UI 修復 ===
         var evt = UnityEngine.EventSystems.EventSystem.current;
         if (evt == null)
         {
@@ -167,33 +164,33 @@ public class LoadUIManager : MonoBehaviour
         foreach (var canvas in GameObject.FindObjectsOfType<Canvas>())
         {
             canvas.overrideSorting = true;
-            var ray = canvas.GetComponent<UnityEngine.UI.GraphicRaycaster>();
-            if (ray == null) canvas.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+            if (canvas.GetComponent<UnityEngine.UI.GraphicRaycaster>() == null)
+                canvas.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
         }
 
-        // === 道具 ===
+        // === 移除已撿到的「場景實體道具」 ===
         foreach (var item in GameObject.FindObjectsOfType<ItemPickup>())
         {
             var id = item.GetComponent<SaveableEntity>();
             if (id != null && data.collectedItems.Contains(id.uniqueID))
             {
-                item.collected = true;        // 🔥 必須還原
+                item.collected = true;
                 item.gameObject.SetActive(false);
             }
         }
 
-        // === 線索 ===
+        // === 移除已撿到的「場景實體線索」 ===
         foreach (var clue in GameObject.FindObjectsOfType<CluePickup>())
         {
             var id = clue.GetComponent<SaveableEntity>();
             if (id != null && data.collectedClues.Contains(id.uniqueID))
             {
-                clue.collected = true;         // 🔥 必須還原
+                clue.collected = true;
                 clue.gameObject.SetActive(false);
             }
         }
 
-        // === 互動物件 ===
+        // === 還原互動物件 ===
         foreach (var inter in GameObject.FindObjectsOfType<SceneInteractable>())
         {
             var id = inter.GetComponent<SaveableEntity>();
@@ -204,11 +201,17 @@ public class LoadUIManager : MonoBehaviour
         // === 生成箱子 ===
         foreach (string id in data.spawnedObjects)
         {
-            bool found = false;
+            bool exists = false;
             foreach (var so in GameObject.FindObjectsOfType<SaveableEntity>())
-                if (so.uniqueID == id) found = true;
+            {
+                if (so.uniqueID == id)
+                {
+                    exists = true;
+                    break;
+                }
+            }
 
-            if (!found)
+            if (!exists)
             {
                 var beds = GameObject.FindObjectOfType<BedController>();
                 if (beds != null) beds.SpawnObject("chest");
@@ -218,11 +221,17 @@ public class LoadUIManager : MonoBehaviour
         // === 生成 NPC ===
         foreach (string id in data.spawnedNPCs)
         {
-            bool found = false;
-            foreach (var npc in GameObject.FindObjectsOfType<SaveableEntity>())
-                if (npc.uniqueID == id) found = true;
+            bool exists = false;
+            foreach (var so in GameObject.FindObjectsOfType<SaveableEntity>())
+            {
+                if (so.uniqueID == id)
+                {
+                    exists = true;
+                    break;
+                }
+            }
 
-            if (!found)
+            if (!exists)
             {
                 var npcManager = GameObject.FindObjectOfType<NPCManager>();
                 if (npcManager != null) npcManager.SpawnNPC("Guard");
@@ -236,6 +245,15 @@ public class LoadUIManager : MonoBehaviour
                 EnemyStateManager.Instance.LoadFromJson(data.enemyStatesJson);
         }
 
-        Debug.Log("✅ 載入資料全部還原完成");
+        // ⭐⭐⭐ === 還原「永久解鎖的門」=== ⭐⭐⭐
+        if (DoorManager.Instance != null && data.unlockedDoors != null)
+        {
+            foreach (string doorID in data.unlockedDoors)
+            {
+                DoorManager.Instance.UnlockDoor(doorID);
+            }
+        }
+
+        Debug.Log("✅ 載入資料全部還原完成（包含永久解鎖的門）");
     }
 }
