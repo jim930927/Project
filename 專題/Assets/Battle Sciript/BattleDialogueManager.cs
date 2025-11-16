@@ -144,6 +144,7 @@ public class BattleDialogueManager : MonoBehaviour
                         PlayMusic(musicName);
                     }
                 }
+
             }
 
             string speakerName = "";
@@ -220,7 +221,6 @@ public class BattleDialogueManager : MonoBehaviour
             StartCoroutine(fightAnimator.DropQuestions(choices.Count));
             questionsDropped = true;
         }
-
         for (int i = 0; i < choiceButtons.Length; i++)
         {
             if (i < choices.Count)

@@ -75,6 +75,9 @@ TagManager:
   - name: Boss
     uniqueID: 3869164149
     locked: 0
+  - name: Clues
+    uniqueID: 2048946833
+    locked: 0
   - name: Player
     uniqueID: 3967421025
     locked: 0

@@ -408,6 +408,12 @@ VAR hp = ""
 ......
 -> q7
 
+== FAILED
+~ speaker = "鬱的化身"
+「乖...你還是繼續乖乖遵守規則當乖孩子就好，不要再想著反抗了......」
+#play_cg FailedCG
+->END
+
 
 === ending ===
 ~ speaker = "我"

@@ -267,6 +267,47 @@ public class FinalInkDialogue : MonoBehaviour
             inkJSON = newInkJSON;
             story = new Story(inkJSON.text);
 
+            var hp = FindObjectOfType<HP>();
+
+            if (hp != null)
+            {
+                // Ink 呼叫：~ HP_Add(n)
+                story.BindExternalFunction("HP_Add", (int amount) =>
+                {
+                    hp.hp += amount;
+                    if (hp.hp < 0) hp.hp = 0; // 無上限，只保底 0
+                    Debug.Log($"❤️ HP 現在為：{hp.hp}");
+                });
+
+                // Ink 呼叫：~ HP_Set(n)
+                story.BindExternalFunction("HP_Set", (int value) =>
+                {
+                    hp.hp = value < 0 ? 0 : value;
+                    Debug.Log($"❤️ HP 設定為：{hp.hp}");
+                });
+
+                // Ink 呼叫：VAR cur = HP_Get()
+                story.BindExternalFunction("HP_Get", () =>
+                {
+                    return hp.hp;
+                });
+
+                Debug.Log("🩸 Ink 血量外部函式已綁定完成");
+            }
+            else
+            {
+                Debug.LogWarning("⚠️ 找不到 HP 物件，血量控制未綁定");
+            }
+
+            BindExternalBookFunctions(); // 🔹 綁定 Ink 外部函式
+            story.ObserveVariable("hp", (string name, object value) =>
+            {
+                if (hpRef == null) hpRef = FindFirstObjectByType<HP>(); // 備援抓場上第一個 HP
+                if (hpRef == null) return;
+                hpRef.hp = Mathf.Max(0, System.Convert.ToInt32(value)); // 無上限，保底 0
+            });
+
+
             story.BindExternalFunction("SaveGame", () => {
                 saveUI.OpenSaveMenu(story.state.ToJson());
             });
@@ -294,8 +335,6 @@ public class FinalInkDialogue : MonoBehaviour
                 }
             }
 
-
-            // ✅ 解鎖門
             story.BindExternalFunction("UnlockDoor", (string doorID) =>
             {
                 if (!string.IsNullOrEmpty(doorID))
@@ -305,30 +344,38 @@ public class FinalInkDialogue : MonoBehaviour
                 }
             });
 
-          
+            story.BindExternalFunction("OpenChestUI", () =>
+            {
+                var chest = GameObject.FindObjectOfType<FinalChestController>();
+                if (chest != null)
+                {
+                    chest.Interact();
+                }
+            });
 
-
-            // ✅ 讓 Ink 能檢查目前持有的物品
             story.BindExternalFunction(
                 "GetHeldItem", () =>
-            {
-            });
+                {
+                    if (itemDatabase != null && itemDatabase.HasItem("recorder"))
+                        return "recorder";
+                    return "";
+                });
 
             // 讓 Ink 設定門已開
             story.BindExternalFunction("SetDoorUnlocked", () => {
                 doorUnlocked = true;
             });
 
-            BindExternalBookFunctions(); // 🔹 綁定 Ink 外部函式
-            story.ObserveVariable("hp", (string name, object value) =>
-            {
-                if (hpRef == null) hpRef = FindFirstObjectByType<HP>(); // 備援抓場上第一個 HP
-                if (hpRef == null) return;
-                hpRef.hp = Mathf.Max(0, System.Convert.ToInt32(value)); // 無上限，保底 0
-            });
+           
 
             if (itemDatabase != null)
             {
+                string have = "";
+                if (itemDatabase.HasItem("recorder"))
+                    have = "recorder";
+
+                story.variablesState["have_items"] = have;
+                Debug.Log($"🧩 已同步 have_items：{have}");
             }
 
             // === ② 初次同步一次（避免剛進入時 Inspector 沒顯示）===
@@ -472,6 +519,30 @@ public class FinalInkDialogue : MonoBehaviour
             Debug.Log($"🔄 道具已替換：{oldItemID} → {newClueID}");
         });
 
+        story.BindExternalFunction("Use_Item", (string itemID) =>
+        {
+            Debug.Log($"🧭 Ink 呼叫 Use_Item：{itemID}");
+
+            if (itemDatabase == null)
+            {
+                Debug.LogWarning("⚠️ Use_Item: 缺少 itemDatabase 參考");
+                return;
+            }
+
+            var item = itemDatabase.items.Find(i => i.id == itemID);
+            if (item != null)
+            {
+                item.collected = false;
+                Debug.Log($"🪞 道具 {itemID} 已標記為未收集（使用掉）");
+            }
+            else
+            {
+                Debug.LogWarning($"⚠️ 找不到道具：{itemID}");
+            }
+
+        });
+
+
         if (story == null) return;
 
         var bookUI = FindObjectOfType<BookUIManager>();
@@ -481,37 +552,7 @@ public class FinalInkDialogue : MonoBehaviour
             return;
         }
 
-        var hp = FindObjectOfType<HP>();
-
-        if (hp != null)
-        {
-            // Ink 呼叫：~ HP_Add(n)
-            story.BindExternalFunction("HP_Add", (int amount) =>
-            {
-                hp.hp += amount;
-                if (hp.hp < 0) hp.hp = 0; // 無上限，只保底 0
-                Debug.Log($"❤️ HP 現在為：{hp.hp}");
-            });
-
-            // Ink 呼叫：~ HP_Set(n)
-            story.BindExternalFunction("HP_Set", (int value) =>
-            {
-                hp.hp = value < 0 ? 0 : value;
-                Debug.Log($"❤️ HP 設定為：{hp.hp}");
-            });
-
-            // Ink 呼叫：VAR cur = HP_Get()
-            story.BindExternalFunction("HP_Get", () =>
-            {
-                return hp.hp;
-            });
-
-            Debug.Log("🩸 Ink 血量外部函式已綁定完成");
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ 找不到 HP 物件，血量控制未綁定");
-        }
+       
     }
 
     public void BindAllExternalFunctions()
@@ -549,6 +590,7 @@ public class FinalInkDialogue : MonoBehaviour
             }
         }
 
+
         // === Ink 外部函式綁定 ===
 
         SafeBind("SaveGame", () => {
@@ -565,7 +607,12 @@ public class FinalInkDialogue : MonoBehaviour
             }
         });
 
-       
+        SafeBind("OpenChestUI", () =>
+        {
+            var chest = GameObject.FindObjectOfType<FinalChestController>();
+            if (chest != null)
+                chest.Interact();
+        });
 
 
         // === 重新綁定書籍、物品、血量函式 ===
@@ -884,7 +931,7 @@ public class FinalInkDialogue : MonoBehaviour
         }
     }
 
-    bool AllCluesCollected()
+    public bool AllCluesCollected()
     {
         var clueData = FindObjectOfType<ClueData>();
         if (clueData == null)
@@ -908,6 +955,7 @@ public class FinalInkDialogue : MonoBehaviour
         Debug.Log("✅ 全部線索已收集！");
         return true;
     }
+
     private IEnumerator PlayCGThenContinue(string cgName = "DefaultCG")
     {
         dialoguePanel.SetActive(false);
@@ -1088,6 +1136,35 @@ public class FinalInkDialogue : MonoBehaviour
                         }
                         break;
                     }
+                case "detection":
+                    {
+                        Debug.Log("🧩 Ink 標籤：#detection → 進行血量檢測");
+
+                        // 找到 HP 物件
+                        HP hpSystem = FindObjectOfType<HP>();
+                        if (hpSystem != null)
+                        {
+                            int curHP = hpSystem.hp;
+                            Debug.Log($"🩸 目前 HP = {curHP}");
+
+                            if (curHP <= 3)
+                            {
+                                Debug.Log("⚠️ HP 過低，進入壞結局");
+                                JumpToKnot("bad_end"); // ← 改成你壞結局的節點名
+                            }
+                            else
+                            {
+                                Debug.Log("✅ HP 足夠，前往下一段劇情");
+                                JumpToKnot("your_choice"); // ← 改成你要的後續節點名
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogWarning("⚠️ 找不到 HP 物件，無法進行檢測");
+                        }
+                        break;
+                    }
+
             }
             // ====== GameOver 支援 ======
             if (tag.StartsWith("GameOver"))
@@ -1158,39 +1235,6 @@ public class FinalInkDialogue : MonoBehaviour
         Debug.Log("✅ Ink 劇情已完全恢復（等待玩家互動觸發對話）");
     }
 
-
-    void DestroyAllNPCs()
-    {
-        foreach (var npc in GameObject.FindGameObjectsWithTag("NPC"))
-        {
-            Destroy(npc);
-        }
-    }
-
-    void DestroyAllEnemyNPCs()
-    {
-        foreach (var npcE in GameObject.FindGameObjectsWithTag("EnemyNPC"))
-        {
-            Destroy(npcE);
-        }
-    }
-
-    void DestroyAllGuideNPCs()
-    {
-        foreach (var npcG in GameObject.FindGameObjectsWithTag("GuideNPC"))
-        {
-            Destroy(npcG);
-        }
-    }
-
-    void DestroyAllStoryNPCs()
-    {
-        foreach (var npcS in GameObject.FindGameObjectsWithTag("StoryNPC"))
-        {
-            Destroy(npcS);
-        }
-    }
-
     // -----------------------------
     // 黑幕淡入淡出控制
     // -----------------------------
@@ -1220,69 +1264,6 @@ public class FinalInkDialogue : MonoBehaviour
         {
             Debug.LogWarning("⚠️ 找不到 BGMManager，無法播放音樂：" + musicName);
         }
-    }
-
-    private void FadePlayer()
-    {
-        var player = GameObject.FindWithTag("Player");
-        if (player != null)
-        {
-            // 你可以選擇用 Destroy、SetActive(false)，或播放動畫
-            // 以下範例用淡出動畫（若你有 DOTween）
-            var sprite = player.GetComponent<SpriteRenderer>();
-            if (sprite != null)
-            {
-                sprite.DOFade(0f, 0.1f);
-            }
-            Debug.Log("🧩 玩家已消失");
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ 場景中找不到 tag 為 'Player' 的物件");
-        }
-    }
-    private void ShowPlayer()
-    {
-        var player = GameObject.FindWithTag("Player");
-        if (player != null)
-        {
-            // 你可以選擇用 Destroy、SetActive(false)，或播放動畫
-            // 以下範例用淡出動畫（若你有 DOTween）
-            var sprite = player.GetComponent<SpriteRenderer>();
-            if (sprite != null)
-            {
-                sprite.DOFade(1f, 0.1f);
-            }
-            Debug.Log("🧩 玩家已回復");
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ 場景中找不到 tag 為 'Player' 的物件");
-        }
-    }
-    private void HideEnemy()
-    {
-        var enemy = GameObject.FindWithTag("Enemy");
-        if (enemy != null)
-        {
-            // 你可以選擇用 Destroy、SetActive(false)，或播放動畫
-            // 以下範例用淡出動畫（若你有 DOTween）
-            var sprite = enemy.GetComponent<SpriteRenderer>();
-            if (sprite != null)
-            {
-                sprite.DOFade(0f, 0.5f).OnComplete(() => enemy.SetActive(false));
-            }
-            else
-            {
-                enemy.SetActive(false);
-            }
-            Debug.Log("🧩 敵人已消失");
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ 場景中找不到 tag 為 'Enemy' 的物件");
-        }
-
     }
     public void JumpToKnot(string knotName)
     {
@@ -1314,12 +1295,8 @@ public class FinalInkDialogue : MonoBehaviour
             if (itemDatabase != null)
             {
                 string have = "";
-                if (itemDatabase.HasItem("key_parent"))
-                    have = "key_parent";
-                else if (itemDatabase.HasItem("key_room"))
-                    have = "key_room";
-                else if (itemDatabase.HasItem("key_store"))
-                    have = "key_store";
+                if (itemDatabase.HasItem("recorder"))
+                    have = "recorder";
 
                 story.variablesState["have_items"] = have;
                 Debug.Log($"🧩 已同步 have_items：{have}");

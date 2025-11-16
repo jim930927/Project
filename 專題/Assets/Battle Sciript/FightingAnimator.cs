@@ -14,6 +14,8 @@ public class FightingAnimator : MonoBehaviour
     public RectTransform question1;
     public RectTransform question2;
     public RectTransform question3;
+    public RectTransform question4;
+    public RectTransform question5;
 
     [Header("引路人")]
     public CanvasGroup guideCharacter;
@@ -26,8 +28,8 @@ public class FightingAnimator : MonoBehaviour
 
     public Action OnIntroFinished;
 
-    private Vector2 q1StartPos, q2StartPos, q3StartPos;
-    private Vector2 q1DropPos, q2DropPos, q3DropPos;
+    private Vector2 q1StartPos, q2StartPos, q3StartPos , q4StartPos , q5StartPos;
+    private Vector2 q1DropPos, q2DropPos, q3DropPos ,q4DropPos, q5DropPos;
 
     void Start()
     {
@@ -35,11 +37,15 @@ public class FightingAnimator : MonoBehaviour
         q1StartPos = question1.anchoredPosition;
         q2StartPos = question2.anchoredPosition;
         q3StartPos = question3.anchoredPosition;
+        q4StartPos = question4.anchoredPosition;
+        q5StartPos = question5.anchoredPosition;
 
         // 設定掉落後的位置（可依實際UI調整）
-        q1DropPos = new Vector2(q1StartPos.x, 100f);
-        q2DropPos = new Vector2(q2StartPos.x, -50f);
-        q3DropPos = new Vector2(q3StartPos.x, 400f);
+        q1DropPos = new Vector2(q1StartPos.x, 80f);
+        q2DropPos = new Vector2(q2StartPos.x, -20f);
+        q3DropPos = new Vector2(q3StartPos.x, 280f);
+        q4DropPos = new Vector2(q4StartPos.x, 400f);
+        q5DropPos = new Vector2(q5StartPos.x, 320f);
 
         StartCoroutine(PlayBattleIntro());
     }
@@ -60,7 +66,7 @@ public class FightingAnimator : MonoBehaviour
     public IEnumerator DropQuestions(int count)
     {
         // 確保不超過 3 張
-        count = Mathf.Clamp(count, 1, 3);
+        count = Mathf.Clamp(count, 1, 5);
 
         if (count >= 1)
         {
@@ -75,7 +81,17 @@ public class FightingAnimator : MonoBehaviour
         if (count >= 3)
         {
             question3.DOAnchorPos(q3DropPos, questionDropDuration).SetEase(Ease.OutBounce);
-            yield return new WaitForSeconds(questionDropDuration + 0.3f);
+            yield return new WaitForSeconds(questionDropDelay);
+        }
+        if (count >= 4)
+        {
+            question4.DOAnchorPos(q4DropPos, questionDropDuration).SetEase(Ease.OutBounce);
+            yield return new WaitForSeconds(questionDropDelay);
+        }
+        if (count >= 5)
+        {
+            question5.DOAnchorPos(q5DropPos, questionDropDuration).SetEase(Ease.OutBounce);
+            yield return new WaitForSeconds(questionDropDelay);
         }
     }
 
@@ -96,5 +112,9 @@ public class FightingAnimator : MonoBehaviour
         question2.DOAnchorPos(q2StartPos, 0.6f).SetEase(Ease.InOutQuad);
         yield return new WaitForSeconds(0.1f);
         question3.DOAnchorPos(q3StartPos, 0.6f).SetEase(Ease.InOutQuad);
+        yield return new WaitForSeconds(0.1f);
+        question4.DOAnchorPos(q4StartPos, 0.6f).SetEase(Ease.InOutQuad);
+        yield return new WaitForSeconds(0.1f);
+        question5.DOAnchorPos(q5StartPos, 0.6f).SetEase(Ease.InOutQuad);
     }
 }
