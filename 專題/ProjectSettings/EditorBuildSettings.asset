@@ -29,5 +29,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scene/FinalBattle.unity
     guid: fa3a080c721e8d445a98abead86d379c
+  - enabled: 1
+    path: Assets/Scene/BadEnd.unity
+    guid: 4d4b0200fb2769b46b8ed4a607a837d9
+  - enabled: 1
+    path: Assets/Scene/NormalEnd.unity
+    guid: e8dbac5a233889c40affe3ddb7134360
+  - enabled: 1
+    path: Assets/Scene/TrueEnd.unity
+    guid: 14b664c8c1647fa4ebaa8cf8490488cb
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

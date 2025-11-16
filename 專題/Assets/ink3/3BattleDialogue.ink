@@ -4,6 +4,7 @@ VAR selected_clues = ""
 
 
 === start ===
+#play_music Final_fight
 ~ speaker = "“它”"
 「離開？天大的笑話，你認為你有勝算嗎？」
 「不要忘了，這一切都是由你開始的，只要你不來許願，也不會發生後來這麼多亂七八糟的事，對吧？」

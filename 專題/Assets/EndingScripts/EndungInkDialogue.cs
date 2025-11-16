@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static ClueData;
+using static FinalInkDialogue;
 using static UnityEditor.Experimental.GraphView.GraphView;
 using static UnityEngine.EventSystems.EventTrigger;
 
@@ -32,13 +33,30 @@ public class EndingInkDialogue : MonoBehaviour
     public Vector2 leftClosePos = new Vector2(0, 0);
     public Vector2 rightClosePos = new Vector2(0, 0);
     public float curtainCloseDuration = 1.2f;
-    public string battleSceneName = "BattleScene";
+    public string SceneName = "MainMenu";
     public GameObject fullblackScreen;
     public CanvasGroup blackScreenCanvasGroup; // 黑幕
 
     public bool justLoaded = false;  // ← 新增：判斷是否剛載入存檔
     private bool canAutoContinue = true; // ← 控制是否自動Continue
 
+    public Transform player;
+    public Transform Hospital;
+    public Transform School;
+    public Transform Home;
+    public Transform BackMountain;
+
+    public GameObject classmate;
+
+
+    [Header("角色立繪區域（Main / Guide / Him）")]
+    public Image mainPortraitImage;
+    public Image guidePortraitImage;
+    public Image himPortraitImage;
+
+    public Sprite mainDefaultPortrait;
+    public Sprite guideDefaultPortrait;
+    public Sprite himDefaultPortrait;
 
     public Story GetStory() => story;
     private bool curtainInitialized = false;
@@ -51,7 +69,9 @@ public class EndingInkDialogue : MonoBehaviour
     private bool isShowingChoices = false;
     private bool skipLocked = false;
 
-
+    public SpriteRenderer spriteRenderer1;
+    public SpriteRenderer spriteRenderer2;
+    public GameObject Him;
     public bool dialogueIsPlaying { get; private set; }
     public bool IsInCooldown => dialogueEndTimer > 0f;
 
@@ -214,6 +234,9 @@ public class EndingInkDialogue : MonoBehaviour
             canContinue = false;
             inputTimer = 0f;
             ContinueStory();
+
+            ShowPortraits();
+            ResetPortraits();
         }
     }
 
@@ -302,6 +325,7 @@ public class EndingInkDialogue : MonoBehaviour
                 Debug.LogWarning("⚠️ Ink 變數 'speaker' 不存在");
             }
             nameText.text = speakerName;
+            UpdatePortrait(speakerName);
 
             foreach (var tag in tags)
             {
@@ -315,6 +339,7 @@ public class EndingInkDialogue : MonoBehaviour
                         PlayMusic(musicName);
                     }
                 }
+
             }
 
 
@@ -355,6 +380,7 @@ public class EndingInkDialogue : MonoBehaviour
             dialogueIsPlaying = false;
             SetPlayerCanMove(true);
             dialogueEndTimer = dialogueEndCooldown;
+            HidePortraits();
 
             onDialogueComplete?.Invoke();
             onDialogueComplete = null;
@@ -371,8 +397,60 @@ public class EndingInkDialogue : MonoBehaviour
         yield return seq.WaitForCompletion();
 
         yield return new WaitForSeconds(0.3f);
-        SceneManager.LoadScene(battleSceneName);
+        SceneManager.LoadScene(SceneName);
     }
+
+
+    public void UpdatePortrait(string speakerName)
+    {
+        // 先重置
+        mainPortraitImage.sprite = mainDefaultPortrait;
+        guidePortraitImage.sprite = guideDefaultPortrait;
+        himPortraitImage.sprite = himDefaultPortrait;
+
+        foreach (var entry in portraits)
+        {
+            if (entry.speakerName == speakerName)
+            {
+                switch (entry.slot)
+                {
+                    case ENDPortraitSlot.Main:
+                        mainPortraitImage.sprite = entry.sprite;
+                        break;
+                    case ENDPortraitSlot.Guide:
+                        guidePortraitImage.sprite = entry.sprite;
+                        break;
+                    case ENDPortraitSlot.Him:
+                        himPortraitImage.sprite = entry.sprite;
+                        break;
+                }
+                return;
+            }
+        }
+    }
+
+    public void HidePortraits()
+    {
+        if (mainPortraitImage != null) mainPortraitImage.gameObject.SetActive(false);
+        if (guidePortraitImage != null) guidePortraitImage.gameObject.SetActive(false);
+        if (himPortraitImage != null) himPortraitImage.gameObject.SetActive(false);
+    }
+
+    public void ShowPortraits()
+    {
+        if (mainPortraitImage != null) mainPortraitImage.gameObject.SetActive(true);
+        if (guidePortraitImage != null) guidePortraitImage.gameObject.SetActive(true);
+        if (himPortraitImage != null) himPortraitImage.gameObject.SetActive(true);
+    }
+
+
+    public void ResetPortraits()
+    {
+        if (mainPortraitImage != null) mainPortraitImage.sprite = mainDefaultPortrait;
+        if (guidePortraitImage != null) guidePortraitImage.sprite = guideDefaultPortrait;
+        if (himPortraitImage != null) himPortraitImage.sprite = himDefaultPortrait;
+    }
+
 
 
     private IEnumerator ContinueAfterChoice()
@@ -581,11 +659,60 @@ public class EndingInkDialogue : MonoBehaviour
                         }
                         break;
                     }
+                case "MainMenu":
+                    SceneManager.LoadScene(SceneName);
+                    break;
 
+                case "Hospital":
+                    player.position = Hospital.position;
+                    break;
+                case "classmate":
+                    classmate.SetActive(true);
+                    break;
+                case "turnleft":
+                    {
+                        Debug.Log("📸 Exposure 觸發 → 換立繪（Main）");
+                        Sprite newSprite5 = Resources.Load<Sprite>("NPC/Turn_left");
+                        if (spriteRenderer1 != null)
+                            spriteRenderer1.sprite = newSprite5;
+                        else
+                            Debug.LogWarning("⚠ 找不到 Resources/NPC/exposure_pose.png");
+
+                        break;
+                    }
+                case "School":
+                    player.position = School.position;
+                    break;
+                case "BackMountain":
+                    player.position = BackMountain.position;
+                    break;
+                case "Home":
+                    player.position = Home.position;
+                    break;
+                case "awake":
+                    {
+                        Debug.Log("📸 Exposure 觸發 → 換立繪（Main）");
+                        Sprite newSprite4 = Resources.Load<Sprite>("NPC/Face_Guide");
+                        if (spriteRenderer2 != null)
+                            spriteRenderer2.sprite = newSprite4;
+                        else
+                            Debug.LogWarning("⚠ 找不到 Resources/NPC/exposure_pose.png");
+
+                        break;
+                    }
             }
         }
     }
-    
+
+    private void TurnPlayerLeft()
+    {
+        if (player == null) return;
+
+        player.GetComponent<Animator>().SetFloat("LastX", -1);
+
+        Debug.Log("Player turned back (rotated 180 degrees)");
+    }
+
     public void ReloadInkState(string jsonState)
     {
         Debug.Log("🔄 重新載入 Ink 劇情狀態...");
@@ -652,11 +779,22 @@ public class EndingInkDialogue : MonoBehaviour
         dialoguePanel.SetActive(true);
         ContinueStory();
     }
+
+    public ENDPortraitEntry[] portraits;
 }
 
 [System.Serializable]
-public class CharacterName
+public class ENDPortraitEntry
 {
     public string speakerName;
+    public Sprite sprite;
+    public ENDPortraitSlot slot;
+}
 
+
+public enum ENDPortraitSlot
+{
+    Main,
+    Guide,
+    Him
 }

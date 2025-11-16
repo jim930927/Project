@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static ClueData;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 using static UnityEditor.Experimental.GraphView.GraphView;
 using static UnityEngine.EventSystems.EventTrigger;
 
@@ -32,12 +33,14 @@ public class FinalInkDialogue : MonoBehaviour
     [Header("存檔UI控制器")]
     public SaveUIManager saveUI;
 
-    [Header("角色立繪區域")]
-    public Image leftPortraitImage;
-    public Image rightPortraitImage;
-    public Sprite leftDefaultPortrait;
-    public Sprite rightDefaultPortrait;
-    public CharacterPortrait[] portraits;
+    [Header("角色立繪區域（Main / Guide / Him）")]
+    public Image mainPortraitImage;
+    public Image guidePortraitImage;
+    public Image himPortraitImage;
+
+    public Sprite mainDefaultPortrait;
+    public Sprite guideDefaultPortrait;
+    public Sprite himDefaultPortrait;
 
     [Header("對話緩衝")]
     public float dialogueEndCooldown = 0.3f;
@@ -95,6 +98,8 @@ public class FinalInkDialogue : MonoBehaviour
     private bool skipLocked = false;
     private bool choiceCooldown = false; // 🔥 新增：防止剛出現選項時空白鍵誤觸
 
+    public SpriteRenderer spriteRenderer;
+    public GameObject Him;
 
     public bool dialogueIsPlaying { get; private set; }
     public bool IsInCooldown => dialogueEndTimer > 0f;
@@ -819,6 +824,19 @@ public class FinalInkDialogue : MonoBehaviour
         SceneManager.LoadScene(battleSceneName);
     }
 
+    private System.Collections.IEnumerator BadEnding()
+    {
+        if (!curtainInitialized) InitCurtain();
+
+        Sequence seq = DOTween.Sequence();
+        seq.Append(leftCurtain.DOAnchorPos(leftClosePos, curtainCloseDuration));
+        seq.Join(rightCurtain.DOAnchorPos(rightClosePos, curtainCloseDuration));
+        yield return seq.WaitForCompletion();
+
+        yield return new WaitForSeconds(0.3f);
+        SceneManager.LoadScene("BadEnd");
+    }
+
 
     void DisplayChoices()
     {
@@ -876,39 +894,57 @@ public class FinalInkDialogue : MonoBehaviour
 
     public void UpdatePortrait(string speakerName)
     {
-        leftPortraitImage.sprite = leftDefaultPortrait;
-        rightPortraitImage.sprite = rightDefaultPortrait;
+        // 先重置
+        mainPortraitImage.sprite = mainDefaultPortrait;
+        guidePortraitImage.sprite = guideDefaultPortrait;
+        himPortraitImage.sprite = himDefaultPortrait;
 
         foreach (var entry in portraits)
         {
             if (entry.speakerName == speakerName)
             {
-                if (entry.position == PortraitPosition.Left)
-                    leftPortraitImage.sprite = entry.sprite;
-                else
-                    rightPortraitImage.sprite = entry.sprite;
+                switch (entry.slot)
+                {
+                    case PortraitSlot.Main:
+                        mainPortraitImage.sprite = entry.sprite;
+                        break;
+                    case PortraitSlot.Guide:
+                        guidePortraitImage.sprite = entry.sprite;
+                        break;
+                    case PortraitSlot.Him:
+                        himPortraitImage.sprite = entry.sprite;
+                        break;
+                }
                 return;
             }
         }
     }
 
+
+
     public void HidePortraits()
     {
-        if (leftPortraitImage != null) leftPortraitImage.gameObject.SetActive(false);
-        if (rightPortraitImage != null) rightPortraitImage.gameObject.SetActive(false);
+        if (mainPortraitImage != null) mainPortraitImage.gameObject.SetActive(false);
+        if (guidePortraitImage != null) guidePortraitImage.gameObject.SetActive(false);
+        if (himPortraitImage != null) himPortraitImage.gameObject.SetActive(false);
     }
+
 
     public void ShowPortraits()
     {
-        if (leftPortraitImage != null) leftPortraitImage.gameObject.SetActive(true);
-        if (rightPortraitImage != null) rightPortraitImage.gameObject.SetActive(true);
+        if (mainPortraitImage != null) mainPortraitImage.gameObject.SetActive(true);
+        if (guidePortraitImage != null) guidePortraitImage.gameObject.SetActive(true);
+        if (himPortraitImage != null) himPortraitImage.gameObject.SetActive(true);
     }
+
 
     public void ResetPortraits()
     {
-        if (leftPortraitImage != null) leftPortraitImage.sprite = leftDefaultPortrait;
-        if (rightPortraitImage != null) rightPortraitImage.sprite = rightDefaultPortrait;
+        if (mainPortraitImage != null) mainPortraitImage.sprite = mainDefaultPortrait;
+        if (guidePortraitImage != null) guidePortraitImage.sprite = guideDefaultPortrait;
+        if (himPortraitImage != null) himPortraitImage.sprite = himDefaultPortrait;
     }
+
 
     public void ForceEndDialogue()
     {
@@ -1164,6 +1200,40 @@ public class FinalInkDialogue : MonoBehaviour
                         }
                         break;
                     }
+                case "Exposure":
+                    {
+                        Debug.Log("📸 Exposure 觸發 → 換立繪（Main）");
+                        Sprite newSprite1 = Resources.Load<Sprite>("NPC/Face_Guide");
+                        Sprite newSprite2 = Resources.Load<Sprite>("NPC/NEW_Guide");
+                        if (newSprite2 != null)
+                            guidePortraitImage.sprite = newSprite2;
+                        else
+                            Debug.LogWarning("⚠ 找不到 Resources/NPC/exposure_pose.png");
+
+                        if (spriteRenderer != null)
+                            spriteRenderer.sprite = newSprite1;
+                        else
+                            Debug.LogWarning("⚠ 找不到 Resources/NPC/exposure_pose.png");
+
+                        break;
+                    }
+                case "Lay_down":
+                    Debug.Log("📸 Exposure 觸發 → 換立繪（Main）");
+                    Sprite newSprite3 = Resources.Load<Sprite>("NPC/Lay_Guide");
+                    if (spriteRenderer != null)
+                        spriteRenderer.sprite = newSprite3;
+                    else
+                        Debug.LogWarning("⚠ 找不到 Resources/NPC/exposure_pose.png");
+
+                    break;
+                case "Him_appear":
+                    Him.SetActive(true);
+                    break;
+                case "BadEnd":
+                    StartCoroutine(BadEnding());
+                    break;
+
+
 
             }
             // ====== GameOver 支援 ======
@@ -1310,18 +1380,23 @@ public class FinalInkDialogue : MonoBehaviour
         }
     }
 
+    public PortraitEntry[] portraits;
+
+    [System.Serializable]
+    public class PortraitEntry
+    {
+        public string speakerName;
+        public Sprite sprite;
+        public PortraitSlot slot;
+    }
+
+    public enum PortraitSlot
+    {
+        Main,
+        Guide,
+        Him
+    }
+
 }
 
-[System.Serializable]
-public class FCharacterPortrait
-{
-    public string speakerName;
-    public Sprite sprite;
-    public PortraitPosition position;
-}
 
-public enum FPortraitPosition
-{
-    Left,
-    Right
-}
