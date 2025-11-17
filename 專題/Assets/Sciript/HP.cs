@@ -25,6 +25,9 @@ public class HP : MonoBehaviour
 
     public bool hasShownHP = false;
 
+    private Coroutine hintCoroutine;
+
+
     private static HP instance;
 
     void Awake()
@@ -51,6 +54,13 @@ public class HP : MonoBehaviour
     {
         if (hp < 0) hp = 0;
         if (hp >= 10) hp = 10;
+
+        if (hpImage == null || hpImage.Equals(null))
+        {
+            FindHPUI();
+            if (hpImage == null) return;
+        }
+
         UpdateHpUI();
     }
 
@@ -64,7 +74,7 @@ public class HP : MonoBehaviour
             hpImage.sprite = hp_1_3;
         else if (hp <= 9)
             hpImage.sprite = hp_4_9;
-        else
+        else 
             hpImage.sprite = hp_10;
     }
 
@@ -141,9 +151,15 @@ public class HP : MonoBehaviour
     void ShowHPHint()
     {
         if (hpHintPanel == null) return;
-        StopAllCoroutines();
-        StartCoroutine(ShowHintCoroutine());
+
+        // ❌ StopAllCoroutines()
+        // ✔ 改成只停止舊的提示 Coroutine
+        if (hintCoroutine != null)
+            StopCoroutine(hintCoroutine);
+
+        hintCoroutine = StartCoroutine(ShowHintCoroutine());
     }
+
 
     IEnumerator ShowHintCoroutine()
     {

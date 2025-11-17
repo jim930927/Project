@@ -17,6 +17,7 @@ public class firstDialogueManager : MonoBehaviour
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI dialogueText;
     public GameObject dialoguePanel;
+    public GameObject fullblackscreen;
 
     [Header("選項 UI")]
     public GameObject choiceContainer;
@@ -768,6 +769,7 @@ public class firstDialogueManager : MonoBehaviour
             Debug.LogWarning($"⚠️ CG ({cgName}) 結束後 Ink 無法繼續！");
         }
 
+        fullblackscreen.SetActive(false);
         dialoguePanel.SetActive(true);
         SetPlayerCanMove(true);
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DG.Tweening.Core.Easing;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -179,7 +180,7 @@ public class BookUIManager : MonoBehaviour
         clueLookup.Clear();
 
         // 篩出已收集線索
-        var collectedClues = clueData.clues.FindAll(c => c.collected);
+        var collectedClues = clueData.clues.FindAll(c => SaveClue.HasClue(c.id));
         collectedClues.Sort((a, b) => a.collectedTime.CompareTo(b.collectedTime));
         int total = collectedClues.Count;
         int cluesPerDoublePage = cluesPerPage * 2; // 一次顯示左右兩頁總共的數量

@@ -2505,7 +2505,7 @@ GameObject:
   - component: {fileID: 529481090}
   - component: {fileID: 529481089}
   m_Layer: 0
-  m_Name: Image
+  m_Name: battle_hp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2518,16 +2518,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 529481087}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 237.14311}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2069047417}
+  m_Father: {fileID: 949036461}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 102.28175, y: -48}
+  m_AnchoredPosition: {x: -793.71826, y: 400}
   m_SizeDelta: {x: 333.4478, y: 481.3868}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &529481089
@@ -4228,8 +4228,8 @@ RectTransform:
   - {fileID: 1895093530}
   - {fileID: 35199361}
   - {fileID: 1213627413}
+  - {fileID: 529481088}
   - {fileID: 489385767}
-  - {fileID: 2069047417}
   - {fileID: 1073744042}
   - {fileID: 864097352}
   - {fileID: 540209705}
@@ -8141,12 +8141,11 @@ Transform:
   m_GameObject: {fileID: 2069047416}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -896, y: 448, z: 237.14311}
+  m_LocalPosition: {x: 64, y: 988, z: 237.14311}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 529481088}
-  m_Father: {fileID: 949036461}
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2069047418
 MonoBehaviour:
@@ -8322,3 +8321,4 @@ SceneRoots:
   - {fileID: 311259237}
   - {fileID: 949036461}
   - {fileID: 571406672}
+  - {fileID: 2069047417}

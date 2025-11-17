@@ -248,7 +248,7 @@ EXTERNAL canStartBattle()
 
 
 == jump_to_battle
-# jump_to_battle
+#jump_to_battle
 -> END
 
 

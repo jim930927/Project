@@ -1,9 +1,10 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-using DG.Tweening;
-using UnityEngine.UI;
-using TMPro;
+﻿using DG.Tweening;
+using DG.Tweening.Core.Easing;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class BookSlider : MonoBehaviour
 {
@@ -116,7 +117,7 @@ public class BookSlider : MonoBehaviour
             {
                 string id = tagClueIDs[i];
                 var clue = clueData.clues.Find(c => c.id == id);
-                if (clue != null && clue.collected)
+                if (clue != null && SaveClue.HasClue(id))
                     tagLabels[i].text = clue.name;
                 else
                     tagLabels[i].text = "???";
@@ -136,11 +137,12 @@ public class BookSlider : MonoBehaviour
         if (clueData == null) return;
 
         var clue = clueData.clues.Find(c => c.id == clueID);
-        if (clue == null || !clue.collected)
+        if (clue == null || !SaveClue.HasClue(clueID))
         {
             Debug.Log($"❌ 尚未獲得線索：{clueID}");
             return;
         }
+
 
         // 顯示詳細內容
         if (clueDetailPanel != null)

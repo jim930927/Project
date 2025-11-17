@@ -37,6 +37,7 @@ public class second_Hp_battle : MonoBehaviour
 
     void Update()
     {
+        UpdateHpUI();
         if (Bhp <= 0)
         {
             TriggerSecondFailDialogue();

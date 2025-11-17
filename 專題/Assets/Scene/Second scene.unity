@@ -45893,13 +45893,13 @@ MonoBehaviour:
     sprite: {fileID: 657828811754895370, guid: 71fc3ce213f6c644d9fb7e31f4ba6955, type: 3}
     position: 1
   - speakerName: '?'
-    sprite: {fileID: -6341688755630789170, guid: 93eaddce26fad3742b370bfc8ebf0f4c, type: 3}
+    sprite: {fileID: 6141116550204499731, guid: 9e947128beb792846b2b1695b8c9edce, type: 3}
     position: 0
   - speakerName: "\u9B31\u7684\u5316\u8EAB"
     sprite: {fileID: 6141116550204499731, guid: 9e947128beb792846b2b1695b8c9edce, type: 3}
     position: 0
   - speakerName: ??
-    sprite: {fileID: 8417382029605585005, guid: dc85372ea4441304ea61c7fdfb73e819, type: 3}
+    sprite: {fileID: 5553733832454143361, guid: 444aea1f9f7984f44abc90ae617720c7, type: 3}
     position: 0
   - speakerName: "\u8E81\u7684\u5316\u8EAB"
     sprite: {fileID: 5553733832454143361, guid: 444aea1f9f7984f44abc90ae617720c7, type: 3}
@@ -56229,7 +56229,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1412076045
 RectTransform:
   m_ObjectHideFlags: 0

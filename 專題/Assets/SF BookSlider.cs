@@ -134,7 +134,7 @@ public class SFBookSlider : MonoBehaviour
                 string id = tagClueIDs[clueIndex];
                 var clue = clueData.clues.Find(c => c.id == id);
 
-                if (clue != null && clue.collected)
+                if (clue != null && SaveClue.HasClue(id))
                 {
                     tagLabels[i].text = clue.name;
                     Debug.Log($"✅ 顯示線索[{i}] = {clue.name}");
@@ -155,7 +155,7 @@ public class SFBookSlider : MonoBehaviour
         if (clueData == null) return;
 
         var clue = clueData.clues.Find(c => c.id == clueID);
-        if (clue == null || !clue.collected)
+        if (clue == null || !SaveClue.HasClue(clueID))
         {
             Debug.Log($"❌ 尚未獲得線索：{clueID}");
             return;

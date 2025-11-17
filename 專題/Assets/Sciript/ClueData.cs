@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using DG.Tweening.Core.Easing;
+using System.Collections.Generic;
 using UnityEngine;
+using static SaveClue;
 
 [CreateAssetMenu(fileName = "ClueDatabase", menuName = "Game/Clue Database")]
 public class ClueData : ScriptableObject
@@ -33,7 +35,7 @@ public class ClueData : ScriptableObject
     public bool HasClue(string id)
     {
         Clue clue = clues.Find(c => c.id == id);
-        return clue != null && clue.collected;
+        return SaveClue.HasClue(id) && clue.collected;
     }
 
     public void AddClue(string id, string name = null)
@@ -45,6 +47,7 @@ public class ClueData : ScriptableObject
             clue.collectedTime = Time.time;
             if (!string.IsNullOrEmpty(name))
                 clue.name = name;
+            SaveClue.SaveClues(id);
         }
         else
         {
@@ -61,6 +64,7 @@ public class ClueData : ScriptableObject
     {
         foreach (var c in clues)
             c.collected = false;
+        SaveClue.ResetClues();
     }
 
     public void SetClueFullContent(string id, string newContent)
