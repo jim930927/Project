@@ -44,7 +44,7 @@ public class FinalBattleDialogueManager : MonoBehaviour
     public Image enemyImage;
     public Sprite[] enemySprites; // 不同敵人的圖片
 
-
+    public GameObject fullblackscreen;
 
     private Action onDialogueComplete;
 
@@ -393,6 +393,7 @@ public class FinalBattleDialogueManager : MonoBehaviour
     private IEnumerator PlayCGThenContinue(string cgName = "DefaultCG")
     {
         dialoguePanel.SetActive(false);
+        fullblackscreen.SetActive(true);
 
         // 尋找 CGPanel
         GameObject cgPanel = GameObject.Find("CGPanel");

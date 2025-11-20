@@ -250,49 +250,32 @@ public class Portal : MonoBehaviour
         isTeleporting = true;
 
         bool unlocked = DoorManager.Instance != null && DoorManager.Instance.IsUnlocked(doorGroupID);
-        dialogueManager.itemDatabase.RemoveItem(requiredKeyID);
         // 若門在 Ink 中被設為 Unlock_door = true，但 DoorManager 尚未同步 → 嘗試補登
-        if (!unlocked)
+        bool inkUnlocked = false;
+
+        var story = dialogueManager?.GetStory();
+        if (story != null && story.variablesState.Contains("Unlock_door"))
         {
-            var story = dialogueManager?.GetStory();
-            if (story != null && story.variablesState.Contains("Unlock_door"))
+            try
             {
-                bool inkUnlocked = false;
-                try
-                {
-                    var val = story.variablesState["Unlock_door"];
-                    inkUnlocked = val is bool b ? b : (val.ToString() == "true");
-                    Debug.Log($"🗝️ 解鎖：{doorGroupID}");
-                }
-                catch { }
-
-                if (inkUnlocked)
-                {
-                    /*
-                    DoorManager.Instance.UnlockDoor(doorGroupID);
-                    unlocked = true;
-                    Debug.Log($"🗝️ 自動補登解鎖：{doorGroupID}");
-                    */
-
-                    // ===== 新增：如果門有設定 requiredKeyID，且玩家持有該鑰匙，就消耗它 =====
-                    if (!string.IsNullOrEmpty(requiredKeyID) && dialogueManager != null && dialogueManager.itemDatabase != null)
-                    {
-                        try
-                        {
-                            if (dialogueManager.itemDatabase.HasItem(requiredKeyID))
-                            {
-                                dialogueManager.itemDatabase.RemoveItem(requiredKeyID);
-                                Debug.Log($"🗝️ 已消耗鑰匙：{requiredKeyID}");
-                            }
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Debug.LogWarning($"⚠️ 無法消耗鑰匙 {requiredKeyID}：{ex.Message}");
-                        }
-                    }
-                    // ===================================================================
-                }
+                var val = story.variablesState["Unlock_door"];
+                inkUnlocked = val is bool b ? b : (val.ToString() == "true");
             }
+            catch { }
+        }
+
+        if (inkUnlocked)
+        {
+            if (!string.IsNullOrEmpty(requiredKeyID) &&
+                dialogueManager.itemDatabase.HasItem(requiredKeyID))
+            {
+                dialogueManager.itemDatabase.RemoveItem(requiredKeyID);
+                Debug.Log($"🗝️ 已使用鑰匙：{requiredKeyID}");
+            }
+        }
+        else
+        {
+            Debug.Log("❗ 玩家選了『等等』或門沒開，不消耗鑰匙");
         }
 
         // ✅ 若門已解鎖 → 稍等 0.5 秒再傳送

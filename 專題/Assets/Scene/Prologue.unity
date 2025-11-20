@@ -4777,7 +4777,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 429573441}
   m_Enabled: 1
-  m_VideoClip: {fileID: 0}
+  m_VideoClip: {fileID: 32900000, guid: e706bcade647d42449a87c62c1f08bc0, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 519420031}
@@ -4787,7 +4787,7 @@ VideoPlayer:
   m_TargetMaterialProperty: <noninit>
   m_RenderMode: 2
   m_AspectRatio: 2
-  m_DataSource: 1
+  m_DataSource: 0
   m_TimeUpdateMode: 2
   m_PlaybackSpeed: 1
   m_AudioOutputMode: 2
@@ -7941,8 +7941,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1000, y: 162}
-  m_SizeDelta: {x: 124.5122, y: 1365.4211}
+  m_AnchoredPosition: {x: 964, y: 45}
+  m_SizeDelta: {x: 144.5429, y: 1625.6462}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1063690760
 GameObject:
@@ -12862,7 +12862,7 @@ MonoBehaviour:
     sprite: {fileID: -1067545317484713298, guid: 6e9546b4ee3dab142831f085b8214b8a, type: 3}
     position: 0
   - speakerName: "\u795E\u79D8\u4EBA"
-    sprite: {fileID: -1675764800081394935, guid: a1789c58548b14d44ac74535db948798, type: 3}
+    sprite: {fileID: 6868148420859359972, guid: 740478eed384abb46966c29133445878, type: 3}
     position: 1
   dialogueEndCooldown: 0.5
   leftCurtain: {fileID: 387371804}
