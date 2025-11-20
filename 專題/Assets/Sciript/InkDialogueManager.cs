@@ -279,7 +279,45 @@ public class InkDialogueManager : MonoBehaviour
             }
         }
     }
+    private bool GetInkBool(string varName)
+    {
+        if (story == null || story.variablesState == null)
+            return false;
 
+        object v;
+        try
+        {
+            v = story.variablesState[varName];
+        }
+        catch
+        {
+            return false;
+        }
+
+        if (v is bool b) return b;
+        if (v is int i) return i != 0;
+        if (v is float f) return Mathf.Abs(f) > 0.0001f;
+
+        bool parsed;
+        if (bool.TryParse(v.ToString(), out parsed))
+            return parsed;
+
+        return false;
+    }
+
+    private void RestoreSceneObjectsFromInk()
+    {
+        // 這邊先處理你說的香爐 / 櫃子
+        if (incense != null)
+            incense.SetActive(GetInkBool("incense_open"));
+
+        if (forcer != null)
+            forcer.SetActive(GetInkBool("forcer_open"));
+
+        // 之後有其他物件要記錄也可以照這裡加：
+        // if (xxxObject != null)
+        //     xxxObject.SetActive(GetInkBool("xxx_flag"));
+    }
     public void EnterDialogueMode(TextAsset newInkJSON, string knotName = "", Action onComplete = null)
     {
         SetPlayerCanMove(false);
@@ -1525,7 +1563,7 @@ public class InkDialogueManager : MonoBehaviour
         BindAllExternalFunctions();
         SyncHpFromInk();
         SyncHaveItemsToInk();
-
+        RestoreSceneObjectsFromInk();
         // 僅恢復 UI 狀態，不主動顯示文字
         dialoguePanel.SetActive(false);
         choiceContainer.SetActive(false);

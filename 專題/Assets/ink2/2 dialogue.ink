@@ -17,6 +17,9 @@ VAR gate_key = false
 VAR bed_chest = false
 VAR quilt_end = false
 VAR bed_top = false
+VAR incense_open = false
+VAR forcer_open = false
+
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
@@ -963,6 +966,8 @@ EXTERNAL Get_fragments(fragmentID)
         （角落放著祖先牌位的櫃子發出了咖噠一聲）
         ~ speaker = "我"
         「也許...我早就忘了自己想求什麼，只記得該怎麼做才能讓他們滿意。」
+        ~ incense_open = true
+        ~ forcer_open = true
         ->END
     *【五炷香】
         ~ HP_Add(-1)
