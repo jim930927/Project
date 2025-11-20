@@ -15,7 +15,7 @@ public class LoadUIManager : MonoBehaviour
     public Button openButton;
     public Button closeButton;
 
-    public static SaveData pendingLoadData; // 🔹 跨場景保存資料
+    public static SaveData pendingLoadData;
 
     private void Start()
     {
@@ -60,22 +60,19 @@ public class LoadUIManager : MonoBehaviour
         string json = File.ReadAllText(path);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-        // 暫存存檔資料
         pendingLoadData = data;
 
         InkDialogueManager.shouldAutoStartInk = false;
 
-        // 避免 EventSystem 重複
         var evt = UnityEngine.EventSystems.EventSystem.current;
         if (evt != null)
-        {
             GameObject.Destroy(evt.gameObject);
-        }
 
         SceneManager.LoadScene(data.sceneName);
     }
 
-    // === 在新場景中由 InkDialogueManager 呼叫 ===
+    // ========== 新場景讀檔流程 ==========
+
     public static IEnumerator ApplyPendingLoadData()
     {
         if (pendingLoadData == null)
@@ -96,21 +93,34 @@ public class LoadUIManager : MonoBehaviour
 
         inkManager.ReloadInkState(data.storyState);
 
-        // === 恢復玩家位置 ===
+        inkManager.SetExternalStateFromSave(data.finishedInteractions);
+
+
+        // === 玩家位置 ===
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
         {
             player.transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
+
+            var pc = player.GetComponent<Collider2D>();
+            if (pc != null)
+            {
+                pc.enabled = false;
+                pc.enabled = true;
+            }
+
+            Physics2D.SyncTransforms();
+
             var pm = player.GetComponent<Player>();
             if (pm != null) pm.canMove = true;
         }
 
-        // === 恢復 HP ===
+        // === HP ===
         HP hpRef = GameObject.FindObjectOfType<HP>();
         if (hpRef != null)
             hpRef.hp = data.playerHp;
 
-        // === 恢復場景物件 ===
+        // === 場景物件 ===
         var bed = GameObject.FindObjectOfType<BedController>();
         if (bed != null && !string.IsNullOrEmpty(data.bedState))
             bed.ChangeImage(data.bedState);
@@ -119,7 +129,7 @@ public class LoadUIManager : MonoBehaviour
         if (toilet != null && !string.IsNullOrEmpty(data.toiletState))
             toilet.ChangeImage(data.toiletState);
 
-        // === 恢復箱子狀態 ===
+        // === 箱子 ===
         if (!string.IsNullOrEmpty(data.chestState))
             ChestController.pendingOverrideState = data.chestState;
         else
@@ -129,7 +139,7 @@ public class LoadUIManager : MonoBehaviour
         if (safe != null)
             safe.isUnlocked = data.safeOpened;
 
-        // === 還原 ScriptableObject：線索、道具 ===
+        // === ScriptableObject ===
         ClueData clueDB = null;
         ItemData itemDB = null;
 
@@ -151,7 +161,7 @@ public class LoadUIManager : MonoBehaviour
                 i.collected = data.databaseCollectedItemIds.Contains(i.id);
         }
 
-        // === UI 修復 ===
+        // === UI ===
         var evt = UnityEngine.EventSystems.EventSystem.current;
         if (evt == null)
         {
@@ -168,7 +178,7 @@ public class LoadUIManager : MonoBehaviour
                 canvas.gameObject.AddComponent<UnityEngine.UI.GraphicRaycaster>();
         }
 
-        // === 移除已撿到的「場景實體道具」 ===
+        // === 道具 ===
         foreach (var item in GameObject.FindObjectsOfType<ItemPickup>())
         {
             var id = item.GetComponent<SaveableEntity>();
@@ -179,7 +189,7 @@ public class LoadUIManager : MonoBehaviour
             }
         }
 
-        // === 移除已撿到的「場景實體線索」 ===
+        // === 線索 ===
         foreach (var clue in GameObject.FindObjectsOfType<CluePickup>())
         {
             var id = clue.GetComponent<SaveableEntity>();
@@ -190,26 +200,25 @@ public class LoadUIManager : MonoBehaviour
             }
         }
 
-        // === 還原互動物件 ===
+        // === 已互動之物件 ===
         foreach (var inter in GameObject.FindObjectsOfType<SceneInteractable>())
         {
             var id = inter.GetComponent<SaveableEntity>();
             if (id != null && data.finishedInteractions.Contains(id.uniqueID))
+            {
                 inter.canInteract = false;
+
+                // ⭐⭐ 最小更動：補上 loadedFromSave = true ⭐⭐
+                inter.loadedFromSave = true;
+            }
         }
 
-        // === 生成箱子 ===
+        // === 生成物件 ===
         foreach (string id in data.spawnedObjects)
         {
             bool exists = false;
             foreach (var so in GameObject.FindObjectsOfType<SaveableEntity>())
-            {
-                if (so.uniqueID == id)
-                {
-                    exists = true;
-                    break;
-                }
-            }
+                if (so.uniqueID == id) exists = true;
 
             if (!exists)
             {
@@ -223,13 +232,7 @@ public class LoadUIManager : MonoBehaviour
         {
             bool exists = false;
             foreach (var so in GameObject.FindObjectsOfType<SaveableEntity>())
-            {
-                if (so.uniqueID == id)
-                {
-                    exists = true;
-                    break;
-                }
-            }
+                if (so.uniqueID == id) exists = true;
 
             if (!exists)
             {
@@ -238,22 +241,45 @@ public class LoadUIManager : MonoBehaviour
             }
         }
 
-        // === 敵人狀態 ===
+        // === 敵人 ===
         if (!string.IsNullOrEmpty(data.enemyStatesJson))
         {
             if (EnemyStateManager.Instance != null)
                 EnemyStateManager.Instance.LoadFromJson(data.enemyStatesJson);
         }
 
-        // ⭐⭐⭐ === 還原「永久解鎖的門」=== ⭐⭐⭐
+        // === 永久解鎖門 ===
         if (DoorManager.Instance != null && data.unlockedDoors != null)
         {
             foreach (string doorID in data.unlockedDoors)
-            {
                 DoorManager.Instance.UnlockDoor(doorID);
-            }
         }
 
-        Debug.Log("✅ 載入資料全部還原完成（包含永久解鎖的門）");
+        // === Trigger 修復 ===
+        Physics2D.SyncTransforms();
+        ForceRefreshInteractables();
+
+        Debug.Log("✅ 載入資料全部還原完成（包含互動、道具、NPC、敵人、門）");
+    }
+
+    // === 強制刷新所有互動 Trigger ===
+    static void ForceRefreshInteractables()
+    {
+        var player = GameObject.FindWithTag("Player");
+        if (player == null) return;
+
+        var playerCol = player.GetComponent<Collider2D>();
+        if (playerCol == null) return;
+
+        foreach (var inter in GameObject.FindObjectsOfType<SceneInteractable>())
+        {
+            var col = inter.GetComponent<Collider2D>();
+
+            if (col != null && col.IsTouching(playerCol))
+            {
+                Debug.Log($"[Load Fix] 🔄 強制觸發互動器 OnTriggerEnter2D：{inter.name}");
+                inter.SendMessage("OnTriggerEnter2D", playerCol, SendMessageOptions.DontRequireReceiver);
+            }
+        }
     }
 }

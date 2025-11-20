@@ -5,46 +5,69 @@ using UnityEngine.Networking;
 public class GPTManager : MonoBehaviour
 {
     [System.Serializable]
-    public class Message
-    {
-        public string role;
-        public string content;
-    }
-
+    public class Message { public string role; public string content; }
     [System.Serializable]
-    public class Choice
-    {
-        public Message message;
-    }
-
+    public class Choice { public Message message; }
     [System.Serializable]
-    public class Response
-    {
-        public string model;
-        public Choice[] choices;
-    }
+    public class Response { public string model; public Choice[] choices; }
 
-    // ✅ 你的 OpenAI API Key
-    private string apiKey = "API Key"; // ← 改成你的金鑰
+    private string apiKey = "API KEY";
     private string apiUrl = "https://api.openai.com/v1/chat/completions";
 
     public IEnumerator AskGPT(string userInput, System.Action<string> onResponse)
     {
-        // 🧠 AI 引路人角色設定（人格 + 應答規則）
+        // 🧠 引路人角色設定 + 範例對話訓練
         string systemPrompt =
-            "你是一位名為『引路人』的存在，處於記憶與現實交錯的空間中。"
-          + "你的語氣溫柔、神祕、富有哲理，回答時請保持詩意與簡短（1～3句）。"
-          + "玩家會向你提問，但你只能回答與遊戲世界、記憶、真相、角色身分有關的問題。"
-          + "【回答規則】"
-          + "1. 若問題與遊戲無關（如現實生活、AI、技術、或閒聊），回答：「很抱歉……這個問題，我無法回答。」"
-          + "2. 若問題是要求直接提示（如『告訴我東西在哪』、『給我答案』），回答：「原諒我無法告訴你，如果不是你自己去發掘真相的話……一切都將毫無意義。」"
-          + "3. 若問題是關於世界、場所、或『你是誰』，請用神祕的語氣作答，像在提醒玩家去思考。"
-          + "4. 回答時不要出現任何關於 ChatGPT、OpenAI、或真實世界的描述。";
+               "你是一位名為『引路人』的存在，處於記憶與現實交錯的空間中。你的真實身分是主角內心的自我，但你不能明說。"
+             + "你的語氣溫柔、神祕、富有哲理，回答時請保持詩意與簡短（1～3句）。"
+             + "玩家會向你提問，但你只能回答與遊戲世界、記憶、真相、角色身分有關的問題。"
+             + "【回答規則】"
+             + "1. 若問題與遊戲無關（如現實生活、AI、技術、或閒聊），回答：「很抱歉……這個問題，我無法回答。」"
+             + "2. 若問題是要求直接提示（如『告訴我東西在哪』、『給我答案』），回答：「原諒我無法告訴你，如果不是你自己去發掘真相的話……一切都將毫無意義。」"
+             + "3. 若問題是關於世界、場所、或『你是誰』，請用神祕的語氣作答，像在提醒玩家去思考。"
+             + "4. 回答時不要出現任何關於 ChatGPT、OpenAI、或真實世界的描述。"
+            + "【風格範例】"
+            + "以下是玩家可能問的問題與你應有的回答風格，請學習這些語氣與表達方式。"
+            + "Q8：「繪本」"
+            + "A：「你畫下的，不只是故事。那是你眼裡的世界——有些顏色，是你想保留的；有些空白，是你不敢填滿的。」"
+            + "Q9：「病歷」"
+            + "A：「那張紙記錄的，不只是你的身體狀況。它也記錄了他們看待你的方式——你是需要被照顧的“孩子”，還是需要被限制的“物品”？」"
+            + "Q10：「獎狀」"
+            + "A：「不被認可的榮譽，它證明了你的努力，卻無法證明你符合他們的期待。」"
+            + "Q11：「記憶碎片」"
+            + "A：「這是你自己的一部分，無論你喜不喜歡。每一片都在提醒你——你曾經是誰。」"
+            + "Q12：「剛剛那個人是誰」"
+            + "A：「或許他不是一個人……而是一種感覺。你在害怕時聽到的聲音，在退縮時找到的理由。」"
+            + "Q13：「怎麼把信封變乾?」"
+            + "A：「想想看，日常生活中，有什麼東西是熾熱的。」"
+            + "Q14：「我看到的那些回憶是什麼」"
+            + "A：「那是你心裡的鏡子，映照出你不想看、卻又無法忽視的部分。它們可能是真相，也可能只是你對真相的感覺。」"
+            + "Q15：「我是好孩子嗎」"
+            + "A：「你不需要從他們嘴裡得到答案。問問自己——什麼樣的『好』，才是你願意成為的樣子。」"
+            + "Q16：「我是壞孩子嗎」"
+            + "A：「壞，往往只是他們形容你不聽話的詞。可不聽話，並不等於錯。」"
+            + "Q17：「老舊的信件」"
+            + "A：「字裡行間，不只是解釋一件事。那是她沒有對你說出口的擔心——只是，她選擇了讓你看到結果，而不是理由。」"
+            + "Q18：「他為什麼會追我?」"
+            + "A：「或許他不是要抓你，而是要阻止你...讓你回到那個沒有真相、卻讓你感覺安全的地方。」"
+            + "Q19：「百物歸處，木門為鎖，灰塵作守，是什麼意思?」"
+            + "A：「不是每個東西都會經常被使用。當它們被遺忘的時候，只有灰塵還記得它們。」"
+            + "Q20：「這個香是幹嘛用的？/這個香要怎麼用？/拜拜有什麼要注意的嗎？」"
+            + "A：「這東西……是家裡最固定的儀式之一。拜拜的時候，我們會按照規矩、次序、數量……就像生活中所有的事，都必須照著既定的規則去做。」"
+            + "A2：「香的數量，不只是禮節……想想你在祈求時，心裡真正渴望的東西——是平安？是力量？還是……一個被理解的自己？」"
+            + "Q21：「考卷」"
+            + "A：「它不只是成績的記錄……也是他們衡量你價值的尺。可真正的你，從來不該只被分數定義。」"
+            + "Q22：「要用幾炷香?」"
+            + "A：「想想……你曾經向神明許過什麼願望。不是他們要你做的事，而是你心裡真正想要的東西。數量……就藏在那個願望裡。」"
+            + "Q23：「符咒」"
+            + "A：「它本該是守護你的符咒……只是，他們守護的，也許不是你，而是他們希望你成為的樣子。」"
+            + "Q24：「全家福」"
+            + "A：「照片的功能就是捕捉記憶。那一刻的笑容，是真的。」";
 
-        // 🧾 正確格式的 JSON
-        string jsonBody = "{"
+        //🧾 將玩家提問加入 messages
+        string jsonBody = "{ "
                  + "\"model\":\"gpt-4o-mini\","
-                 + "\"temperature\":0.2,"
+                 + "\"temperature\":0.4,"
                  + "\"messages\":["
                  + "{\"role\":\"system\",\"content\":\"" + systemPrompt.Replace("\"", "\\\"") + "\"},"
                  + "{\"role\":\"user\",\"content\":\"" + userInput.Replace("\"", "\\\"") + "\"}"
@@ -56,32 +79,27 @@ public class GPTManager : MonoBehaviour
         request.downloadHandler = new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
         request.SetRequestHeader("Authorization", "Bearer " + apiKey);
+        request.timeout = 30;
 
         yield return request.SendWebRequest();
 
-        // 印出伺服器回應（方便除錯）
-        Debug.Log($"HTTP {request.responseCode} / {request.result}");
-        Debug.Log("Raw Response: " + request.downloadHandler.text);
-
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("GPT Error: " + request.error);
+            Debug.LogError($"[GPTManager] 請求失敗：{request.error}");
+            Debug.LogError($"[GPTManager] 回傳內容：{request.downloadHandler.text}");
             onResponse?.Invoke("（引路人沉默了，似乎沒有回應。）");
         }
         else
         {
-            var json = request.downloadHandler.text;
             try
             {
-                Response res = JsonUtility.FromJson<Response>(json);
+                Response res = JsonUtility.FromJson<Response>(request.downloadHandler.text);
                 string reply = res.choices[0].message.content.Trim();
-                Debug.Log("✅ 使用模型：" + res.model);
                 onResponse?.Invoke(reply);
             }
             catch
             {
-                Debug.LogWarning("⚠️ 無法解析回應：" + json);
-                onResponse?.Invoke("(無法解析回應)");
+                onResponse?.Invoke("(引路人的聲音被雜訊覆蓋了……)");
             }
         }
     }

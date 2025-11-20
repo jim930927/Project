@@ -4,6 +4,7 @@ using NUnit.Framework.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -285,13 +286,13 @@ public class InkDialogueManager : MonoBehaviour
         SetPlayerCanMove(false);
         if (justLoaded)
         {
-            Debug.Log("🟡 已從存檔載入，跳過開場 CG，但仍恢復對話介面");
             dialoguePanel.SetActive(true);
             choiceContainer.SetActive(false);
             dialogueIsPlaying = true;
             canContinue = true;
             justLoaded = false;
-            return;
+
+            // ❗ 不要 return，不要阻斷後面 knot 的跳轉
         }
 
 
@@ -1516,7 +1517,6 @@ public class InkDialogueManager : MonoBehaviour
 
         // 載入 Ink 狀態
         story.state.LoadJson(jsonState);
-
         // 綁定所有外部函式
         story.BindExternalFunction("SaveGame", () => {
             saveUI.OpenSaveMenu(story.state.ToJson());
@@ -1724,6 +1724,30 @@ public class InkDialogueManager : MonoBehaviour
         dialoguePanel.SetActive(true);
         ContinueStory();
     }
+
+    // =======================================================
+    // 讓 LOAD 系統把已完成的互動塞回 Ink 變數（id_finish = true）
+    // =======================================================
+    public void SetExternalStateFromSave(List<string> finishedList)
+    {
+        if (story == null || story.variablesState == null) return;
+
+        foreach (var id in finishedList)
+        {
+            string varName = id + "_finish";
+
+            if (story.variablesState.Contains(varName))
+            {
+                story.variablesState[varName] = true;
+                Debug.Log($"[Ink] 載入存檔：{varName} = true");
+            }
+            else
+            {
+                Debug.Log($"[Ink] ⚠ 未發現變數：{varName}");
+            }
+        }
+    }
+
 
     public void SyncHaveItemsToInk()
     {
