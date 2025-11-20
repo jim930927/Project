@@ -57133,10 +57133,9 @@ GameObject:
   - component: {fileID: 1497022761}
   - component: {fileID: 1497022762}
   - component: {fileID: 1497022763}
-  - component: {fileID: 1497022764}
   m_Layer: 0
   m_Name: forcer
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -57245,19 +57244,6 @@ MonoBehaviour:
   interactKey: 32
   Porpsimage: {fileID: 0}
   canInteract: 1
---- !u!114 &1497022764
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1497022758}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 520f1514f29976641b811096d23a3e34, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uniqueID: 49ff2ab5-af70-4d80-886e-caee5e49c61e
 --- !u!1 &1509343817
 GameObject:
   m_ObjectHideFlags: 0
