@@ -322,8 +322,10 @@ VAR selected_clues = ""
 【此題需要使用兩個線索，選擇的線索前後順序互不影響】
 ~ speaker = "“它”"
 「就算現在，也沒人真正懂你。阿姨只是在可憐你，媽媽也只是害怕孤單，沒有人會真的理解你內心的黑暗。」
+~ speaker = "我"
+「我不需要別人理解我，只要我自己理解自己就好。」
 + [沒有人會理解你]
-    {(selected_clues ? "NPC_talk") && (selected_clues ? "Letter"):
+    { (selected_clues ? "Letter") && (selected_clues ? "DrawBook"):
         -> q5_5 
       - else:
         -> wrong_clue5
@@ -335,15 +337,18 @@ VAR selected_clues = ""
 
 == q5_5
 ~ speaker = "我"
-「你錯了。那兩個木偶——他們在嘲笑、討論、甚至質疑，但那是我內心的一部分，是我與自己的對話。」
 「這封信，是我小時候寫給未來的自己：『不管有多難，都不要忘了畫畫的時候那份快樂。』」
-「有人理解我，因為我正在學會理解自己。只有我自己能真正定義我。」
+「畢卡索曾經說過：『你是創作者，你覺得好，就是好；你若覺得不好，那就不好。你，對自己創作的觀點，才是最重要的』。 所以我的畫筆由我決定！」
+「只有我自己能真正定義我！」
 ~ speaker = "提示"
 【此題需要使用四個線索，選擇的線索前後順序互不影響】
 ~ speaker = "“它”"
 「愛會消逝、信任會破碎、記憶會淡去。你什麼都留不住，到最後還是會只剩下自己。你拚命反駁，只是害怕孤單罷了。」
+~ speaker = "我"
+「是啊，我確實害怕孤單。從多多被送走、爺爺離開、爸爸沉淪、媽媽崩潰——我一次次被迫面對失去。」
+~ speaker = "“它”"
 + [你終究會孤單一個人]
-    {(selected_clues ? "Journal1") && (selected_clues ? "Journal2") && (selected_clues ? "Journal3") && (selected_clues ? "AuntLetter"):
+    {(selected_clues ? "Letter2") && (selected_clues ? "Journal2") && (selected_clues ? "Journal3") && (selected_clues ? "AuntLetter"):
         -> correct_path5 
       - else:
         -> wrong_clue5

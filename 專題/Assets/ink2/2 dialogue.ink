@@ -19,6 +19,7 @@ VAR quilt_end = false
 VAR bed_top = false
 VAR incense_open = false
 VAR forcer_open = false
+VAR incense_again = false
 
 
 EXTERNAL UnlockDoor(door_id)
@@ -942,49 +943,62 @@ EXTERNAL Get_fragments(fragmentID)
 == USEincense
 ~ speaker = "我"
 ~ inc_interact += 1
-「該拿幾支香來拜呢？」
 { inc_interact > 5:
     「不需要再拜拜了」
     -> END
 - else:
-    ~ speaker = ""
-    *【一炷香】
-    「如果我想請神明幫忙，只點燃一支香可能不夠......」
-    ->END
-    *【三炷香】
-        #burn
-        ~ HP_Add(1)
-        ~ speaker = "我"
-        「我...好像只求過一次…那是我唯一主動去祈求神明的時候。」
-        「......」
-        「可那真的是我想要的嗎？還是……只是因為我想滿足他們的期待？」
-        「連祈願的方式……都要有人告訴我『正確』的做法。
-        可是，神明在意的……真的是香的數量，還是我祈求時的心意？」
-        ~ speaker = ""
-        （拿起神桌上的打火機點亮了手中的香，拜三拜，向神明祈求，隨後把香插入香爐內）
-        #open_forcer
-        （角落放著祖先牌位的櫃子發出了咖噠一聲）
-        ~ speaker = "我"
-        「也許...我早就忘了自己想求什麼，只記得該怎麼做才能讓他們滿意。」
-        ~ incense_open = true
-        ~ forcer_open = true
-        ->END
-    *【五炷香】
-        ~ HP_Add(-1)
-        ~ speaker = "我"
-        「節日或是法會才會用到，這好像跟我想祈求的事情無關......」
-        ->END
-    *【七炷香】
-        ~ speaker = "我"
-        「調轉生死或命運走向，我應該還不至於用到這種地步吧......」
-        ->END
-    *【九炷香】
-        ~ HP_Add(-1)
-        ~ speaker = "我"
-        「我只不過是想跟神明祈求一些事而已，不用這麼大手筆......」
-        ->END
+    ~ speaker = "我"
+    { incense_again == true:
+    「不需要再拜拜了」
+    -> END
+    - else:
+        ->use_incense
+    }  
+
 }  
 
+
+
+== use_incense
+~ speaker = "我"
+「該拿幾支香來拜呢？」
+~ speaker = ""
+*【一炷香】
+    「如果我想請神明幫忙，只點燃一支香可能不夠......」
+    ->END
+*【三炷香】
+    #burn
+    ~ HP_Add(1)
+    ~ speaker = "我"
+    「我...好像只求過一次…那是我唯一主動去祈求神明的時候。」
+    「......」
+    「可那真的是我想要的嗎？還是……只是因為我想滿足他們的期待？」
+    「連祈願的方式……都要有人告訴我『正確』的做法。
+    可是，神明在意的……真的是香的數量，還是我祈求時的心意？」
+    ~ speaker = ""
+    （拿起神桌上的打火機點亮了手中的香，拜三拜，向神明祈求，隨後把香插入香爐內）
+    #open_forcer
+    （角落放著祖先牌位的櫃子發出了咖噠一聲）
+    ~ speaker = "我"
+    「也許...我早就忘了自己想求什麼，只記得該怎麼做才能讓他們滿意。」
+    ~ incense_open = true
+    ~ forcer_open = true
+    ~ incense_again = true
+    ->END
+*【五炷香】
+    ~ HP_Add(-1)
+    ~ speaker = "我"
+    「節日或是法會才會用到，這好像跟我想祈求的事情無關......」
+    ->END
+*【七炷香】
+    ~ speaker = "我"
+    「調轉生死或命運走向，我應該還不至於用到這種地步吧......」
+    ->END
+*【九炷香】
+    ~ HP_Add(-1)
+    ~ speaker = "我"
+    「我只不過是想跟神明祈求一些事而已，不用這麼大手筆......」
+    ->END
 
 
 == god_forcer
