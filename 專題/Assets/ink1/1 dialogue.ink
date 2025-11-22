@@ -8,6 +8,7 @@ EXTERNAL UnlockLetter()
 EXTERNAL UnlockJournal()
 EXTERNAL UnlockTalk()
 EXTERNAL canStartBattle()
+EXTERNAL Get_Item(itemID)
 
 == CG ==
 #play_cg
@@ -17,7 +18,8 @@ EXTERNAL canStartBattle()
 ~ speaker = "我"
 ......
 #play_music start_theme
-這裡是……舞台？為什麼我會在這種地方？
+這裡是……舞台？(按下空白鍵以繼續)
+為什麼我會在這種地方？
 那裡...好像有個人，先去問問怎麼離開這裡好了
 -> END
 
@@ -114,25 +116,20 @@ EXTERNAL canStartBattle()
 == boss_talk_first
 ~ speaker = "我"
 「那個...請問你知道這是哪裡嗎？」
-
 ~ speaker = "神秘人"
 「你...還記得...自己是誰嗎？」
-
 ~ speaker = "我"
 「什麼？我是誰？」
 「我是......」
 「欸？我......是誰？我好像...想不起來了......」
-
 ~ speaker = "神秘人"
 「看看四周…你會想起來的……」
 「還有這個......你拿著......」
-
 ~ speaker = "我"
 「這是......油燈？你給我這個幹什麼？」
-
 ~ speaker = "神秘人"
 「保護好他...他將是你能否離開的關鍵」
-
+~ Get_Item("HP_image")
 ~ talked_to_boss = true
 #show_hp
 -> END
@@ -148,13 +145,13 @@ EXTERNAL canStartBattle()
 「天啊，傻X學校為什麼不開除他？讓我們這些普通人跟隨時都有可能會攻擊我們的神經病待在一起？」
 「......」
 ~ speaker = "我"
-* 「姓墨？是在說我嗎...」
-    ~ hp += 1
-    「我有精神疾病？」
-    -> END
 * 「精神疾病？」
     ~ hp -= 1
     「真令人討厭......」
+    -> END
+* 「姓墨？是在說我嗎...」
+    ~ hp += 1
+    「我有精神疾病？」
     -> END
 * 「好希望這樣的人也能夠跟大家好好相處...」
     「他有精神疾病應該連他自己也很不好受......」
@@ -202,12 +199,7 @@ EXTERNAL canStartBattle()
     「這篇日記到後面就沒有任何記載了......」
     「......」
     「這真的是我寫的嗎...」
-    * 「總感覺我好像不是很受歡迎...」
-       ~ hp += 1
-        「不受父母愛戴...也沒有真心的朋友」
-        「真可笑...」
-        ~ journal_choices_done = true
-        -> END
+    
     * 「這些人真可惡！我到底是招誰惹誰了」
         ~ hp -= 1
         「真想讓所有傷害過我的人都消失在這世界上...」
@@ -219,6 +211,12 @@ EXTERNAL canStartBattle()
     * 「陰廟...？所以...我去許願了？」
         「可是我為什麼一點印象都沒有？」
         【獲得線索 “日記殘頁”】
+        ~ journal_choices_done = true
+        -> END
+    * 「總感覺我好像不是很受歡迎...」
+       ~ hp += 1
+        「不受父母愛戴...也沒有真心的朋友」
+        「真可笑...」
         ~ journal_choices_done = true
         -> END
 }

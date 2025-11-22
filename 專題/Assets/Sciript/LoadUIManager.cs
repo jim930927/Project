@@ -1,10 +1,11 @@
 ﻿using Ink.Runtime;
+using System.Collections;
 using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System.Collections;
+using static ClueData;
 
 public class LoadUIManager : MonoBehaviour
 {
@@ -28,6 +29,8 @@ public class LoadUIManager : MonoBehaviour
 
         openButton?.onClick.AddListener(OpenMenu);
         closeButton?.onClick.AddListener(CloseMenu);
+
+
     }
 
     public void OpenMenu() => loadMenu.SetActive(true);
@@ -139,17 +142,33 @@ public class LoadUIManager : MonoBehaviour
         var itemSample = GameObject.FindObjectOfType<ItemPickup>();
         if (itemSample != null) itemDB = itemSample.itemData;
 
+        // === 從存檔還原 ScriptableObject 狀態 ===
         if (clueDB != null)
         {
-            foreach (var c in clueDB.clues)
-                c.collected = data.databaseCollectedClueIds.Contains(c.id);
+
+            clueDB.SyncFromSave(data.databaseCollectedClueIds);
+            Debug.Log("Loaded Clue IDs: " + string.Join(",", data.databaseCollectedClueIds));
+            foreach (var clue in clueDB.clues)
+            {
+                clue.collected = data.databaseCollectedClueIds.Contains(clue.id);
+                clue.collectedTime = clue.collected ? Time.time : 0f;
+            }
+        }
+
+        Debug.Log("ClueDB instance: " + clueDB.GetInstanceID());
+
+
+        if (clueDB != null)
+        {
+            clueDB.SyncFromSave(data.databaseCollectedClueIds);
         }
 
         if (itemDB != null)
         {
-            foreach (var i in itemDB.items)
-                i.collected = data.databaseCollectedItemIds.Contains(i.id);
+            itemDB.SyncFromSave(data.databaseCollectedItemIds);
         }
+
+
 
         // === UI 修復 ===
         var evt = UnityEngine.EventSystems.EventSystem.current;
@@ -256,4 +275,19 @@ public class LoadUIManager : MonoBehaviour
 
         Debug.Log("✅ 載入資料全部還原完成（包含永久解鎖的門）");
     }
+
+    public static void ResetDatabase()
+    {
+        var clue = Resources.Load<ClueData>("ClueDatabase");
+        var item = Resources.Load<ItemData>("ItemDatabase");
+
+        clue?.ResetAll();
+        item?.ResetAll();
+
+        SaveClue.ResetClues();
+        SaveItem.ResetItems();
+
+        Debug.Log("📕 已重置線索與道具資料庫");
+    }
+
 }

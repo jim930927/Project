@@ -2,9 +2,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class BattleDialogueManager : MonoBehaviour
 {
@@ -206,6 +207,9 @@ public class BattleDialogueManager : MonoBehaviour
         canContinue = false;
         inputTimer = 0f;
         skipLocked = true;
+
+        EventSystem.current.SetSelectedGameObject(null); // 清掉選取物件
+        Input.ResetInputAxes(); // 清掉所有輸入
     }
 
     private void DisplayChoices()

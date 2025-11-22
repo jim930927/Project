@@ -230,6 +230,16 @@ public class FirstBookUI : MonoBehaviour
         currentPage = 0;
 
         clueDetailPanel?.SetActive(true);
+        var image = Resources.Load<Sprite>($"Clues/{clue.id}");
+        if (image != null && PreviewImageManager.Instance != null)
+        {
+            Debug.Log($"🖼️ 顯示線索圖片：{clue.id}");
+            PreviewImageManager.Instance.ShowImage(image);
+        }
+        else
+        {
+            Debug.LogWarning($"⚠️ 找不到圖片：Resources/Clues/{clue.id}.png 或 PreviewImageManager 未初始化");
+        }
         UpdateCluePage();
     }
 
@@ -340,6 +350,16 @@ public class FirstBookUI : MonoBehaviour
         currentItemPage = 0;
 
         clueDetailPanel?.SetActive(true);
+        var image = Resources.Load<Sprite>($"Clues/{item.id}");
+        if (image != null && PreviewImageManager.Instance != null)
+        {
+            Debug.Log($"🖼️ 顯示線索圖片：{item.id}");
+            PreviewImageManager.Instance.ShowImage(image);
+        }
+        else
+        {
+            Debug.LogWarning($"⚠️ 找不到圖片：Resources/Clues/{item.id}.png 或 PreviewImageManager 未初始化");
+        }
         UpdateItemPage();
     }
 

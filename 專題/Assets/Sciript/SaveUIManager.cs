@@ -111,6 +111,8 @@ public class SaveUIManager : MonoBehaviour
         var anyClue = Resources.FindObjectsOfTypeAll<CluePickup>().FirstOrDefault(p => p?.clueData != null);
         if (anyClue != null)
         {
+            Debug.Log("ClueDB saved instance: " + anyClue.clueData.GetInstanceID());
+
             foreach (var c in anyClue.clueData.clues)
                 if (c.collected) data.databaseCollectedClueIds.Add(c.id);
         }

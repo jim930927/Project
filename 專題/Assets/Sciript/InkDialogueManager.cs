@@ -1408,6 +1408,9 @@ public class InkDialogueManager : MonoBehaviour
                 case "open_forcer":
                     if (forcer != null) forcer.SetActive(true);
                     break;
+                case "forcer_end":
+                    if (forcer != null) forcer.SetActive(false);
+                    break;
                 case "black_screen":
                     fullblackScreen.SetActive(true);
                     break;

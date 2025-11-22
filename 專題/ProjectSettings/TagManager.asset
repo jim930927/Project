@@ -17,6 +17,7 @@ TagManager:
   - FightEnemy
   - Mother
   - Father
+  - AI
   layers:
   - Default
   - TransparentFX

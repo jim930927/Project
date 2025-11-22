@@ -18,6 +18,7 @@ public class HP : MonoBehaviour
 
     [Header("提示 UI（可選）")]
     public GameObject hpHintPanel;
+    public GameObject hpItem;
     public string hpHintPanelName = "HPHintPanel";
 
     public float hintDuration = 3f;
@@ -152,8 +153,6 @@ public class HP : MonoBehaviour
     {
         if (hpHintPanel == null) return;
 
-        // ❌ StopAllCoroutines()
-        // ✔ 改成只停止舊的提示 Coroutine
         if (hintCoroutine != null)
             StopCoroutine(hintCoroutine);
 

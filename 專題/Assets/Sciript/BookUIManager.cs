@@ -1,4 +1,5 @@
 ﻿using DG.Tweening.Core.Easing;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -62,8 +63,8 @@ public class BookUIManager : MonoBehaviour
     [Header("頁面設定")]
     public int cluesPerPage = 9; // 左頁顯示幾個
     public int itemsPerPage = 9; // 左頁顯示幾個
-    private int currentClueListPage = 0;
-    private int currentItemListPage = 0;
+    public int currentClueListPage = 0;
+    public int currentItemListPage = 0;
 
     public bool closeBook = false;
 
@@ -71,13 +72,13 @@ public class BookUIManager : MonoBehaviour
     private List<Button> clueButtons = new List<Button>();
     private Dictionary<string, ClueData.Clue> clueLookup = new Dictionary<string, ClueData.Clue>();
     private ClueData.Clue currentClue;
-    private int currentPage = 0;
+    public int currentPage = 0;
 
     // 🟦 道具系統
     private List<Button> itemButtons = new List<Button>();
     private Dictionary<string, ItemData.Item> itemLookup = new Dictionary<string, ItemData.Item>();
     private ItemData.Item currentItem;
-    private int currentItemPage = 0;
+    public int currentItemPage = 0;
 
     void Start()
     {
@@ -167,7 +168,7 @@ public class BookUIManager : MonoBehaviour
     }
 
     // ===================== 線索 =====================
-    void GenerateClueButtons()
+    public void GenerateClueButtons()
     {
         if (clueData == null || clueLeftContainer == null || clueRightContainer == null || clueButtonPrefab == null)
             return;
@@ -180,7 +181,8 @@ public class BookUIManager : MonoBehaviour
         clueLookup.Clear();
 
         // 篩出已收集線索
-        var collectedClues = clueData.clues.FindAll(c => SaveClue.HasClue(c.id));
+        var collectedClues = clueData.clues.FindAll(c => c.collected);
+
         collectedClues.Sort((a, b) => a.collectedTime.CompareTo(b.collectedTime));
         int total = collectedClues.Count;
         int cluesPerDoublePage = cluesPerPage * 2; // 一次顯示左右兩頁總共的數量
@@ -232,6 +234,7 @@ public class BookUIManager : MonoBehaviour
     void BackMenu()
     {
         SceneManager.LoadScene("MainMenu");
+        LoadUIManager.ResetDatabase();
     }
     public void ShowClueDetail(ClueData.Clue clue)
     {
@@ -240,8 +243,24 @@ public class BookUIManager : MonoBehaviour
         currentPage = 0;
 
         clueDetailPanel?.SetActive(true);
+
+        // ============================
+        // ⭐ 用 clueID 從 Resources 載入圖片
+        // ============================
+        var image = Resources.Load<Sprite>($"Clues/{clue.id}");
+        if (image != null && PreviewImageManager.Instance != null)
+        {
+            Debug.Log($"🖼️ 顯示線索圖片：{clue.id}");
+            PreviewImageManager.Instance.ShowImage(image);
+        }
+        else
+        {
+            Debug.LogWarning($"⚠️ 找不到圖片：Resources/Clues/{clue.id}.png 或 PreviewImageManager 未初始化");
+        }
+
         UpdateCluePage();
     }
+
 
     void UpdateCluePage()
     {
@@ -287,7 +306,7 @@ public class BookUIManager : MonoBehaviour
     }
 
     // ===================== 道具 =====================
-    void GenerateItemButtons()
+    public void GenerateItemButtons()
     {
         if (itemData == null || itemLeftContainer == null || itemRightContainer == null || itemButtonPrefab == null)
             return;
@@ -299,6 +318,7 @@ public class BookUIManager : MonoBehaviour
         itemLookup.Clear();
 
         var collectedItems = itemData.items.FindAll(i => i.collected);
+
         collectedItems.Sort((a, b) => a.collectedTime.CompareTo(b.collectedTime));
         int total = collectedItems.Count;
         int itemsPerDoublePage = itemsPerPage * 2;
@@ -344,9 +364,22 @@ public class BookUIManager : MonoBehaviour
         if (item == null) return;
         currentItem = item;
         currentItemPage = 0;
+ 
         itemDetailPanel?.SetActive(true);
+
+        var image = Resources.Load<Sprite>($"Clues/{item.id}");
+        if (image != null && PreviewImageManager.Instance != null)
+        {
+            Debug.Log($"🖼️ 顯示線索圖片：{item.id}");
+            PreviewImageManager.Instance.ShowImage(image);
+        }
+        else
+        {
+            Debug.LogWarning($"⚠️ 找不到圖片：Resources/Clues/{item.id}.png 或 PreviewImageManager 未初始化");
+        }
         UpdateItemPage();
     }
+
 
     void UpdateItemPage()
     {

@@ -85,4 +85,35 @@ public class MainMenuAnimator : MonoBehaviour
         // 4️⃣ 載入下一個場景
         SceneManager.LoadScene(nextSceneName);
     }
+
+    public void ExitGameWithAnimation()
+    {
+        StartCoroutine(ExitAndQuit());
+    }
+
+    IEnumerator ExitAndQuit()
+    {
+        // 1️⃣ 標題升起
+        title.DOAnchorPosY(800, 1.5f).SetEase(Ease.InQuad);
+
+        // 2️⃣ 按鈕淡出
+        foreach (var btn in buttons)
+        {
+            btn.DOFade(0f, 0.8f);
+            btn.interactable = false;
+        }
+
+        yield return new WaitForSeconds(0.9f);
+
+        // 3️⃣ 布幕拉開
+        leftCurtain.DOAnchorPosX(-1500, 1.8f).SetEase(Ease.InQuad);
+        yield return rightCurtain.DOAnchorPosX(1500, 1.8f).SetEase(Ease.InQuad).WaitForCompletion();
+
+        // 4️⃣ 結束遊戲
+        Application.Quit();
+
+    #if UNITY_EDITOR
+    UnityEditor.EditorApplication.isPlaying = false;
+    #endif
+    }
 }

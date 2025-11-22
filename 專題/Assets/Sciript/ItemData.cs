@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using DG.Tweening.Core.Easing;
+using System.Collections.Generic;
 using UnityEngine;
+using static ClueData;
+using static SaveItem;
 
 [CreateAssetMenu(fileName = "ItemDatabase", menuName = "Game/Item Database")]
 public class ItemData : ScriptableObject
@@ -29,59 +32,25 @@ public class ItemData : ScriptableObject
     public delegate void ItemAddedHandler(Item item);
     public event ItemAddedHandler OnItemAdded;
 
-    // ============================
-    // 🔍 是否已經擁有某個道具？
-    // ============================
     public bool HasItem(string id)
     {
-        if (string.IsNullOrEmpty(id))
-            return false;
-
-        Item item = items.Find(i => i.id == id);
-
-        // 道具不存在（尚未被初始化加入資料庫）
-        if (item == null)
-            return false;
-
-        return item.collected;
+        return SaveItem.HasItem(id);
     }
 
-    // ============================
-    // ➕ 新增道具（撿到場景物品）
-    // ============================
     public void AddItem(string id, string name = null)
     {
-        if (string.IsNullOrEmpty(id))
-        {
-            Debug.LogWarning("❌ AddItem 被呼叫但 id 為空！");
-            return;
-        }
-
         Item item = items.Find(i => i.id == id);
-
         if (item != null)
         {
-            // 已存在，直接標記已取得
             item.collected = true;
             item.collectedTime = Time.time;
-
             if (!string.IsNullOrEmpty(name))
                 item.name = name;
+            SaveItem.SaveItems(id);
         }
         else
         {
-            // 若資料庫沒有該道具 → 新增一筆
-            item = new Item
-            {
-                id = id,
-                name = string.IsNullOrEmpty(name) ? id : name,
-                collected = true,
-                collectedTime = Time.time,
-                detail = "",
-                fullContent = "",
-                pages = new List<string>()
-            };
-
+            item = new Item { id = id, name = name ?? id, collected = true };
             items.Add(item);
         }
 
@@ -122,6 +91,7 @@ public class ItemData : ScriptableObject
             i.collected = false;
             i.collectedTime = 0f;
         }
+        SaveItem.ResetItems();
     }
 
     // ============================
@@ -162,4 +132,14 @@ public class ItemData : ScriptableObject
         }
         return true;
     }
+
+    public void SyncFromSave(List<string> savedIds)
+    {
+        foreach (var item in items)
+        {
+            item.collected = savedIds.Contains(item.id);
+            item.collectedTime = item.collected ? Time.time : 0f;
+        }
+    }
+
 }

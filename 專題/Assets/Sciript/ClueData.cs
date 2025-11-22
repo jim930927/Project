@@ -34,8 +34,7 @@ public class ClueData : ScriptableObject
 
     public bool HasClue(string id)
     {
-        Clue clue = clues.Find(c => c.id == id);
-        return SaveClue.HasClue(id) && clue.collected;
+        return SaveClue.HasClue(id);
     }
 
     public void AddClue(string id, string name = null)
@@ -63,7 +62,10 @@ public class ClueData : ScriptableObject
     public void ResetAll()
     {
         foreach (var c in clues)
+        {
             c.collected = false;
+            c.collectedTime = 0f;
+        } 
         SaveClue.ResetClues();
     }
 
@@ -108,8 +110,8 @@ public class ClueData : ScriptableObject
         return true;
     }
     
-    // ✅ 新增：檢查是否收集了指定的線索
-public bool HasCollectedClues(params string[] requiredIds)
+        // ✅ 新增：檢查是否收集了指定的線索
+    public bool HasCollectedClues(params string[] requiredIds)
     {
         foreach (string id in requiredIds)
         {
@@ -123,6 +125,14 @@ public bool HasCollectedClues(params string[] requiredIds)
 
         Debug.Log("✅ 已收集指定的所有線索！");
         return true;
+    }
+    public void SyncFromSave(List<string> savedIds)
+    {
+        foreach (var clue in clues)
+        {
+            clue.collected = savedIds.Contains(clue.id);
+            clue.collectedTime = clue.collected ? Time.time : 0f;
+        }
     }
 
 }

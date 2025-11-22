@@ -20,6 +20,7 @@ VAR bed_top = false
 VAR incense_open = false
 VAR forcer_open = false
 VAR incense_again = false
+VAR sideboard = false
 
 
 EXTERNAL UnlockDoor(door_id)
@@ -862,6 +863,42 @@ EXTERNAL Get_fragments(fragmentID)
 ->END
 
 == safe_open
+{ sideboard == true: 
+    -> enough
+- else:
+    -> not_enough 
+    }
+
+
+== not_enough
+~ Get_Clue("Letter2")
+~ speaker = ""
+......
+~ speaker = "我"
+「這是……我爸寫的嗎？」
+「“那老不死的”？是在說誰？」
+「這到底是怎麼回事？難不成我爸心裡有個他很討厭的人嗎？」
+「……」
+「或許這會是個很重要的線索，先帶在身上吧。」
+「這裡還有爸媽房間的備用鑰匙？或許只要進去那裡…我就能找到一切我想了解的真相……」
+#StoryNPC
+~ speaker = "引路人"
+「你找到了很重要的東西。」
+~ speaker = "我"
+「嗯！這是我爸媽房間的備用鑰匙，有了它我就能進到我爸媽的房間裡了，那裡應該會有很多我想知道的真相。」
+~ speaker = "引路人"
+不過我看你現在似乎有部分記憶沒有找回，沒準備好的話不要隨便違反規則進爸媽房間，否則你會遇到不好的事。」
+~ speaker = "我"
+「好，我知道了。」
+#StoryNPC_disspear
+~ speaker = ""
+~ Get_fragments("lied")
+【獲得道具：父母房間的備用鑰匙】
+【獲得線索：一封字跡潦草的書信】
+【獲得記憶碎片5/8：父親的謊言】
+->END
+
+== enough
 ~ Get_Clue("Letter2")
 ~ speaker = ""
 ......
@@ -967,7 +1004,6 @@ EXTERNAL Get_fragments(fragmentID)
     「如果我想請神明幫忙，只點燃一支香可能不夠......」
     ->END
 *【三炷香】
-    #burn
     ~ HP_Add(1)
     ~ speaker = "我"
     「我...好像只求過一次…那是我唯一主動去祈求神明的時候。」
@@ -976,6 +1012,7 @@ EXTERNAL Get_fragments(fragmentID)
     「連祈願的方式……都要有人告訴我『正確』的做法。
     可是，神明在意的……真的是香的數量，還是我祈求時的心意？」
     ~ speaker = ""
+    #burn
     （拿起神桌上的打火機點亮了手中的香，拜三拜，向神明祈求，隨後把香插入香爐內）
     #open_forcer
     （角落放著祖先牌位的櫃子發出了咖噠一聲）
@@ -1038,6 +1075,7 @@ EXTERNAL Get_fragments(fragmentID)
 拿起平安符
 ~ Get_Clue("amulet")
 ~ Get_fragments("desire")
+#forcer_end
 【獲得線索：平安符（可抵擋一次攻擊）】
 【獲得記憶碎片6/8：母親的願望】
 ->END
@@ -1082,7 +1120,7 @@ EXTERNAL Get_fragments(fragmentID)
 和我記憶裡那些吼聲、懲罰、鎖上的門……是同一個家嗎？」
 「如果兩個版本的家都是真的……那我到底生活在哪一個“家”裡？」
 「也許……這才是最可怕的地方——我不知道自己該懷念哪一個家。」
-
+~ sideboard = true
 【獲得線索：全家福、日記殘頁-3】
 【獲得記憶碎片8/8：記憶中的模樣】
 ->END
@@ -1122,10 +1160,6 @@ EXTERNAL Get_fragments(fragmentID)
 ~ speaker = "我"
 「要先找到鑰匙...」
 ->END
-
-
-
-
 
 
 

@@ -206,13 +206,6 @@ public class firstDialogueManager : MonoBehaviour
     public void EnterDialogueMode(TextAsset newInkJSON, string knotName = "", Action onComplete = null)
     {
         SetPlayerCanMove(false);
-        if (justLoaded)
-        {
-            // 代表是從存檔載入的，不要重播開場 CG 或重新初始化 Ink
-            Debug.Log("🟡 已從存檔載入，跳過自動對話初始化");
-            justLoaded = false;
-            return;
-        }
 
         if (newInkJSON == null) return;
 
@@ -244,6 +237,30 @@ public class firstDialogueManager : MonoBehaviour
                     Debug.Log("🩸 為新 Story 建立 hp（預設為 3）");
                 }
             }
+
+            story.BindExternalFunction("Get_Item", (string itemID) =>
+            {
+                var clueIDB = itemDatabase;
+                var bookUI = bookUIManager;
+
+                clueIDB.AddItem(itemID);
+
+                bookUI.OpenItemOverlay(itemID);
+
+                // ✅ 嘗試從 Resources/Clues/ 載入對應圖片
+                var image = Resources.Load<Sprite>($"Clues/{itemID}");
+                if (image != null && PreviewImageManager.Instance != null)
+                {
+                    Debug.Log($"🖼️ 顯示線索圖片：{itemID}");
+                    PreviewImageManager.Instance.ShowImage(image);
+                }
+                else
+                {
+                    Debug.LogWarning($"⚠️ 找不到圖片：Resources/Clues/{itemID}.png 或 PreviewImageManager 未初始化");
+                }
+
+                Debug.Log($"📘 Ink 觸發撿取道具：{itemID}");
+            });
 
 
             story.BindExternalFunction("canStartBattle", () =>
@@ -555,8 +572,6 @@ public class firstDialogueManager : MonoBehaviour
         yield return new WaitForSeconds(0.05f); // 再給 Ink 一點時間
         ContinueStory();
     }
-
-
 
 
     public void UpdatePortrait(string speakerName)
