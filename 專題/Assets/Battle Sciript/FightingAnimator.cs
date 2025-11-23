@@ -41,11 +41,11 @@ public class FightingAnimator : MonoBehaviour
         q5StartPos = question5.anchoredPosition;
 
         // 設定掉落後的位置（可依實際UI調整）
-        q1DropPos = new Vector2(q1StartPos.x, 80f);
-        q2DropPos = new Vector2(q2StartPos.x, -20f);
-        q3DropPos = new Vector2(q3StartPos.x, 100f);
-        q4DropPos = new Vector2(q4StartPos.x, 400f);
-        q5DropPos = new Vector2(q5StartPos.x, 320f);
+        q1DropPos = new Vector2(q1StartPos.x, 350f);
+        q2DropPos = new Vector2(q2StartPos.x, 280f);
+        q3DropPos = new Vector2(q3StartPos.x, 0f);
+        q4DropPos = new Vector2(q4StartPos.x, 80f);
+        q5DropPos = new Vector2(q5StartPos.x, -20f);
 
         StartCoroutine(PlayBattleIntro());
     }

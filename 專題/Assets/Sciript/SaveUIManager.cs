@@ -96,8 +96,10 @@ public class SaveUIManager : MonoBehaviour
 
         // === 儲存「場景實體的線索」 ===
         data.collectedClues.Clear();
+
         foreach (var pickup in Resources.FindObjectsOfTypeAll<CluePickup>())
         {
+
             if (pickup == null || !pickup.gameObject.scene.IsValid()) continue;
             if (pickup.collected)
             {
@@ -113,16 +115,20 @@ public class SaveUIManager : MonoBehaviour
         {
             Debug.Log("ClueDB saved instance: " + anyClue.clueData.GetInstanceID());
 
-            foreach (var c in anyClue.clueData.clues)
-                if (c.collected) data.databaseCollectedClueIds.Add(c.id);
+            foreach (var c in DatabaseSingleton.ClueDB.clues)
+                if (c.collected)
+                    data.databaseCollectedClueIds.Add(c.id);
+
         }
 
         data.databaseCollectedItemIds.Clear();
         var anyItem = Resources.FindObjectsOfTypeAll<ItemPickup>().FirstOrDefault(p => p?.itemData != null);
         if (anyItem != null)
         {
-            foreach (var i in anyItem.itemData.items)
-                if (i.collected) data.databaseCollectedItemIds.Add(i.id);
+            foreach (var i in DatabaseSingleton.ItemDB.items)
+                if (i.collected)
+                    data.databaseCollectedItemIds.Add(i.id);
+
         }
 
         // === 儲存互動物件 ===

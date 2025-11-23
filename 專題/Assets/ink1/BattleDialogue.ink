@@ -34,7 +34,6 @@ EXTERNAL HP_Add(hp)
     - else:
         -> wrong_path1
     }
-
 === correct_path1 ===
 ~ speaker = "我"
 「我…是墨涅」
@@ -43,9 +42,9 @@ EXTERNAL HP_Add(hp)
 ~ speaker = "我"
 「懷念？難道...你認識我......？」
 ~ speaker = ""
-神秘人沒有回答，但嘴角似乎有一瞬間往上抬了一下
+神秘人沉默了片刻
 ~ speaker = "我"
-「他剛剛是不是...應該是我看錯了」
+「......?」
 -> q2
 
 

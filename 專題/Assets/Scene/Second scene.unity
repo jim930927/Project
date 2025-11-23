@@ -3063,7 +3063,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemID: rule
   itemName: "\u3010\u5BB6\u898F\u3011"
-  itemData: {fileID: 11400000, guid: 2c30294bcd788e64cba5edbdfb80302e, type: 2}
   destroyOnPickup: 1
   inkManager: {fileID: 1222130035}
   inkStoryAsset: {fileID: 4900000, guid: 1a301e74df62402479f89c01863ea942, type: 3}
@@ -31793,7 +31792,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemID: key_unknow
   itemName: "\u3010\u4E0D\u660E\u7684\u9470\u5319\u3001\u63C9\u76BA\u7684\u7D19\u5718\u3011"
-  itemData: {fileID: 11400000, guid: 2c30294bcd788e64cba5edbdfb80302e, type: 2}
   destroyOnPickup: 1
   inkManager: {fileID: 1222130035}
   inkStoryAsset: {fileID: 4900000, guid: 1a301e74df62402479f89c01863ea942, type: 3}
@@ -32356,7 +32354,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemID: incense
   itemName: "\u3010\u4E00\u5305\u796D\u62DC\u7528\u7684\u9999\u8DDF\u4F7F\u7528\u6307\u5357\u3011"
-  itemData: {fileID: 11400000, guid: 2c30294bcd788e64cba5edbdfb80302e, type: 2}
   destroyOnPickup: 1
   inkManager: {fileID: 1222130035}
   inkStoryAsset: {fileID: 4900000, guid: 1a301e74df62402479f89c01863ea942, type: 3}
@@ -42979,7 +42976,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clueID: MomLetter
   clueName: "\u3010\u5ABD\u5ABD\u7D66\u963F\u59E8\u7684\u4FE1\u4EF6\u3011"
-  clueData: {fileID: 11400000, guid: 7b90fe4aaccb5634d892a3aa92abaf94, type: 2}
   destroyOnPickup: 1
   inkManager: {fileID: 1222130035}
   inkStoryAsset: {fileID: 4900000, guid: 1a301e74df62402479f89c01863ea942, type: 3}
@@ -45976,7 +45972,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemID: water_letter
   itemName: "\u3010\u88AB\u6C34\u6D78\u6FD5\u7684\u4FE1\u5C01\u3011"
-  itemData: {fileID: 11400000, guid: 2c30294bcd788e64cba5edbdfb80302e, type: 2}
   destroyOnPickup: 1
   inkManager: {fileID: 1222130035}
   inkStoryAsset: {fileID: 4900000, guid: 1a301e74df62402479f89c01863ea942, type: 3}
@@ -56654,7 +56649,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clueID: Journal4
   clueName: "\u3010\u65E5\u8A18\u6B98\u9801-4\u3011"
-  clueData: {fileID: 11400000, guid: 7b90fe4aaccb5634d892a3aa92abaf94, type: 2}
   destroyOnPickup: 1
   inkManager: {fileID: 1222130035}
   inkStoryAsset: {fileID: 4900000, guid: 1a301e74df62402479f89c01863ea942, type: 3}
@@ -57757,7 +57751,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clueID: AuntLetter
   clueName: "\u3010\u963F\u59E8\u7D66\u5ABD\u5ABD\u7684\u4FE1\u4EF6\u3011"
-  clueData: {fileID: 11400000, guid: 7b90fe4aaccb5634d892a3aa92abaf94, type: 2}
   destroyOnPickup: 1
   inkManager: {fileID: 1222130035}
   inkStoryAsset: {fileID: 4900000, guid: 1a301e74df62402479f89c01863ea942, type: 3}
@@ -57873,7 +57866,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clueID: Journal1
   clueName: "\u3010\u65E5\u8A18\u6B98\u9801-1\u3011"
-  clueData: {fileID: 11400000, guid: 7b90fe4aaccb5634d892a3aa92abaf94, type: 2}
   destroyOnPickup: 1
   inkManager: {fileID: 1222130035}
   inkStoryAsset: {fileID: 4900000, guid: 1a301e74df62402479f89c01863ea942, type: 3}
@@ -58380,7 +58372,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clueID: Exam
   clueName: "\u301081\u5206\u7684\u6578\u5B78\u8003\u5377\u3011"
-  clueData: {fileID: 11400000, guid: 7b90fe4aaccb5634d892a3aa92abaf94, type: 2}
   destroyOnPickup: 1
   inkManager: {fileID: 1222130035}
   inkStoryAsset: {fileID: 4900000, guid: 1a301e74df62402479f89c01863ea942, type: 3}
@@ -61541,7 +61532,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clueID: Journal5
   clueName: "\u3010\u65E5\u8A18\u6B98\u9801-5\u3011"
-  clueData: {fileID: 11400000, guid: 7b90fe4aaccb5634d892a3aa92abaf94, type: 2}
   destroyOnPickup: 1
   inkManager: {fileID: 1222130035}
   inkStoryAsset: {fileID: 4900000, guid: 1a301e74df62402479f89c01863ea942, type: 3}
@@ -68308,6 +68298,50 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &2069459450
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2069459452}
+  - component: {fileID: 2069459451}
+  m_Layer: 0
+  m_Name: DataMnager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2069459451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2069459450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925d8fc5efb350345a3154d82e6903f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &2069459452
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2069459450}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 46.209595, y: 53.286804, z: -0.9555249}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2071169374
 GameObject:
   m_ObjectHideFlags: 0
@@ -69036,7 +69070,6 @@ SceneRoots:
   - {fileID: 1804843679}
   - {fileID: 306166387}
   - {fileID: 643654570}
-  - {fileID: 783104257}
   - {fileID: 1920659394}
   - {fileID: 2027663923}
   - {fileID: 437103131}
@@ -69049,3 +69082,5 @@ SceneRoots:
   - {fileID: 1451263009}
   - {fileID: 756227587}
   - {fileID: 289825758}
+  - {fileID: 783104257}
+  - {fileID: 2069459452}

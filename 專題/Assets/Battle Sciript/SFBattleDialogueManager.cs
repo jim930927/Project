@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -129,15 +130,20 @@ public class SFBattleDialogueManager : MonoBehaviour
 
     private IEnumerator SafeContinue()
     {
-        isContinuing = true;
         canContinue = false;
-        inputTimer = 0f;
-
         yield return new WaitForSeconds(0.05f);
+
         ContinueStory();
+
+        // 🔒 清掉所有輸入，避免下一幀又觸發
+        Input.ResetInputAxes();
+        if (EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(null);
+
         yield return new WaitForSeconds(0.15f);
-        isContinuing = false;
+        skipLocked = false;
     }
+
 
     public void ContinueStory()
     {
@@ -239,6 +245,14 @@ public class SFBattleDialogueManager : MonoBehaviour
         canContinue = false;
         inputTimer = 0f;
         skipLocked = true;
+
+        StartCoroutine(LockInputTemporarily(0.2f));
+
+        // 🔒 避免按鍵還在按著 → 自動 continue / 自動選項 / 誤觸 UI
+        if (EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(null);
+
+        Input.ResetInputAxes();
     }
 
     private void DisplayChoices()
@@ -282,6 +296,10 @@ public class SFBattleDialogueManager : MonoBehaviour
             }
         }
 
+        // 🔒 鎖鍵（防止空白鍵誤觸第一個選項）
+        StartCoroutine(LockInputTemporarily(0.2f));
+        EventSystem.current.SetSelectedGameObject(null);
+        Input.ResetInputAxes();
         Debug.Log($"🟢 DisplayChoices(): choices={choices.Count}, isShowingChoices={isShowingChoices}");
     }
 

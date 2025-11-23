@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static ClueData;
@@ -154,10 +155,18 @@ public class firstDialogueManager : MonoBehaviour
     {
         canContinue = false;
         yield return new WaitForSeconds(0.05f);
+
         ContinueStory();
+
+        // 🔒 清掉所有輸入，避免下一幀又觸發
+        Input.ResetInputAxes();
+        if (EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(null);
+
         yield return new WaitForSeconds(0.15f);
         skipLocked = false;
     }
+
 
 
 
@@ -499,6 +508,14 @@ public class firstDialogueManager : MonoBehaviour
 
             onDialogueComplete?.Invoke();
             onDialogueComplete = null;
+
+            StartCoroutine(LockInputTemporarily(0.2f));
+
+            // 🔒 避免按鍵還在按著 → 自動 continue / 自動選項 / 誤觸 UI
+            if (EventSystem.current != null)
+                EventSystem.current.SetSelectedGameObject(null);
+
+            Input.ResetInputAxes();
         }
     }
 
@@ -545,6 +562,9 @@ public class firstDialogueManager : MonoBehaviour
                 choiceButtons[i].gameObject.SetActive(false);
             }
         }
+        StartCoroutine(LockInputTemporarily(0.2f));
+        EventSystem.current.SetSelectedGameObject(null);
+        Input.ResetInputAxes();
 
         Debug.Log($"🟢 DisplayChoices(): choices={choices.Count}, isShowingChoices={isShowingChoices}");
     }

@@ -1107,6 +1107,7 @@ EXTERNAL Get_fragments(fragmentID)
 
 == inside
 ~ speaker = ""
+~ key_gold = false
 用神明廳得來的金鑰匙打開客廳的玻璃櫥窗。
 #use_key_gold
 裡面有一張童年出遊時的全家福照片、幾張日記殘頁

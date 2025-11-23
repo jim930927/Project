@@ -7,7 +7,8 @@ public class CluePickup : MonoBehaviour
     [Header("線索設定")]
     public string clueID;          // 對應 ClueData 裡的 id
     public string clueName;        // 顯示名稱（可選）
-    public ClueData clueData;      // 指向 ClueDatabase（ScriptableObject）
+    public ClueData clueData => DatabaseSingleton.ClueDB;
+    // 指向 ClueDatabase（ScriptableObject）
 
     [Header("互動設定")]
     public bool destroyOnPickup = true; // 撿起後是否刪除物件

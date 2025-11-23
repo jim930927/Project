@@ -6,7 +6,7 @@ public class EnemyController2D : MonoBehaviour
     [Header("基本設定")]
     public Transform player;
     public Transform appearPoint;
-    public float moveSpeed = 4f;
+    public float moveSpeed = 3f;
     public bool isChasing = false;
 
     [Header("追丟設定")]

@@ -34,7 +34,8 @@ public class ItemData : ScriptableObject
 
     public bool HasItem(string id)
     {
-        return SaveItem.HasItem(id);
+        Item item = items.Find(i => i.id == id);
+        return SaveItem.HasItem(id) && item.collected;
     }
 
     public void AddItem(string id, string name = null)
@@ -141,5 +142,14 @@ public class ItemData : ScriptableObject
             item.collectedTime = item.collected ? Time.time : 0f;
         }
     }
+
+    public void SyncFromPlayerPrefs()
+    {
+        foreach (var item in items)
+        {
+            item.collected = PlayerPrefs.GetInt("item_" + item.id, 0) == 1;
+        }
+    }
+
 
 }

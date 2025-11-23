@@ -254,7 +254,7 @@ public class FirstBookUI : MonoBehaviour
             ? currentClue.pages[currentPage]
             : currentClue.fullContent ?? currentClue.detail;
 
-        clueDetailText.text = $"{pageText}\n\n<color=#999>(第 {currentPage + 1}/{pageCount} 頁)</color>";
+        clueDetailText.text = $"{pageText}";
 
         CDnextPageButton.gameObject.SetActive(currentPage < pageCount - 1);
         CDprevPageButton.gameObject.SetActive(currentPage > 0);
@@ -374,7 +374,7 @@ public class FirstBookUI : MonoBehaviour
             ? currentItem.pages[currentItemPage]
             : currentItem.fullContent ?? currentItem.detail;
 
-        clueDetailText.text = $"{pageText}\n\n<color=#999>(第 {currentItemPage + 1}/{pageCount} 頁)</color>";
+        clueDetailText.text = $"{pageText}";
 
         IDnextPageButton.gameObject.SetActive(currentItemPage < pageCount - 1);
         IDprevPageButton.gameObject.SetActive(currentItemPage > 0);

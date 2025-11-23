@@ -27,6 +27,11 @@ public class ClueData : ScriptableObject
 
     }
 
+    void Awake()
+    {
+        Debug.Log("ClueDB Awake instance id = " + GetInstanceID());
+    }
+
     public List<Clue> clues = new List<Clue>();
 
     public delegate void ClueAddedHandler(Clue clue);
@@ -134,5 +139,14 @@ public class ClueData : ScriptableObject
             clue.collectedTime = clue.collected ? Time.time : 0f;
         }
     }
+
+    public void SyncFromPlayerPrefs()
+    {
+        foreach (var clue in clues)
+        {
+            clue.collected = PlayerPrefs.GetInt("clue_" + clue.id, 0) == 1;
+        }
+    }
+
 
 }

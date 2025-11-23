@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static ClueData;
@@ -807,6 +808,12 @@ public class FinalInkDialogue : MonoBehaviour
 
             onDialogueComplete?.Invoke();
             onDialogueComplete = null;
+
+            // 🔒 避免按鍵還在按著 → 自動 continue / 自動選項 / 誤觸 UI
+            if (EventSystem.current != null)
+                EventSystem.current.SetSelectedGameObject(null);
+
+            Input.ResetInputAxes();
         }
     }
 

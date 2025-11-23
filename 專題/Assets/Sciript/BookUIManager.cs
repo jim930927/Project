@@ -181,7 +181,8 @@ public class BookUIManager : MonoBehaviour
         clueLookup.Clear();
 
         // 篩出已收集線索
-        var collectedClues = clueData.clues.FindAll(c => c.collected);
+        //var collectedClues = clueData.clues.FindAll(c => c.collected);
+        var collectedClues = clueData.clues.FindAll(c => SaveClue.HasClue(c.id));
 
         collectedClues.Sort((a, b) => a.collectedTime.CompareTo(b.collectedTime));
         int total = collectedClues.Count;
@@ -317,7 +318,8 @@ public class BookUIManager : MonoBehaviour
         itemButtons.Clear();
         itemLookup.Clear();
 
-        var collectedItems = itemData.items.FindAll(i => i.collected);
+        //var collectedItems = itemData.items.FindAll(i => i.collected);
+        var collectedItems = itemData.items.FindAll(i => SaveItem.HasItem(i.id));
 
         collectedItems.Sort((a, b) => a.collectedTime.CompareTo(b.collectedTime));
         int total = collectedItems.Count;

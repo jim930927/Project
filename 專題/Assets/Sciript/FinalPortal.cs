@@ -159,11 +159,11 @@ public class FinalPortal : MonoBehaviour
         if (portalID == "b1") // 👈 改成你的木屋出口的 portalID
         {
             var dialogue = FindFirstObjectByType<FinalInkDialogue>();
-            GuideNPC.SetActive(true);
             if (dialogue != null && HasCollectedAllClues(dialogue))
             {
                 Debug.Log("🌟 所有線索已收集，觸發引路人被抓走事件");
 
+                GuideNPC.SetActive(true);
                 // 停止玩家移動
                 dialogue.SetPlayerCanMove(false);
 

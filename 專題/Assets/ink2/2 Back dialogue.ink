@@ -17,6 +17,7 @@ VAR gate_key = false
 VAR bed_chest = false
 VAR quilt_end = false
 VAR bed_top = false
+VAR Guide_again = false
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
@@ -222,7 +223,11 @@ EXTERNAL Get_fragments(fragmentID)
 .....
 + 好了
     {parent_explore >= 5:
+        {Guide_again == false:
         -> explore_end
+        - else:
+            -> no_again 
+        }
     - else:
         -> no_explore 
     }
@@ -258,12 +263,18 @@ EXTERNAL Get_fragments(fragmentID)
 「既然我已經想起了一切，也找到了真相...那我是不是可以離開這裡了？」
 ~ speaker = "引路人"
 「可以。大門的鑰匙就在我這裡，我們離開這裡。」
+~ Guide_again =true
 ~ gate_key = true
 ->END
 
 == no_explore 
 ~ speaker = "引路人"
-似乎還缺少某些東西，再多看看吧
+「似乎還缺少某些東西，再多看看吧」
+->END
+
+== no_again
+~ speaker = "引路人"
+「該走了」
 ->END
 
 == no_enter
@@ -320,6 +331,7 @@ EXTERNAL Get_fragments(fragmentID)
 ~ speaker = ""
 推開大門，走了出去
 #go_out
+#play_music he_appear
 ......
 ~ speaker = "我"
 「怎麼回事？」

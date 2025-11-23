@@ -2,9 +2,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class FinalBattleDialogueManager : MonoBehaviour
 {
@@ -248,6 +249,12 @@ public class FinalBattleDialogueManager : MonoBehaviour
         canContinue = false;
         inputTimer = 0f;
         skipLocked = true;
+
+        // 🔒 避免按鍵還在按著 → 自動 continue / 自動選項 / 誤觸 UI
+        if (EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(null);
+
+        Input.ResetInputAxes();
     }
 
     private void DisplayChoices()

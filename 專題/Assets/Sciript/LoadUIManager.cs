@@ -160,15 +160,45 @@ public class LoadUIManager : MonoBehaviour
 
         if (clueDB != null)
         {
+            // 同步到 ScriptableObject（請確保你的 ClueData.SyncFromSave 接受 List<string>）
             clueDB.SyncFromSave(data.databaseCollectedClueIds);
+            Debug.Log("Applied Clue IDs to ClueDB: " + string.Join(",", data.databaseCollectedClueIds));
+
+            // 兼容舊有的 PlayerPrefs 機制：把已收集的 id 寫回 PlayerPrefs（避免 UI 依賴 PlayerPrefs 時出事）
+            if (data.databaseCollectedClueIds != null)
+            {
+                foreach (var id in data.databaseCollectedClueIds)
+                {
+                    PlayerPrefs.SetInt("clue_" + id, 1);
+                }
+                PlayerPrefs.Save();
+            }
         }
 
         if (itemDB != null)
         {
             itemDB.SyncFromSave(data.databaseCollectedItemIds);
+            Debug.Log("Applied Item IDs to ItemDB: " + string.Join(",", data.databaseCollectedItemIds));
+
+            if (data.databaseCollectedItemIds != null)
+            {
+                foreach (var id in data.databaseCollectedItemIds)
+                {
+                    PlayerPrefs.SetInt("item_" + id, 1);
+                }
+                PlayerPrefs.Save();
+            }
         }
 
-
+        var book = GameObject.FindObjectOfType<BookUIManager>();
+        if (book != null)
+        {
+            book.currentClueListPage = 0;
+            book.currentItemListPage = 0;
+            book.GenerateClueButtons();
+            book.GenerateItemButtons();
+            Debug.Log("Book UI regenerated after load. Clue buttons count: " + book.transform.childCount);
+        }
 
         // === UI 修復 ===
         var evt = UnityEngine.EventSystems.EventSystem.current;

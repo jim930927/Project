@@ -12,7 +12,8 @@ public class ItemPickup : MonoBehaviour
     public string itemName;
 
     [Tooltip("指向 ItemData ScriptableObject 資料庫")]
-    public ItemData itemData;
+    public ItemData itemData => DatabaseSingleton.ItemDB;
+
 
     [Header("互動設定")]
     [Tooltip("撿起後是否刪除物件")]
