@@ -495,7 +495,6 @@ EXTERNAL Get_fragments(fragmentID)
 「從那之後...我好像再也沒在半夜跑到廚房了...」
 「我一直認為，他們的規則只是為了讓我服從……」
 「可那天的媽媽，似乎真的只是怕我累壞……」
-~ HP_Add(1)
 「或者，我只是想把每一次的限制都解讀成惡意，這樣我才有理由反抗。」
 ->END
 
@@ -576,7 +575,6 @@ EXTERNAL Get_fragments(fragmentID)
 ->END
 
 == cloth_end
-~ HP_Add(1)
 ~ Get_fragments("scars")
 【獲得線索：日記殘頁-4】
 【獲得記憶碎片3/8：校服上的傷痕】
