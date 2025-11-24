@@ -291,29 +291,40 @@ public class InkDialogueManager : MonoBehaviour
     }
     private bool GetInkBool(string varName)
     {
+        // 1. 基本防呆
         if (story == null || story.variablesState == null)
+        {
+            Debug.LogWarning($"[InkDebug] 查 {varName} 時 story 或 variablesState 為 null");
             return false;
+        }
 
-        object v;
+        object v = null;
         try
         {
             v = story.variablesState[varName];
         }
         catch
         {
+            Debug.LogWarning($"[InkDebug] Ink 變數 '{varName}' 不存在於 variablesState 中");
             return false;
         }
 
-        if (v is bool b) return b;
-        if (v is int i) return i != 0;
-        if (v is float f) return Mathf.Abs(f) > 0.0001f;
+        if (v == null)
+        {
+            Debug.LogWarning($"[InkDebug] Ink 變數 '{varName}' 為 null");
+            return false;
+        }
 
-        bool parsed;
-        if (bool.TryParse(v.ToString(), out parsed))
-            return parsed;
+        bool result;
+        if (v is bool b) result = b;
+        else if (v is int i) result = (i != 0);
+        else if (v is float f) result = Mathf.Abs(f) > 0.0001f;
+        else if (!bool.TryParse(v.ToString(), out result)) result = false;
 
-        return false;
+        Debug.Log($"[InkDebug] {varName} = {v} (parsed => {result})");
+        return result;
     }
+
 
     private void RestoreSceneObjectsFromInk()
     {
@@ -1313,6 +1324,16 @@ public class InkDialogueManager : MonoBehaviour
             switch (tag)
             {
                 case "memory1":
+
+                    // ⚠️ 只在「讀檔後」阻擋，而不是每次都阻擋
+                    // 判斷方式：場景已經是 memory 狀態，或者已經播放過一次
+                    if (justLoaded && GetInkBool("memory1_done"))
+                    {
+                        Debug.Log("⏭ 讀檔後 memory1 已播放過 → 跳過入口");
+                        break;
+                    }
+
+                    // ⚠️ 正常第一次播放
                     originalPlayerPos = player.position;
                     StartCoroutine(EnterMemoryScene("memory1"));
                     break;
@@ -1325,9 +1346,24 @@ public class InkDialogueManager : MonoBehaviour
                     StartCoroutine(EnterMemoryScene("memory3"));
                     break;
                 case "memory4":
-                    originalPlayerPos = player.position;
-                    StartCoroutine(EnterMemoryScene("memory4"));
-                    break;
+                    {
+                        // ⚡ 第一步：打印目前 Ink 的 memory4_done 值
+                        bool flag = GetInkBool("memory4_done");
+                        Debug.Log($"[InkDebug] TAG=memory4, memory4_done={flag}");
+
+                        // ⚡ 第二步：如果已經播放過，跳過回憶
+                        if (flag)
+                        {
+                            Debug.Log("[InkDebug] memory4_done == true → 跳過 EnterMemoryScene(\"memory4\")");
+                            break;
+                        }
+
+                        // ⚡ 第三步：正常第一次觸發回憶
+                        Debug.Log("[InkDebug] memory4_done == false → 觸發 EnterMemoryScene(\"memory4\")");
+                        originalPlayerPos = player.position;
+                        StartCoroutine(EnterMemoryScene("memory4"));
+                        break;
+                    }
                 case "go_out":
                     originalPlayerPos = player.position;
                     StartCoroutine(EnterMemoryScene("go_out"));
@@ -1383,8 +1419,18 @@ public class InkDialogueManager : MonoBehaviour
                     DestroyAllStoryNPCs();
                     break;
                 case "sink_memory_end":
+
+                    // 讀檔後若已經處理過，不要再 Exit
+                    if (justLoaded && GetInkBool("sink_memory_end_done"))
+                    {
+                        Debug.Log("⏭ 讀檔後 sink_memory_end 已處理，跳過退出記憶");
+                        shouldAutoContinue = true;
+                        break;
+                    }
+
+                    // 第一次正常退出回憶
                     StartCoroutine(ExitMemoryScene());
-                    shouldAutoContinue = true; // 🟩 這類 tag 通常沒有對話，繼續下一段
+                    shouldAutoContinue = true;
                     break;
                 case "refrigerator_memory_end":
                     StartCoroutine(ExitMemoryScene());
@@ -1395,9 +1441,26 @@ public class InkDialogueManager : MonoBehaviour
                     shouldAutoContinue = true;
                     break;
                 case "store_memory_end":
-                    StartCoroutine(ExitMemoryScene());
-                    shouldAutoContinue = true; 
-                    break;
+                    {
+                        // ⚡ 第一步：讀取 Ink 的 store_memory_end_done 狀態
+                        bool flag = GetInkBool("store_memory_end_done");
+                        Debug.Log($"[InkDebug] TAG=store_memory_end, store_memory_end_done={flag}, justLoaded={justLoaded}");
+
+                        // ⚡ 第二步：如果是讀檔後，並且 Ink 已經記錄結束過 → 跳過 ExitMemoryScene
+                        if (justLoaded && flag)
+                        {
+                            Debug.Log("[InkDebug] store_memory_end_done==true 且 justLoaded==true → 跳過 ExitMemoryScene()");
+                            shouldAutoContinue = true;
+                            break;
+                        }
+
+                        // ⚡ 第三步：第一次正常退出回憶
+                        Debug.Log("[InkDebug] 第一次執行 store_memory_end → ExitMemoryScene()");
+                        StartCoroutine(ExitMemoryScene());
+                        shouldAutoContinue = true;
+                        break;
+                    }
+
                 case "turn_back":
                     TurnPlayerBack();
                     break;

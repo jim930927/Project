@@ -21,7 +21,10 @@ VAR incense_open = false
 VAR forcer_open = false
 VAR incense_again = false
 VAR sideboard = false
-
+VAR sink_memory_done = false
+VAR sink_memory_end_done = false
+VAR memory4_done = false
+VAR store_memory_end_done = false
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
@@ -414,6 +417,8 @@ EXTERNAL Get_fragments(fragmentID)
 ->sink_memory_end
 
 == sink_memory_end
+~ sink_memory_done = true
+~ sink_memory_end_done = true
 #keep_music
 ~ speaker = " "
 ......
@@ -691,6 +696,9 @@ EXTERNAL Get_fragments(fragmentID)
 ->END
 
 == storeroom
+{ memory4_done:
+    -> END
+}
 #memory4
 #pause_music
 ~ speaker = ""
@@ -729,6 +737,8 @@ EXTERNAL Get_fragments(fragmentID)
 
 
 == store_memory_end
+~ memory4_done = true
+~ store_memory_end_done = true 
 ~ speaker = ""
 ......
 ~ speaker = "我"
