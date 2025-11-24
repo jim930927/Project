@@ -25,6 +25,7 @@ VAR sink_memory_done = false
 VAR sink_memory_end_done = false
 VAR memory4_done = false
 VAR store_memory_end_done = false
+VAR npc_guide_spawned = false
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
@@ -161,6 +162,7 @@ EXTERNAL Get_fragments(fragmentID)
 ~ speaker = ""
 ~ bed_chest = true
 【現在開始可以向AI引路人問問題（他只會回答遊戲相關的問題）或許他知道一些重要的線索】
+~ npc_guide_spawned = true
 ->END
 
 

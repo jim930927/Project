@@ -335,6 +335,9 @@ public class InkDialogueManager : MonoBehaviour
         if (forcer != null)
             forcer.SetActive(GetInkBool("forcer_open"));
 
+        if (AiNpc != null)
+            AiNpc.SetActive(GetInkBool("npc_guide_spawned"));
+
         // 之後有其他物件要記錄也可以照這裡加：
         // if (xxxObject != null)
         //     xxxObject.SetActive(GetInkBool("xxx_flag"));
@@ -1396,7 +1399,8 @@ public class InkDialogueManager : MonoBehaviour
                     }
                     break;
                 case "SpawnGuideNPC":
-                    AiNpc.SetActive(true); 
+                    AiNpc.SetActive(true);
+                    story.variablesState["npc_guide_spawned"] = true;
                     break;
                 case "lay_down":
                     FadePlayer();
