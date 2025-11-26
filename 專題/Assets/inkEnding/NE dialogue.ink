@@ -24,6 +24,7 @@ EXTERNAL canStartBattle()
 「你...！」
 ~ speaker = "“它”"
 「好啦好啦~不要用這麼兇的眼神看我，我放你們走就是了～」
+#play_music NormalEndBGM
 #awake
 ~ speaker = "引路人"
 「這裡是......？」
@@ -66,12 +67,15 @@ EXTERNAL canStartBattle()
 最後他成功考上全國最頂尖的藝術大學。
 #BackMountain
 ......
+#pause_music
 #back_screen
 ......
 ~ speaker = "“它”"
 「我替你準備的大禮，還喜歡嗎？嘻嘻~」
 「我只答應你不再纏著你，可沒說...你的人生，我不能動。」
-#black_screen
+#play_cg NormalEndCG
+#black_end
+......
 #MainMeun
 -> DONE
 

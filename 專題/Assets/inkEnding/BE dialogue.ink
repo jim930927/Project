@@ -17,6 +17,7 @@ EXTERNAL canStartBattle()
 
 
 == start ==
+#play_music BadEndBGM
 ~ speaker = " "
 ......
 另一方面，新的學期開始了
@@ -30,7 +31,11 @@ EXTERNAL canStartBattle()
 「我希望...」
 「所有欺負我的人...」
 「都從這世界上消失......」
-#black_screen
-# MainMeun
--> END
+#play_cg BadEndCG
+#black_end
+-> main
 
+== main
+......
+# MainMeun
+->END

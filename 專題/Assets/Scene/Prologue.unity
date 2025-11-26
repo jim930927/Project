@@ -3081,7 +3081,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &363948035
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13557,7 +13557,7 @@ MonoBehaviour:
     sprite: {fileID: -1067545317484713298, guid: 6e9546b4ee3dab142831f085b8214b8a, type: 3}
     position: 0
   - speakerName: "\u795E\u79D8\u4EBA"
-    sprite: {fileID: 6868148420859359972, guid: 740478eed384abb46966c29133445878, type: 3}
+    sprite: {fileID: -3137967284339353352, guid: cac7ab6ee3eb99a49a2019db896bdd80, type: 3}
     position: 1
   dialogueEndCooldown: 0.5
   leftCurtain: {fileID: 387371804}

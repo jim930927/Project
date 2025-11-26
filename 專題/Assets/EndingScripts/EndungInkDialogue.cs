@@ -36,6 +36,7 @@ public class EndingInkDialogue : MonoBehaviour
     public string SceneName = "MainMenu";
     public GameObject fullblackScreen;
     public CanvasGroup blackScreenCanvasGroup; // 黑幕
+    public GameObject endblackScreen;
 
     public bool justLoaded = false;  // ← 新增：判斷是否剛載入存檔
     private bool canAutoContinue = true; // ← 控制是否自動Continue
@@ -46,14 +47,14 @@ public class EndingInkDialogue : MonoBehaviour
     public Transform School;
     public Transform Home;
     public Transform BackMountain;
+    public Transform Theater;
     public Transform monster;
 
+    public GameObject crack;
 
     public GameObject talismanFX;
 
-
     public GameObject classmate;
-
 
     [Header("角色立繪區域（Main / Guide / Him）")]
     public Image mainPortraitImage;
@@ -640,6 +641,9 @@ public class EndingInkDialogue : MonoBehaviour
                 case "black_screen":
                     fullblackScreen.SetActive(true);
                     break;
+                case "black_end":
+                    endblackScreen.SetActive(true);
+                    break;
                 case "back_screen":
                     fullblackScreen.SetActive(false);
                     break;
@@ -697,6 +701,15 @@ public class EndingInkDialogue : MonoBehaviour
                     break;
                 case "Home":
                     player.position = Home.position;
+                    break;
+                case "Theater":
+                    player.position = Theater.position;
+                    break;
+                case "crack_appear":
+                    crack.SetActive(true);
+                    break;
+                case "crack_disappear":
+                    crack.SetActive(false);
                     break;
                 case "awake":
                     {

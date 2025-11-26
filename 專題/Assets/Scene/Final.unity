@@ -97092,10 +97092,10 @@ MonoBehaviour:
     sprite: {fileID: -1067545317484713298, guid: 6e9546b4ee3dab142831f085b8214b8a, type: 3}
     slot: 0
   - speakerName: "\u5F15\u8DEF\u4EBA"
-    sprite: {fileID: 6868148420859359972, guid: 740478eed384abb46966c29133445878, type: 3}
+    sprite: {fileID: -3137967284339353352, guid: cac7ab6ee3eb99a49a2019db896bdd80, type: 3}
     slot: 1
   - speakerName: "\u201C\u5B83\u201D"
-    sprite: {fileID: -2991937770572663176, guid: 5852af312976dc44788f78d32471985d, type: 3}
+    sprite: {fileID: 2772477057956341891, guid: e8b704f897ae36143bc36519462ee669, type: 3}
     slot: 2
   - speakerName: ???
     sprite: {fileID: -6262241670168945901, guid: de9e16899d5449b499a3b37fb742adc5, type: 3}

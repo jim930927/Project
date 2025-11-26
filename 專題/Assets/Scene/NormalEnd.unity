@@ -8178,6 +8178,81 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &453456864
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 453456865}
+  - component: {fileID: 453456868}
+  - component: {fileID: 453456867}
+  m_Layer: 5
+  m_Name: EndBlackScreen
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &453456865
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453456864}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 534145811}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &453456867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453456864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &453456868
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453456864}
+  m_CullTransparentMesh: 1
 --- !u!1 &509507581
 GameObject:
   m_ObjectHideFlags: 0
@@ -8303,6 +8378,7 @@ RectTransform:
   - {fileID: 25797598}
   - {fileID: 444897995}
   - {fileID: 979422387}
+  - {fileID: 453456865}
   - {fileID: 1500476085}
   - {fileID: 1448755079}
   - {fileID: 2009884633}
@@ -18813,7 +18889,7 @@ Transform:
   m_GameObject: {fileID: 721861556}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.02, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -27363,6 +27439,7 @@ MonoBehaviour:
   SceneName: MainMenu
   fullblackScreen: {fileID: 25797597}
   blackScreenCanvasGroup: {fileID: 1496493888}
+  endblackScreen: {fileID: 453456864}
   justLoaded: 0
   player: {fileID: 1280321230}
   player_fake: {fileID: 0}
@@ -27370,7 +27447,9 @@ MonoBehaviour:
   School: {fileID: 0}
   Home: {fileID: 0}
   BackMountain: {fileID: 1218292066}
+  Theater: {fileID: 0}
   monster: {fileID: 0}
+  crack: {fileID: 0}
   talismanFX: {fileID: 0}
   classmate: {fileID: 0}
   mainPortraitImage: {fileID: 1004575114}
@@ -27391,7 +27470,7 @@ MonoBehaviour:
     sprite: {fileID: -549016053603560862, guid: 5551266fde8a5764e8bbd9b68ba6f771, type: 3}
     slot: 1
   - speakerName: "\u201C\u5B83\u201D"
-    sprite: {fileID: -2991937770572663176, guid: 5852af312976dc44788f78d32471985d, type: 3}
+    sprite: {fileID: 2772477057956341891, guid: e8b704f897ae36143bc36519462ee669, type: 3}
     slot: 2
 --- !u!1 &849119471
 GameObject:
@@ -43969,8 +44048,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 964.00006, y: 45}
-  m_SizeDelta: {x: 144.5429, y: 1625.6462}
+  m_AnchoredPosition: {x: 973.74493, y: 42.563793}
+  m_SizeDelta: {x: 127.409, y: 1620.4526}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1060585173
 MonoBehaviour:
@@ -44143,7 +44222,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1187793567}
-  bgmClips: []
+  bgmClips:
+  - {fileID: 8300000, guid: 83e67310221ae1f4da100fd35323415a, type: 3}
 --- !u!82 &1187793567
 AudioSource:
   m_ObjectHideFlags: 0
@@ -44154,8 +44234,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 007778fa6da12bb4f953920d600781fb, type: 3}
-  m_Resource: {fileID: 8300000, guid: 007778fa6da12bb4f953920d600781fb, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 83e67310221ae1f4da100fd35323415a, type: 3}
+  m_Resource: {fileID: 8300000, guid: 83e67310221ae1f4da100fd35323415a, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.3
   m_Pitch: 1

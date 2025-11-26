@@ -46648,7 +46648,7 @@ MonoBehaviour:
     sprite: {fileID: -1067545317484713298, guid: 6e9546b4ee3dab142831f085b8214b8a, type: 3}
     position: 0
   - speakerName: "\u5F15\u8DEF\u4EBA"
-    sprite: {fileID: 6868148420859359972, guid: 740478eed384abb46966c29133445878, type: 3}
+    sprite: {fileID: -3137967284339353352, guid: cac7ab6ee3eb99a49a2019db896bdd80, type: 3}
     position: 1
   - speakerName: '?'
     sprite: {fileID: 6141116550204499731, guid: 9e947128beb792846b2b1695b8c9edce, type: 3}

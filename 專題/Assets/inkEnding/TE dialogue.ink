@@ -14,6 +14,8 @@ EXTERNAL canStartBattle()
 
 
 == start ==
+~ speaker = ""
+......
 ~ speaker = "我"
 「你輸了。按照賭約，你必須讓我離開，而且永遠不准再纏著我。」
 ~ speaker = "“它”"
@@ -35,7 +37,7 @@ EXTERNAL canStartBattle()
 ~ speaker = "我"
 「放...放開我......！」
 ~ speaker = ""
-（在墨涅即將被“它”吞噬的瞬間，他口袋裡的平安符再次綻放出耀眼的光）
+（在即將被“它”吞噬的瞬間，口袋裡的平安符再次綻放出耀眼的光）
 #flash_white
 （強光將“它”的力量驅散，同時喚醒了早已變成木偶的引路人）
 #push_enemy
@@ -51,24 +53,61 @@ EXTERNAL canStartBattle()
 ~ speaker = "“它”"
 「該死...」
 ~ speaker = ""
-（“它”試圖化為黑霧逃離現場，但還是被平安符的光芒給照到，再次現出原形）
+（“它”試圖再次發起攻擊，但平安符發出的光芒讓“它”無法靠近）
 ~ speaker = "我"
-「這是當年我媽幫我求來的平安符，它經過了太子爺的法力加持，你是逃不掉的。」
+「這是當年媽媽幫我求來的平安符，它經過了太子爺的法力加持，你是傷不到我的。」
 ~ speaker = "引路人"
 「我來幫你。」
 ~ speaker = ""
 （引路人舉起手中的燈籠，燈籠的光芒在風中搖曳，照亮了整座山林，也將這終年照射不到陽光的地方逐漸染上光明）
 #flash_white
-（霧氣翻湧、退散，“它”的身影被撕裂成無數碎片，像被風吞沒的陰影般消散。）
+（霧氣翻湧、退散，“它”的身影被逐漸變得透明，像被風吞沒的陰影般消散。）
 #enemy_disappear
-~ speaker = "“它”"
-「第366次…居然失敗了…」
+~ speaker = "回音"
+「我…居然失敗了…」
 ~ speaker = "我"
 「它……消失了？結束了嗎？我……可以回家了？」
 ~ speaker = "引路人"
-「看起來是的，我們可以回家了。」
+「看起來是的，我們可以離…」
 ~ speaker = ""
-（與引路人一同離開後山上）
+（沒等引路人說完，突然間整個空間開始就劇烈晃動，天空跟地板都出現裂痕）
+#crack_appear
+~ speaker = "引路人"
+「糟了…“它”消逝之後，維持空間的力量便不在了，我們得快點離開了」
+~ speaker = "我"
+「好」
+~ speaker = ""
+（此時一隻黑色的手從地上的裂縫中伸出抓住我的腳）
+~ speaker = "我"
+「！！！」
+~ speaker = "回音"
+「別走啊～留下來陪我吧～」
+~ speaker = "引路人"
+「手給我！」
+~ speaker = ""
+（抓住引路人的手）
+#black_screen
+#crack_disappear
+#Theater
+......
+#back_screen
+#play_music TrueEndBGM
+~ speaker = "我"
+「這裡是......？我們回來了？」
+~ speaker = "引路人"
+「是的，我把我們帶回了我們的意識裡了，這裡是絕對安全的」
+~ speaker = "我"
+「它真的消失了嗎？」
+~ speaker = "引路人"
+「我也不能保證，但能確定的是，我們已經脫離它的掌控了」
+「你該離開了，回到現實去，那裡有人在等著你」
+~ speaker = "我"
+「那你呢？」
+~ speaker = "引路人"
+「我說過的，我是你的一部分，我會一直與你同在，直到哪天你又失去自我的時候，我們會在見面的」
+~ speaker = "我"
+「謝謝你，另一個我」
+~ speaker = ""
 #black_screen
 #Hospital
 ......
@@ -127,6 +166,7 @@ EXTERNAL canStartBattle()
 「唉......」
 #black_screen
 #BackMountain
+#pause_music
 ......
 #back_screen
 ~ speaker = ""
@@ -135,7 +175,12 @@ EXTERNAL canStartBattle()
 「我希望...大家都能留在我身邊...永遠不要離開......」
 ~ speaker = ""
 陰廟的傳說並沒有因此失傳，而是以不同的方式繼續流傳，誰也不知道“故事”究竟何時會終結......
-#black_screen
+#play_cg TrueEndCG
+#black_end
+-> main
+
+== main
+......
 # MainMeun
 ->END
 
