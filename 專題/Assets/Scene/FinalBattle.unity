@@ -1589,7 +1589,7 @@ VideoPlayer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 374339969}
   m_Enabled: 1
-  m_VideoClip: {fileID: 0}
+  m_VideoClip: {fileID: 32900000, guid: a1ae2526d3f80e946a147c726af51f42, type: 3}
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
@@ -1868,7 +1868,7 @@ AudioSource:
   m_GameObject: {fileID: 441188016}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -3618394080187439713, guid: 7f1a43b667198424289b172097efbe19, type: 2}
   m_audioClip: {fileID: 8300000, guid: c9f7c0789f8a8584d845c1273030cf9e, type: 3}
   m_Resource: {fileID: 8300000, guid: c9f7c0789f8a8584d845c1273030cf9e, type: 3}
   m_PlayOnAwake: 0
@@ -5383,7 +5383,7 @@ MonoBehaviour:
   hp_2: {fileID: 1490719217455366361, guid: a244279628f12104d88230de1ccbcff2, type: 3}
   hp_1: {fileID: -5817544225397591828, guid: c486689d84e264b44965c578bb9216a6, type: 3}
   hp_0: {fileID: 7060280873281199228, guid: 74d4e04062fd2ba4f81c94e45e58c592, type: 3}
-  SceneName: MainMenu
+  SceneName: FightAgain
   blackScreen: {fileID: 1366457892}
   blackScreenAct: {fileID: 1366457890}
   blackScreenDuration: 1
@@ -7915,7 +7915,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -52.7386, y: 85.8505}
-  m_SizeDelta: {x: 1919.5083, y: 1079.0403}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1369365158
 MonoBehaviour:
@@ -10762,11 +10762,11 @@ RectTransform:
   - {fileID: 1894405496}
   - {fileID: 690317515}
   - {fileID: 890327110}
+  - {fileID: 729283035}
   - {fileID: 374339970}
+  - {fileID: 1366457891}
   - {fileID: 1013607036}
   - {fileID: 46671639}
-  - {fileID: 1366457891}
-  - {fileID: 729283035}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

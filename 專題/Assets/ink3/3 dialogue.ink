@@ -81,6 +81,7 @@ EXTERNAL Use_Item(itemID)
 ->END
 
 == wrong_10
+~ HP_Add(-1)
 ~ speaker = "我"
 「怎麼好像又走回來了？我該不會永遠都要在這裡鬼打牆了吧？」
 ~ speaker = "引路人"
@@ -285,7 +286,8 @@ EXTERNAL Use_Item(itemID)
 ~ speaker = "我"
 「！！！」
 「怎麼回事？！」
-「糟了...這個“它”不只騙了許多無辜之人，現在還把那個傢伙抓走了，我得趕快追上去了結這一切。」
+「糟了...“它”把另一個我抓走了，我得趕快追上去了結這一切。」
+#house_end
 -> END
 
 

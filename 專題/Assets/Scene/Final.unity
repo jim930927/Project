@@ -97076,6 +97076,7 @@ MonoBehaviour:
   bookUIManager: {fileID: 859881904}
   doorUnlocked: 0
   memoryFragmentDatabase: {fileID: 11400000, guid: b92acb2c5efd663478f4ad3c6f11d433, type: 2}
+  houseLock: {fileID: 1518259572}
   endings:
   - tagName: GameOver1:LoseSelf
     text: "\u3010\u58DE\u7D50\u5C40\uFF1A\u55AA\u5931\u81EA\u6211\u3011"
@@ -102055,7 +102056,7 @@ Tilemap:
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 1}
+  m_Color: {r: 0.509434, g: 0.509434, b: 0.509434, a: 1}
   m_Origin: {x: -14, y: 0, z: 0}
   m_Size: {x: 26, y: 143, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
@@ -106853,7 +106854,7 @@ AudioSource:
   m_GameObject: {fileID: 1416335069}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -3618394080187439713, guid: 7f1a43b667198424289b172097efbe19, type: 2}
   m_audioClip: {fileID: 8300000, guid: 007778fa6da12bb4f953920d600781fb, type: 3}
   m_Resource: {fileID: 8300000, guid: 007778fa6da12bb4f953920d600781fb, type: 3}
   m_PlayOnAwake: 0
@@ -113022,7 +113023,7 @@ Tilemap:
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.5943396, g: 0.5943396, b: 0.5943396, a: 1}
   m_Origin: {x: -13, y: -12, z: 0}
   m_Size: {x: 224, y: 157, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
@@ -155110,7 +155111,7 @@ Tilemap:
     m_Data: {r: 1.30077e-40, g: 1.30077e-40, b: 1.30077e-40, a: 1.30077e-40}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
-  m_Color: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 1}
+  m_Color: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}
   m_Origin: {x: -13, y: -2, z: 0}
   m_Size: {x: 225, y: 149, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}

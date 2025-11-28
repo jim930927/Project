@@ -14,6 +14,8 @@ public class MainMenuAnimator : MonoBehaviour
     [Header("按鈕群 (依順序)")]
     public CanvasGroup[] buttons;
 
+    public GameObject optionsPanel;
+
     [Header("動畫參數")]
     public float curtainDuration = 2.0f;           // 布幕滑入速度：放慢
     public float titleDropDuration = 1.2f;         // 標題下落
@@ -84,6 +86,10 @@ public class MainMenuAnimator : MonoBehaviour
 
         // 4️⃣ 載入下一個場景
         SceneManager.LoadScene(nextSceneName);
+    }
+    public void OnClickOptions()
+    {
+        optionsPanel.SetActive(true);
     }
 
     public void ExitGameWithAnimation()

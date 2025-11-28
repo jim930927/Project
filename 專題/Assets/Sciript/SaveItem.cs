@@ -1,27 +1,32 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 public class SaveItem : MonoBehaviour
 {
-    // Àx¦s½u¯Á
+    // å„²å­˜é“å…·
     public static void SaveItems(string id)
     {
         PlayerPrefs.SetInt("item_" + id, 1);
-        PlayerPrefs.Save(); // ¥ß§Y¼g¤J
+        PlayerPrefs.Save();
     }
 
-    // ¬O§_¤w¸g¨ú±o½u¯Á
+    // æ˜¯å¦å·²ç¶“å–å¾—é“å…·
     public static bool HasItem(string id)
     {
         return PlayerPrefs.GetInt("item_" + id, 0) == 1;
     }
 
-    // ­«¸m©Ò¦³½u¯Á¡]¦pªG§A»İ­n¡^
+    // ğŸŸ© æ–°å¢ï¼šåˆªé™¤å–®ä¸€é“å…·ï¼ˆä½¿ç”¨å¾Œç§»é™¤ï¼‰
+    public static void RemoveItem(string id)
+    {
+        PlayerPrefs.DeleteKey("item_" + id);
+        PlayerPrefs.Save();
+    }
+
+    // é‡ç½®æ‰€æœ‰é“å…·
     public static void ResetItems()
     {
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save();
     }
-
-
 }

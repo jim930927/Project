@@ -918,7 +918,7 @@ Camera:
   m_GameObject: {fileID: 76011412}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0.11320752, g: 0.11320752, b: 0.11320752, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -47207,7 +47207,7 @@ AudioSource:
   m_GameObject: {fileID: 1253865960}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -3618394080187439713, guid: 7f1a43b667198424289b172097efbe19, type: 2}
   m_audioClip: {fileID: 8300000, guid: a27486dbbe39b7542ae6e7620f692b63, type: 3}
   m_Resource: {fileID: 8300000, guid: a27486dbbe39b7542ae6e7620f692b63, type: 3}
   m_PlayOnAwake: 0
@@ -63789,8 +63789,8 @@ Transform:
   m_GameObject: {fileID: 1913781578}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.04, y: -0.7851, z: 0}
-  m_LocalScale: {x: 0.8390307, y: 0.8328223, z: 0.61188745}
+  m_LocalPosition: {x: -0.0494, y: -0.8261, z: 0}
+  m_LocalScale: {x: 0.8598824, y: 0.8897065, z: 0.61188745}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 134848668}

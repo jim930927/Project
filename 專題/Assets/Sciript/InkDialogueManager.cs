@@ -1282,7 +1282,7 @@ public class InkDialogueManager : MonoBehaviour
 
         while (!videoFinished)
         {
-            if (Input.anyKeyDown)
+            if (Input.GetKeyDown(KeyCode.E))
             {
                 Debug.Log("⏭ 玩家跳過 CG");
                 video.Stop();

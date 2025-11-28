@@ -68,6 +68,8 @@ public class FinalInkDialogue : MonoBehaviour
     [Header("記憶碎片資料庫")]
     public MemoryFragmentData memoryFragmentDatabase;
 
+    public GameObject houseLock;
+
 
     [System.Serializable]
     public class EndingLabel
@@ -1162,7 +1164,6 @@ public class FinalInkDialogue : MonoBehaviour
                         }
                         break;
                     }
-
                 // 🟩 繼續播放音樂
                 case "keep_music":
                     {
@@ -1206,6 +1207,9 @@ public class FinalInkDialogue : MonoBehaviour
                         }
                         break;
                     }
+                case "house_end":
+                    houseLock.SetActive(false);
+                    break;
                 case "Exposure":
                     {
                         Debug.Log("📸 Exposure 觸發 → 換立繪（Main）");
@@ -1238,9 +1242,6 @@ public class FinalInkDialogue : MonoBehaviour
                 case "BadEnd":
                     StartCoroutine(BadEnding());
                     break;
-
-
-
             }
             // ====== GameOver 支援 ======
             if (tag.StartsWith("GameOver"))

@@ -48,6 +48,8 @@ VAR selected_clues = ""
 ~ speaker = "我"
 （不對…他說的話好像有什麼地方是不對的，一定有可以反驳他的證據）
 #wrong
+~ speaker = ""
+......
 -> start
 
 
@@ -57,6 +59,8 @@ VAR selected_clues = ""
 ~ speaker = "我"
 （不夠…這個證據還不夠強…我需要更有力的反擊）
 #wrong
+~ speaker = ""
+......
 -> start
 
 
@@ -106,6 +110,8 @@ VAR selected_clues = ""
 ~ speaker = "我"
 （不對…我明明看到他們的遺言與懊悔，怎麼會是自願的？）
 #wrong
+~ speaker = ""
+......
 -> q2
 
 
@@ -117,6 +123,8 @@ VAR selected_clues = ""
 ~ speaker = "“它”"
 「你以為我會虧本做生意嗎？」
 #wrong
+~ speaker = ""
+......
 -> q2
 
 
@@ -126,6 +134,8 @@ VAR selected_clues = ""
 ~ speaker = "我"
 （不行…我不能再失誤了，這次必須用最有力的證據。）
 #wrong
+~ speaker = ""
+......
 -> q2
 
 
@@ -171,6 +181,8 @@ VAR selected_clues = ""
 ~ speaker = "我"
 （不對…我明明已經理解了他們對我的愛，為什麼還會動搖？）
 #wrong
+~ speaker = ""
+......
 -> q3
 
 
@@ -180,6 +192,8 @@ VAR selected_clues = ""
 ~ speaker = "我"
 （不行…我選錯了線索，這次必須更準確地反擊）
 #wrong
+~ speaker = ""
+......
 -> q3
 
 
@@ -231,6 +245,8 @@ VAR selected_clues = ""
 ~ speaker = "我"
 （不行…這證據不夠強，我需要更明確的反擊）
 #wrong
+~ speaker = ""
+......
 -> q4
 
 
@@ -383,6 +399,8 @@ VAR selected_clues = ""
 ~ speaker = "我"
 （不行！現在逃避，那之前的努力就全都白費了）
 #wrong
+~ speaker = ""
+......
 ->q5_1
 
 == wrong_clue5
@@ -391,6 +409,8 @@ VAR selected_clues = ""
 ~ speaker = "我"
 （可惡！這線索不是最好的證據，我必須拿出更有說服力的東西出來。）
 #wrong
+~ speaker = ""
+......
 ->q5_1
 
 === ending ===
@@ -406,4 +426,6 @@ VAR selected_clues = ""
 ~ speaker = "我"
 （感覺身體失去了知覺，視野逐漸模糊）
 #play_cg FailedCG
+~ speaker = ""
+......
 ->END

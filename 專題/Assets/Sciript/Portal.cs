@@ -264,12 +264,12 @@ public class Portal : MonoBehaviour
             catch { }
         }
 
-        if (inkUnlocked)
+        if (unlocked || inkUnlocked)
         {
-            if (!string.IsNullOrEmpty(requiredKeyID) &&
-                dialogueManager.itemDatabase.HasItem(requiredKeyID))
+            if (!string.IsNullOrEmpty(requiredKeyID) && dialogueManager.itemDatabase.HasItem(requiredKeyID))
             {
                 dialogueManager.itemDatabase.RemoveItem(requiredKeyID);
+                SaveItem.RemoveItem(requiredKeyID);   // ← ★★★最關鍵
                 Debug.Log($"🗝️ 已使用鑰匙：{requiredKeyID}");
             }
         }
