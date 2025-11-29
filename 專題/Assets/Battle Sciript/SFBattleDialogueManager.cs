@@ -475,7 +475,7 @@ public class SFBattleDialogueManager : MonoBehaviour
 
         while (!finished)
         {
-            if (Input.anyKeyDown)
+            if (Input.GetKeyDown(KeyCode.E))
             {
                 video.Stop();
                 finished = true;

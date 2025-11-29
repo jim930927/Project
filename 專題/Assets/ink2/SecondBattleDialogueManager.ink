@@ -340,7 +340,7 @@ VAR hp = ""
 +[你什麼都不懂！]
     -> wrong_clue_q7
     
-+ [你是個什麼都不會的廢物！] #current_clue:Certificate
++ [你沒有任何價值！] #current_clue:Certificate
     {current_clue == "Certificate":
         -> Second_round
     - else:

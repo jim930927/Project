@@ -236,6 +236,9 @@ public class BookUIManager : MonoBehaviour
     {
         SceneManager.LoadScene("MainMenu");
         LoadUIManager.ResetDatabase();
+
+        GenerateClueButtons();
+        GenerateItemButtons();
     }
     public void ShowClueDetail(ClueData.Clue clue)
     {

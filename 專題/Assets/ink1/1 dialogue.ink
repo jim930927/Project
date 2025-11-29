@@ -210,7 +210,7 @@ EXTERNAL Get_Item(itemID)
         -> END
     * 「陰廟...？所以...我去許願了？」
         「可是我為什麼一點印象都沒有？」
-        【獲得線索 “日記殘頁”】
+        【獲得線索 “有點舊的日記本”】
         ~ journal_choices_done = true
         -> END
     * 「總感覺我好像不是很受歡迎...」

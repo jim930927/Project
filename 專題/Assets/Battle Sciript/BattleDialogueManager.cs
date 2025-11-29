@@ -170,6 +170,13 @@ public class BattleDialogueManager : MonoBehaviour
                 List<string> tags = story.currentTags ?? new List<string>();
                 if (tags.Contains("DONE"))
                 {
+                    var hp = FindObjectOfType<HP>();
+                    if (hp != null)
+                    {
+                        hp.hp += 1;
+                        Debug.Log("❤️ HP +1! 目前 HP = " + hp.hp);
+                    }
+
                     Debug.Log("✅ DONE tag detected, play outro before loading scene...");
                     if (fightAnimator != null)
                     {

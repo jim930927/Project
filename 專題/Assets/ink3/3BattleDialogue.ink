@@ -264,7 +264,7 @@ VAR selected_clues = ""
 ~ speaker = "我"
 (如果真的是像你說得這樣。那我在回憶裡感受到的愛難道都是假的嗎？）
 ~ speaker = "“它”"
-+ [這個家會變成這樣，都是你害的]
++ [全都是你的錯]
     -> wrong_path5
 
 + [沒有人會理解你]
@@ -297,7 +297,7 @@ VAR selected_clues = ""
 ~ speaker = "我"
 （他們吵架從來都不是我的錯，這個責任不該由我來背負。）
 ~ speaker = "“它”"
-+ [這個家會變成這樣，都是你害的]
++ [全都是你的錯]
     {(selected_clues ? "AuntLetter") && (selected_clues ? "MomLetter") && (selected_clues ? "Journal2"):
         -> q5_3
       - else:
@@ -373,10 +373,10 @@ VAR selected_clues = ""
 ~ speaker = "提示"
 【此題需要使用四個線索，選擇的線索前後順序互不影響】
 ~ speaker = "我"
-「是啊，我確實害怕孤單。從多多被送走、爺爺離開、爸爸沉淪、媽媽崩潰——我一次次被迫面對失去。」
+「是啊，我確實害怕孤單。從爸爸沉淪、爺爺離開——我一次次被迫面對失去。但...」
 ~ speaker = "“它”"
 + [你終究會孤單一個人]
-    {(selected_clues ? "Letter2") && (selected_clues ? "Journal2") && (selected_clues ? "Journal3") && (selected_clues ? "AuntLetter"):
+    {(selected_clues ? "Journal2") && (selected_clues ? "Journal3") && (selected_clues ? "AuntLetter"):
         -> correct_path5 
       - else:
         -> wrong_clue5
@@ -386,8 +386,7 @@ VAR selected_clues = ""
 
 == correct_path5
 ~ speaker = "我"
-「是啊，我確實害怕孤單。從多多被送走、爺爺離開、爸爸沉淪、媽媽崩潰——我一次次被迫面對失去。」
-「但孤單不是詛咒，而是讓我學會珍惜的老師。每次寫下這些日記時，我都在記錄自己仍然活著。」
+「孤單不是詛咒，而是讓我學會珍惜的老師。每次寫下這些日記時，我都在記錄自己仍然活著。」
 「我不再逃避孤單，因為我知道，孤單過後，還有希望在等著我。」
 ~ speaker = "“它”"
 「你……！」

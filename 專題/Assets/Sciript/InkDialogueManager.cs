@@ -656,6 +656,7 @@ public class InkDialogueManager : MonoBehaviour
 
             // 移除舊道具
             itemDatabase.RemoveItem(oldItemID);
+            SaveItem.RemoveItem(oldItemID);
 
             // 新增新道具
             clueDatabase.AddClue(newClueID);
