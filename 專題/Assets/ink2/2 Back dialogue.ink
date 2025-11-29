@@ -34,8 +34,6 @@ EXTERNAL Get_Clue(clueID)
 EXTERNAL ReplaceItem(oldItemID,newItemID)
 EXTERNAL Get_fragments(fragmentID)
 
-== CG ==
-->start
 
 == start ==
 ~ speaker = "我"

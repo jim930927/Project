@@ -160,7 +160,7 @@ public class InkDialogueManager : MonoBehaviour
         // 🔸 原本的初始化流程
         if (inkJSON != null && shouldAutoStartInk && !justLoaded)
         {
-            EnterDialogueMode(inkJSON, "CG");
+            EnterDialogueMode(inkJSON, "start");
         }
         else
         {

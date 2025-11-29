@@ -99629,7 +99629,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b33b4aab6910b7b4aa75efbf64d84aab, type: 2}
-  m_sharedMaterial: {fileID: 2557324121496398928, guid: b33b4aab6910b7b4aa75efbf64d84aab, type: 2}
+  m_sharedMaterial: {fileID: -4381348813380047099, guid: b33b4aab6910b7b4aa75efbf64d84aab, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -106701,7 +106701,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Enter text...
+  m_text: "\u8F38\u5165\u56DB\u4F4D\u6578\u5BC6\u78BC"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b33b4aab6910b7b4aa75efbf64d84aab, type: 2}
   m_sharedMaterial: {fileID: 2557324121496398928, guid: b33b4aab6910b7b4aa75efbf64d84aab, type: 2}
@@ -106991,7 +106991,7 @@ AudioSource:
   m_GameObject: {fileID: 1416335069}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -3618394080187439713, guid: 7f1a43b667198424289b172097efbe19, type: 2}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 7f1a43b667198424289b172097efbe19, type: 2}
   m_audioClip: {fileID: 8300000, guid: 007778fa6da12bb4f953920d600781fb, type: 3}
   m_Resource: {fileID: 8300000, guid: 007778fa6da12bb4f953920d600781fb, type: 3}
   m_PlayOnAwake: 0

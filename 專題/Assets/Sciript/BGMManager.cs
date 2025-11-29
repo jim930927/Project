@@ -7,7 +7,7 @@ public class BGMManager : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
 
         // 若已有 BGMManager 存在，刪掉後來的
         var objs = FindObjectsOfType<BGMManager>();

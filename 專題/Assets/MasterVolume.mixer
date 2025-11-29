@@ -1,45 +1,12 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!244 &-6228918151693379924
-AudioMixerEffectController:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_EffectID: 635ce506cff089e4cb97ef42c6020d70
-  m_EffectName: Attenuation
-  m_MixLevel: 30097184ec74bd0478aa4eab29feabb9
-  m_Parameters: []
-  m_SendTarget: {fileID: 0}
-  m_EnableWetMix: 0
-  m_Bypass: 0
---- !u!243 &-3618394080187439713
-AudioMixerGroupController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: MasterVolume
-  m_AudioMixer: {fileID: 24100000}
-  m_GroupID: 8df800c41c15ea146803e54c68e461cf
-  m_Children: []
-  m_Volume: 1f57cc798ac3bee4d8f00f1d887eabeb
-  m_Pitch: 2684592b4579fe44dae2131082240238
-  m_Send: 00000000000000000000000000000000
-  m_Effects:
-  - {fileID: -6228918151693379924}
-  m_UserColorIndex: 0
-  m_Mute: 0
-  m_Solo: 0
-  m_BypassEffects: 0
 --- !u!241 &24100000
 AudioMixerController:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AudioMixer
+  m_Name: MasterVolume
   m_OutputGroup: {fileID: 0}
   m_MasterGroup: {fileID: 24300002}
   m_Snapshots:
@@ -48,11 +15,12 @@ AudioMixerController:
   m_SuspendThreshold: 0
   m_EnableSuspend: 1
   m_UpdateMode: 0
-  m_ExposedParameters: []
+  m_ExposedParameters:
+  - guid: d155deddd1814ba41ab801a8ceec26b0
+    name: MasterVolume
   m_AudioMixerGroupViews:
   - guids:
     - 8a0d7bf005ea78942b274c96dba5778e
-    - 8df800c41c15ea146803e54c68e461cf
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500006}
@@ -65,8 +33,7 @@ AudioMixerGroupController:
   m_Name: Master
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 8a0d7bf005ea78942b274c96dba5778e
-  m_Children:
-  - {fileID: -3618394080187439713}
+  m_Children: []
   m_Volume: d155deddd1814ba41ab801a8ceec26b0
   m_Pitch: cc2bf2bc4d330814f8c8b6414a5f60e0
   m_Send: 00000000000000000000000000000000
@@ -101,5 +68,5 @@ AudioMixerSnapshotController:
   m_SnapshotID: 9d2a500421f3535418b8001600cc8cb9
   m_FloatValues:
     1f57cc798ac3bee4d8f00f1d887eabeb: 0
-    d155deddd1814ba41ab801a8ceec26b0: -0.19117308
+    d155deddd1814ba41ab801a8ceec26b0: 0
   m_TransitionOverrides: {}
