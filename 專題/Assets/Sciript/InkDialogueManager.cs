@@ -1545,6 +1545,22 @@ public class InkDialogueManager : MonoBehaviour
                     itemDatabase.RemoveItem("key_gold");
                     break;
             }
+            // =================== 🎵 播放背景音樂 ======================
+            if (tag.StartsWith("play_music"))
+            {
+                string[] parts = tag.Split(' ');
+                if (parts.Length > 1)
+                {
+                    string musicName = parts[1];
+                    Debug.Log($"🎵 Step3.5: HandleTags 解析到音樂：{musicName}");
+                    PlayMusic(musicName);   // ← 這裡會跳去你剛寫好的 Step4 PlayMusic()
+                }
+                else
+                {
+                    Debug.LogWarning("⚠ play_music 標籤格式錯誤：" + tag);
+                }
+            }
+
             // ====== GameOver 支援 ======
             if (tag.StartsWith("GameOver"))
             {
@@ -1664,8 +1680,39 @@ public class InkDialogueManager : MonoBehaviour
         dialogueIsPlaying = false;
         canContinue = false;
         justLoaded = false;
+        string dummy = story.ContinueMaximally();
+        // === 讀檔後：請 Ink 幫我們開啟背景音樂 ===
+        // === Debug 讀檔後 BGM ===
+        try
+        {
+            Debug.Log("🎯 Step1: 已呼叫 load_bgm 節點");
+
+            story.ChoosePathString("load_bgm");
+
+            story.Continue();
+            Debug.Log("🎯 Step2: Ink 已執行 Continue()");
+            Debug.Log("🎯 Step2: Ink currentTags 數量 = " + story.currentTags.Count);
+
+            var tagsList = new List<string>(story.currentTags);
+
+            Debug.Log("🎯 Step3: 準備呼叫 HandleTags()，tag = " + string.Join(", ", tagsList));
+
+            if (tagsList.Count > 0)
+            {
+                HandleTags(tagsList);
+            }
+            else
+            {
+                Debug.LogWarning("❗ Step2/3: load_bgm 沒有 tag！！（Ink 沒吐出任何 tag）");
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("❌ Step0: 執行 load_bgm 時發生例外：" + e.Message);
+        }
 
         Debug.Log("✅ Ink 劇情已完全恢復（等待玩家互動觸發對話）");
+
     }
 
     void SpawnNPC(string npcName)
@@ -1776,12 +1823,12 @@ public class InkDialogueManager : MonoBehaviour
         var bgmManager = FindObjectOfType<BGMManager>();
         if (bgmManager != null)
         {
-            bgmManager.PlayMusic(musicName);
-            Debug.LogWarning("播放音樂：" + musicName);
+            Debug.Log($"🎯 Step4: InkDialogueManager.PlayMusic() 呼叫 BGMManager 播放：{musicName}");
+            bgmManager.PlayMusic(musicName);   // 交給 BGMManager 真正播放
         }
         else
         {
-            Debug.LogWarning("⚠️ 找不到 BGMManager，無法播放音樂：" + musicName);
+            Debug.LogWarning("⚠️ Step4: 找不到 BGMManager，無法播放音樂：" + musicName);
         }
     }
 

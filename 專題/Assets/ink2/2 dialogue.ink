@@ -63,6 +63,10 @@ EXTERNAL Get_fragments(fragmentID)
 #play_music second_theme
 -> END
 
+== load_bgm ==
+#play_music second_theme
+-> END
+
 == trash_can
 ~ speaker = " "
 一個垃圾桶，裡面是空的

@@ -303,6 +303,15 @@ public class LoadUIManager : MonoBehaviour
             }
         }
 
+        // 🟢 讀檔後恢復背景音樂（如果之前有播放過）
+        var bgm = GameObject.FindObjectOfType<BGMManager>();
+        if (bgm != null)
+        {
+            bgm.ResumeMusic();   // ← 這會繼續播放 audioSource 裡的音樂
+            Debug.Log("🎵 已恢復讀檔前的背景音樂");
+        }
+
+
         Debug.Log("✅ 載入資料全部還原完成（包含永久解鎖的門）");
     }
 

@@ -23736,6 +23736,7 @@ GameObject:
   - component: {fileID: 1124535179}
   - component: {fileID: 1124535181}
   - component: {fileID: 1124535180}
+  - component: {fileID: 1124535182}
   m_Layer: 0
   m_Name: mon_letter
   m_TagString: Untagged
@@ -23825,6 +23826,19 @@ MonoBehaviour:
   returnKnotName: mom_letter_end
   clueImage: {fileID: 4978513740323591969, guid: d6982550a54b3ea4cb2c25508cef0fff, type: 3}
   collected: 0
+--- !u!114 &1124535182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124535178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 520f1514f29976641b811096d23a3e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueID: 082c4f56-02af-45ab-bc7a-2a52097b2bb1
 --- !u!1 &1136991722
 GameObject:
   m_ObjectHideFlags: 0
@@ -24311,6 +24325,7 @@ GameObject:
   - component: {fileID: 1196225192}
   - component: {fileID: 1196225194}
   - component: {fileID: 1196225193}
+  - component: {fileID: 1196225195}
   m_Layer: 0
   m_Name: aunt_letter
   m_TagString: Untagged
@@ -24400,6 +24415,19 @@ MonoBehaviour:
   returnKnotName: aunt_letter_end
   clueImage: {fileID: 4978513740323591969, guid: 9bfd7ed222b167340982611d02c53152, type: 3}
   collected: 0
+--- !u!114 &1196225195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196225191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 520f1514f29976641b811096d23a3e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueID: 83cfd2af-575a-4016-b4ff-26baae67b02d
 --- !u!1 &1211189912
 GameObject:
   m_ObjectHideFlags: 0
