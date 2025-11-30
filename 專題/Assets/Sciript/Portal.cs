@@ -264,7 +264,7 @@ public class Portal : MonoBehaviour
             catch { }
         }
 
-        if (unlocked || inkUnlocked)
+        if (unlocked && inkUnlocked)
         {
             if (!string.IsNullOrEmpty(requiredKeyID) && dialogueManager.itemDatabase.HasItem(requiredKeyID))
             {

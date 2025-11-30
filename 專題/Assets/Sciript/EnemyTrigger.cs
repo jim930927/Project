@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using static NPCManager;
 
 public class EnemyTrigger : MonoBehaviour
 {
@@ -18,6 +19,13 @@ public class EnemyTrigger : MonoBehaviour
         {
             hasTriggered = true;
 
+            // ⭐ 更改敵人的 Tag → EnemyHide
+            if (gameObject.CompareTag("Enemy"))
+            {
+                gameObject.tag = "EnemyHide";
+                Debug.Log("🔄 敵人 Tag 已更改為 EnemyHide");
+            }
+
             if (inkManager == null)
                 inkManager = FindObjectOfType<InkDialogueManager>();
 
@@ -26,8 +34,8 @@ public class EnemyTrigger : MonoBehaviour
             if (inkManager != null && inkManager.story != null)
             {
                 Debug.Log($"⚔️ 觸發進入對話：{targetKnot}");
-                inkManager.ShowPortraits();   // 🟩 新增
-                inkManager.ResetPortraits();  // 🟩 新增
+                inkManager.ShowPortraits();
+                inkManager.ResetPortraits();
                 inkManager.JumpToKnot(targetKnot);
             }
             else

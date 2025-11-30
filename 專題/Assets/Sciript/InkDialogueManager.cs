@@ -31,6 +31,7 @@ public class InkDialogueManager : MonoBehaviour
 
     [Header("Ink 劇本")]
     public TextAsset inkJSON;
+    public string StartKnotName;
 
     [Header("存檔UI控制器")]
     public SaveUIManager saveUI;
@@ -160,7 +161,7 @@ public class InkDialogueManager : MonoBehaviour
         // 🔸 原本的初始化流程
         if (inkJSON != null && shouldAutoStartInk && !justLoaded)
         {
-            EnterDialogueMode(inkJSON, "start");
+            EnterDialogueMode(inkJSON, StartKnotName);
         }
         else
         {
@@ -1544,6 +1545,7 @@ public class InkDialogueManager : MonoBehaviour
                     break;
                 case "use_key_gold":
                     itemDatabase.RemoveItem("key_gold");
+                    SaveItem.RemoveItem("key_gold");
                     break;
             }
             // =================== 🎵 播放背景音樂 ======================
@@ -1873,7 +1875,7 @@ public class InkDialogueManager : MonoBehaviour
     }
     private void HideEnemy()
     {
-        var enemy = GameObject.FindWithTag("Enemy");
+        var enemy = GameObject.FindWithTag("EnemyHide");
         if (enemy != null)
         {
             // 你可以選擇用 Destroy、SetActive(false)，或播放動畫

@@ -105,6 +105,10 @@ EXTERNAL Get_fragments(fragmentID)
 「好...」
 ->END
 
+== load_bgm ==
+#play_music second_end
+-> END
+
 == wardrobe2
 ~ speaker = "我"
 「爸媽的衣櫃從以前到現在都很亂...」

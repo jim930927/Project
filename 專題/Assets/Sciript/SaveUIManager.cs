@@ -159,9 +159,20 @@ public class SaveUIManager : MonoBehaviour
                 data.spawnedNPCs.Add(so.uniqueID);
         }
 
+
+        data.spawnedEnemys.Clear();
+        foreach (var enemy in Resources.FindObjectsOfTypeAll<SaveableEntity>())
+        {
+            if (enemy == null || !enemy.gameObject.scene.IsValid()) continue;
+                var id = enemy.GetComponent<SaveableEntity>();
+            if (enemy.CompareTag("EnemyHide"))
+                data.spawnedEnemys.Add(id.uniqueID);
+        }
+
         // === 儲存敵人 ===
         if (EnemyStateManager.Instance != null)
             data.enemyStatesJson = EnemyStateManager.Instance.ToJson();
+
 
         // === ⭐⭐ 儲存永久解鎖的門 ⭐⭐
         if (DoorManager.Instance != null)
@@ -224,6 +235,8 @@ public class SaveData
     // 生成物件
     public List<string> spawnedObjects = new List<string>(); // chest
     public List<string> spawnedNPCs = new List<string>();    // NPC
+    public List<string> spawnedEnemys = new List<string>();    // Enemy
+
 
     // ScriptableObject：資料庫中的「已收集 id」
     public List<string> databaseCollectedClueIds = new List<string>();

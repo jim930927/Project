@@ -2,6 +2,7 @@
 using System.Collections;
 using System.IO;
 using TMPro;
+using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -284,6 +285,16 @@ public class LoadUIManager : MonoBehaviour
             {
                 var npcManager = GameObject.FindObjectOfType<NPCManager>();
                 if (npcManager != null) npcManager.SpawnNPC("Guard");
+            }
+        }
+
+        // === 移除已撿到的「場景實體敵人」 ===
+        foreach (var enemy in GameObject.FindObjectsOfType<SaveableEntity>())
+        {
+            var id = enemy.GetComponent<SaveableEntity>();
+            if (id != null && data.spawnedEnemys.Contains(id.uniqueID))
+            {
+                enemy.gameObject.SetActive(false);
             }
         }
 

@@ -26,6 +26,7 @@ VAR sink_memory_end_done = false
 VAR memory4_done = false
 VAR store_memory_end_done = false
 VAR npc_guide_spawned = false
+VAR chest_opened = false
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
@@ -252,14 +253,22 @@ EXTERNAL Get_fragments(fragmentID)
 ->END
 
 == chest ==
-~ speaker = "我"
-「箱子的密碼是多少呢...」
-~ OpenChestUI()
--> END
+{chest_opened == false:
+    ~ speaker = "我"
+    「箱子的密碼是多少呢...」
+    ~ OpenChestUI()
+    -> END
+    - else:
+        ~ speaker = "我"
+        「箱子裡沒東西了」
+        -> END
+    }
 
 == chest_open ==
 #play_cg chestCG
+~ chest_opened = true
 ->chest_inside
+
 
 == chest_inside ==
 ~ speaker = "我"

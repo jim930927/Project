@@ -76,7 +76,7 @@ public class SceneInteractable : MonoBehaviour
     private void OnDialogueEnd()
     {
         Debug.Log($"🗨️ 結束互動：{interactionNode}");
-        StartCoroutine(UnlockInteraction());
+        dialogueManager.StartCoroutine(UnlockInteraction()); // 🟢 改用活著的物件跑
     }
 
     private IEnumerator UnlockInteraction()

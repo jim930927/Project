@@ -43,7 +43,6 @@ public class EnemyStateManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
     }
-
     private static long NowUnix() => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
     /// <summary>
