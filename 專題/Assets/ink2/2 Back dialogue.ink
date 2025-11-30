@@ -35,6 +35,12 @@ EXTERNAL ReplaceItem(oldItemID,newItemID)
 EXTERNAL Get_fragments(fragmentID)
 
 
+== CG ==
+~ speaker = " "
+「......」
+->start
+
+
 == start ==
 ~ speaker = "我"
 「這些是......」

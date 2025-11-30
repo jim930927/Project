@@ -624,16 +624,6 @@ public class InkDialogueManager : MonoBehaviour
             int count = fragDB.GetCollectedCount();
             Debug.Log($"🧩 當前記憶碎片數量：{count}/8");
 
-            if (count == 4)
-            {
-                HP hpSystem = FindObjectOfType<HP>();
-                if (hpSystem != null)
-                {
-                    hpSystem.hp += 1;
-                    Debug.Log("💖 記憶碎片達到4個，血量 +1！");
-                }
-            }
-
             if (count == 8)
             {
                 HP hpSystem = FindObjectOfType<HP>();

@@ -29673,10 +29673,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -31902,6 +31902,7 @@ GameObject:
   - component: {fileID: 698843460}
   - component: {fileID: 698843459}
   - component: {fileID: 698843458}
+  - component: {fileID: 698843461}
   m_Layer: 0
   m_Name: clothes_basket
   m_TagString: Untagged
@@ -32018,6 +32019,19 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &698843461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 698843456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 520f1514f29976641b811096d23a3e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueID: f5a8d485-a3c1-402f-ab2c-9858646c4bbe
 --- !u!1001 &701002398
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32391,6 +32405,7 @@ GameObject:
   - component: {fileID: 727330572}
   - component: {fileID: 727330571}
   - component: {fileID: 727330570}
+  - component: {fileID: 727330573}
   m_Layer: 0
   m_Name: incense
   m_TagString: Untagged
@@ -32507,6 +32522,19 @@ MonoBehaviour:
   returnKnotName: incense_end
   itemImage: {fileID: 2468115297647770175, guid: ffd7dbeb6498d4a448dc09831dde6abc, type: 3}
   collected: 0
+--- !u!114 &727330573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 727330568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 520f1514f29976641b811096d23a3e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueID: c1640bb8-493a-420a-a281-d99810dfcb6f
 --- !u!1 &731992973
 GameObject:
   m_ObjectHideFlags: 0
@@ -33762,7 +33790,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4edc4237c44920f4d94237d2f23f0d16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 3
+  hp: 1
   hpImage: {fileID: 1577133525}
   hpImageName: HPImage
   hp_0: {fileID: -205913479492284020, guid: fa92ba999fd459c498d55edfbbf7f820, type: 3}
@@ -38999,6 +39027,7 @@ GameObject:
   - component: {fileID: 923379347}
   - component: {fileID: 923379344}
   - component: {fileID: 923379346}
+  - component: {fileID: 923379348}
   m_Layer: 0
   m_Name: Safe_box
   m_TagString: Untagged
@@ -39134,6 +39163,19 @@ MonoBehaviour:
   interactKey: 32
   Porpsimage: {fileID: 0}
   canInteract: 1
+--- !u!114 &923379348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923379342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 520f1514f29976641b811096d23a3e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueID: d80b9724-5781-40d0-ae7a-b89ea66ea06b
 --- !u!1 &933098992
 GameObject:
   m_ObjectHideFlags: 0
@@ -58494,6 +58536,7 @@ GameObject:
   - component: {fileID: 1497022761}
   - component: {fileID: 1497022762}
   - component: {fileID: 1497022763}
+  - component: {fileID: 1497022764}
   m_Layer: 0
   m_Name: forcer
   m_TagString: Untagged
@@ -58605,6 +58648,19 @@ MonoBehaviour:
   interactKey: 32
   Porpsimage: {fileID: 0}
   canInteract: 1
+--- !u!114 &1497022764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1497022758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 520f1514f29976641b811096d23a3e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueID: 00ee7b22-2bee-444c-b8c3-74ceb0c5b018
 --- !u!1 &1509343817
 GameObject:
   m_ObjectHideFlags: 0
@@ -58624,7 +58680,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &1509343818
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -60893,6 +60949,7 @@ GameObject:
   - component: {fileID: 1675046501}
   - component: {fileID: 1675046500}
   - component: {fileID: 1675046499}
+  - component: {fileID: 1675046502}
   m_Layer: 0
   m_Name: glass_cabinet
   m_TagString: Untagged
@@ -61004,6 +61061,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1675046502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1675046497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 520f1514f29976641b811096d23a3e34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueID: 7df68b89-99f4-47c8-a7b9-3badfa30776b
 --- !u!1 &1679429815
 GameObject:
   m_ObjectHideFlags: 0

@@ -27,6 +27,8 @@ VAR memory4_done = false
 VAR store_memory_end_done = false
 VAR npc_guide_spawned = false
 VAR chest_opened = false
+VAR safe_opened = false
+VAR forcer_opened = false
 
 EXTERNAL UnlockDoor(door_id)
 EXTERNAL SaveGame()
@@ -639,6 +641,7 @@ EXTERNAL Get_fragments(fragmentID)
 == cloth_end
 ~ speaker = "我"
 + 「真是倒霉...」
+    ~ HP_Add(-1)
     「學校明明是個讓人學習的地方，偏偏分班的時候遇到這群流氓...」
     「希望下次分班不要再跟這些人同一班了。」
     ->END
@@ -649,7 +652,7 @@ EXTERNAL Get_fragments(fragmentID)
     「或許我不是這樣的人...」
     ->END
 + 「又是他們」
-    ~ HP_Add(-1)
+    ~ HP_Add(-2)
     「真是討厭！」
     「他們總是以欺負別人為樂，無聊透頂。」
     「這種人本來就不該活在世上，應該要下地獄才對。」
@@ -964,12 +967,19 @@ EXTERNAL Get_fragments(fragmentID)
 ->END
 
 == safe
-~ speaker = "我"
-「保險箱?...密碼會是多少...?」
-~ OpenSafeUI()
-->END
+{ safe_opened == false: 
+    ~ speaker = "我"
+    「保險箱?...密碼會是多少...?」
+    ~ OpenSafeUI()
+    ->END
+    - else:
+        ~ speaker = "我"
+        「保險箱裡面沒東西了」
+        }
+        ->END
 
 == safe_open
+~ safe_opened = true
 { sideboard == true: 
     -> enough
 - else:
@@ -1108,10 +1118,10 @@ EXTERNAL Get_fragments(fragmentID)
 「該拿幾支香來拜呢？」
 ~ speaker = ""
 *【一炷香】
+    ~ HP_Add(-1)
     「如果我想請神明幫忙，只點燃一支香可能不夠......」
     ->END
 *【三炷香】
-    ~ HP_Add(1)
     ~ speaker = "我"
     「我...好像只求過一次…那是我唯一主動去祈求神明的時候。」
     「......」
@@ -1130,34 +1140,43 @@ EXTERNAL Get_fragments(fragmentID)
     ~ incense_again = true
     ->END
 *【五炷香】
-    ~ HP_Add(-1)
+    ~ HP_Add(-2)
     ~ speaker = "我"
     「節日或是法會才會用到，這好像跟我想祈求的事情無關......」
     ->END
 *【七炷香】
     ~ speaker = "我"
+    ~ HP_Add(-1)
     「調轉生死或命運走向，我應該還不至於用到這種地步吧......」
     ->END
 *【九炷香】
-    ~ HP_Add(-2)
+    ~ HP_Add(-3)
     ~ speaker = "我"
     「我只不過是想跟神明祈求一些事而已，不用這麼大手筆......」
     ->END
 
 
 == god_forcer
-~ speaker = ""
-打開櫃子，裡面放著一把金色的鑰匙，上面寫著 「櫥櫃鑰匙」
-~ Get_Item("key_gold")
-~ key_gold = true
-裡面還放著一個平安符，上面寫著「保佑闔家平安」
-#memory3
-#pause_music
-->amulet_memory
+{ forcer_opened == false: 
+    ~ speaker = ""
+    打開櫃子，裡面放著一把金色的鑰匙，上面寫著 「櫥櫃鑰匙」
+    ~ Get_Item("key_gold")
+    ~ key_gold = true
+    裡面還放著一個平安符，上面寫著「保佑闔家平安」
+    #memory3
+    #pause_music
+    ->amulet_memory
+    - else:
+        ~ speaker = "我"
+        「櫃子裡面沒東西了」
+        }
+        ->END
+
+
 
 
 == amulet_memory
-#keep_music
+~ forcer_opened = true
 ~ speaker = ""
 ......
 #change_sprite
@@ -1170,6 +1189,7 @@ EXTERNAL Get_fragments(fragmentID)
 -> amulet_memory_end
 
 == amulet_memory_end
+#keep_music
 ~ speaker = ""
 #change_sprite_back
 ......

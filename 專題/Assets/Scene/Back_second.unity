@@ -7485,10 +7485,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -41834,7 +41834,7 @@ MonoBehaviour:
   - {fileID: 331341881}
   hpRef: {fileID: 1875334682}
   inkJSON: {fileID: 4900000, guid: 7dda2d51edcaaae42ab0a4e60f798000, type: 3}
-  StartKnotName: start
+  StartKnotName: CG
   saveUI: {fileID: 971808222}
   leftPortraitImage: {fileID: 1370732329}
   rightPortraitImage: {fileID: 1404162470}
