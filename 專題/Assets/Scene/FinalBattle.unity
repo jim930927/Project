@@ -5383,7 +5383,7 @@ MonoBehaviour:
   hp_2: {fileID: 1490719217455366361, guid: a244279628f12104d88230de1ccbcff2, type: 3}
   hp_1: {fileID: -5817544225397591828, guid: c486689d84e264b44965c578bb9216a6, type: 3}
   hp_0: {fileID: 7060280873281199228, guid: 74d4e04062fd2ba4f81c94e45e58c592, type: 3}
-  SceneName: FightAgain
+  SceneName: FightAgain2
   blackScreen: {fileID: 1366457892}
   blackScreenAct: {fileID: 1366457890}
   blackScreenDuration: 1

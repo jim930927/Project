@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   items:
   - id: HP_image
-    name: "\u3010\u71C8\u706B\u503C\u4ECB\u7D39\u3011"
+    name: "\u3010\u81EA\u6211\u503C\u4ECB\u7D39\u3011"
     detail: 
     fullContent: 
     pages: []
-    collected: 0
-    collectedTime: 10.967503
+    collected: 1
+    collectedTime: 7.61202
   - id: rule
     name: "\u3010\u5BB6\u898F\u3011"
     detail: 

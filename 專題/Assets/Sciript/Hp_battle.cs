@@ -19,7 +19,7 @@ public class Hp_battle : MonoBehaviour
     public Sprite hp_1;
     public Sprite hp_0;
 
-    public string SceneName = "MainMenu";
+    public string SceneName = "FightAgain";
 
     [Header("特效設定")]
     public Image blackScreen; // 指向黑屏 UI 物件

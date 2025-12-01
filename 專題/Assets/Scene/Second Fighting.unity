@@ -4236,9 +4236,9 @@ RectTransform:
   - {fileID: 489385767}
   - {fileID: 1799049314}
   - {fileID: 1228637236}
+  - {fileID: 540209705}
   - {fileID: 1073744042}
   - {fileID: 864097352}
-  - {fileID: 540209705}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -8459,7 +8459,7 @@ MonoBehaviour:
   hp_2: {fileID: 1490719217455366361, guid: a244279628f12104d88230de1ccbcff2, type: 3}
   hp_1: {fileID: -5817544225397591828, guid: c486689d84e264b44965c578bb9216a6, type: 3}
   hp_0: {fileID: 7060280873281199228, guid: 74d4e04062fd2ba4f81c94e45e58c592, type: 3}
-  SceneName: MainMenu
+  SceneName: FightAgain
   blackScreen: {fileID: 1799049315}
   blackScreenAct: {fileID: 1799049313}
   blackScreenDuration: 1

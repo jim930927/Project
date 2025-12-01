@@ -11,6 +11,8 @@ public class FailedButton : MonoBehaviour
     public Vector2 leftClosePos = new Vector2(-425, -50);
     public Vector2 rightClosePos = new Vector2(425, -50);
     public float curtainCloseDuration = 1.2f;
+    public string AgainScene;
+    public string GiveUpName;
 
     public void Return()
     {
@@ -31,7 +33,7 @@ public class FailedButton : MonoBehaviour
         yield return seq.WaitForCompletion();
 
         yield return new WaitForSeconds(0.3f);
-        SceneManager.LoadScene("BadEnd");
+        SceneManager.LoadScene(GiveUpName);
     }
 
     IEnumerator WaitCurtainRetry()
@@ -42,6 +44,6 @@ public class FailedButton : MonoBehaviour
         yield return seq.WaitForCompletion();
 
         yield return new WaitForSeconds(0.3f);
-        SceneManager.LoadScene("FinalBattle");
+        SceneManager.LoadScene(AgainScene);
     }
 }
