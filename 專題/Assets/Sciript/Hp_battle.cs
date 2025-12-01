@@ -77,6 +77,10 @@ public class Hp_battle : MonoBehaviour
         var dm = FinalBattleDialogueManager.Instance;
         if (dm != null)
         {
+            var hp = FindObjectOfType<HP>();
+            if (hp != null) hp.hp -= 1;
+
+
             // 這裡假設你的 Ink 裡有 Knot: "FAILED"
             dm.EnterDialogueMode(dm.inkJSON, "FAILED", () =>
             {

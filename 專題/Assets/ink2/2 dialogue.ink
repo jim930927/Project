@@ -212,6 +212,7 @@ EXTERNAL Get_fragments(fragmentID)
         床底下藏著箱子，將箱子拿了出來，上面有一個4位數密碼鎖
         ~ speaker = "我"
         「鎖住了...密碼是多少呢...是某個日期嗎」
+        「說不定那傢伙知道...問問看他吧」
         -> END
     }  
 
@@ -258,6 +259,7 @@ EXTERNAL Get_fragments(fragmentID)
 {chest_opened == false:
     ~ speaker = "我"
     「箱子的密碼是多少呢...」
+    「說不定那傢伙知道...問問看他吧」
     ~ OpenChestUI()
     -> END
     - else:

@@ -205,6 +205,8 @@ EXTERNAL Use_Item(itemID)
 == chest
 ~ speaker = ""
 木屋的櫃子裡放著一個箱子，但箱子被4位數密碼鎖住了
+~ speaker = "我"
+「密碼是多少呢...問問看他吧」
 ~ OpenChestUI()
 ->END
 

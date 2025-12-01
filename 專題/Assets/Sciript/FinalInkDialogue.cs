@@ -552,7 +552,7 @@ public class FinalInkDialogue : MonoBehaviour
 
         if (story == null) return;
 
-        var bookUI = FindObjectOfType<BookUIManager>();
+        var bookUI = FindObjectOfType<FinalBookUIManager>();
         if (bookUI == null)
         {
             Debug.LogWarning("⚠️ 找不到 BookUIManager，無法綁定 Ink 外部函式");

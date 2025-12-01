@@ -2,7 +2,6 @@ VAR speaker = "???"
 VAR current_clue = ""
 VAR selected_clues = ""
 
-
 === start ===
 #play_music Final_fight
 ~ speaker = "“它”"
@@ -154,7 +153,6 @@ VAR selected_clues = ""
 ~ speaker = "“它”"
 「不管你發現了什麼，都改變不了你內心深處的慾望，我再告訴你一件事吧」
 「如果你離開這裡，那你之前許下的所有願望也會直接消失。你真的願意放棄嗎？」
-~ speaker = "我"
 + [放棄]
     { (selected_clues ? "AuntLetter") && (selected_clues ? "MomLetter"):
         -> correct_path3
@@ -222,7 +220,6 @@ VAR selected_clues = ""
 ~ speaker = "我"
 （不對，一定有東西能證明我的人生有改善的可能。）
 （這些東西記載了媽媽發生的事，這些事也影響了她最後做了這個決定。）
-~ speaker = "“它”"
 + [你的人生就是這麼可笑！]
     { (selected_clues ? "AuntLetter")&& (selected_clues ? "MomLetter")&& (selected_clues ? "Agreement"):
         -> correct_path4
@@ -267,7 +264,6 @@ VAR selected_clues = ""
 【所有的對話框都必須按照正確的題目順序跟線索擊破才能通關，此題需要使用三個線索，選擇的線索前後順序互不影響】
 ~ speaker = "我"
 (如果真的是像“它”說得這樣。那我在回憶裡感受到的愛難道都是假的嗎？）
-~ speaker = "“它”"
 + [全都是你的錯]
     -> wrong_path5
 
@@ -300,7 +296,6 @@ VAR selected_clues = ""
 【此題需要使用三個線索，選擇的線索前後順序互不影響】
 ~ speaker = "我"
 （他們吵架從來都不是我的錯，這個責任不該由我來背負。）
-~ speaker = "“它”"
 + [全都是你的錯]
     {(selected_clues ? "AuntLetter") && (selected_clues ? "MomLetter") && (selected_clues ? "Journal2"):
         -> q5_3
@@ -379,8 +374,6 @@ VAR selected_clues = ""
 「但還是留下了我人生當中最重要的那些日子，不管是開心的、生氣的還是難過的都寫在裡面。」
 「這些年來我失去了很多，這個家也變了很多，但唯一不變的是媽媽還是很關心我的，只是不知道該怎麼做又用錯了方式。」
 「以前的我會害怕自己一個人，但現在我已經不怕了，因為我知道，不管發生什麼事，媽媽一直都在我身邊。」
-
-~ speaker = "“它”"
 + [你終究會孤單一個人]
     {(selected_clues ? "Journal1") && (selected_clues ? "Journal2") && (selected_clues ? "Journal3")&& (selected_clues ? "MomLetter") && (selected_clues ? "AuntLetter"):
         -> correct_path5 
